@@ -1,0 +1,406 @@
+{{> head }}
+<body class="bg-slate-50 min-h-screen flex flex-col">
+{{> navbar }}
+<div class="flex flex-1 overflow-hidden">
+{{> sidebar }}
+
+<main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+  {{#if success_msg}}
+  <div class="alert-success animate-fadeup flex items-center gap-3 p-4 rounded-xl shadow-sm border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm font-semibold">
+    <div class="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center flex-shrink-0">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <span class="flex-1">{{success_msg}}</span>
+  </div>
+  {{/if}}
+
+  {{#if error_msg}}
+  <div class="alert-error animate-fadeup flex items-center gap-3 p-4 rounded-xl shadow-sm border border-rose-200 bg-rose-50 text-rose-800 text-sm font-semibold">
+    <div class="w-7 h-7 rounded-lg bg-rose-500 text-white flex items-center justify-center flex-shrink-0">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <span class="flex-1">{{error_msg}}</span>
+  </div>
+  {{/if}}
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-7 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative overflow-hidden animate-fadeup">
+    <!-- Decorative background accent blob -->
+    <div class="absolute -right-12 -top-12 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -right-4 -bottom-12 w-48 h-48 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none"></div>
+
+    <div class="relative z-10 space-y-1.5">
+      <div class="flex items-center gap-2.5">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-blue-50 text-blue-700 border border-blue-100/80">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span id="today-date">Today</span>
+        </span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+          System Ready
+        </span>
+      </div>
+      
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight pt-1">
+        Good day, <span class="bg-gradient-to-r from-blue-700 to-indigo-600 bg-clip-text text-transparent">{{userName}}</span> 👋
+      </h1>
+      <p class="text-slate-500 text-sm font-medium">Welcome back to ScoreSync — your central competition management hub.</p>
+    </div>
+
+    <div class="relative z-10 flex items-center gap-3">
+      <a href="/events/create" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-blue-700 to-indigo-600 text-white font-bold text-sm shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Event
+      </a>
+    </div>
+  </div>
+
+  {{#if pendingCount}}
+  <!-- Pending Account Approval Banner -->
+  <div class="p-5 rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fadeup relative overflow-hidden">
+    <div class="flex items-center gap-4 relative z-10">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-amber-500/20">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h3 class="font-extrabold text-amber-950 text-base">Pending Registration Requests</h3>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-500 text-white shadow-xs">{{pendingCount}} new</span>
+        </div>
+        <p class="text-amber-800/90 text-xs font-medium mt-0.5">New user accounts are awaiting your administrative verification before accessing the system.</p>
+      </div>
+    </div>
+    <a href="/users" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md shadow-amber-600/20 hover:scale-[1.02] transition flex-shrink-0">
+      Review &amp; Approve Requests
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+  {{/if}}
+
+  <!-- KPI Cards Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 animate-fadeup-1">
+
+    <!-- Card 1: Total Events -->
+    <div class="relative overflow-hidden rounded-2xl p-5 text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group"
+      style="background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 60%, #3b82f6 100%);">
+      <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl group-hover:scale-125 transition duration-500"></div>
+      <div class="flex items-start justify-between mb-4 relative z-10">
+        <div>
+          <p class="text-blue-200 text-xs font-extrabold uppercase tracking-widest">Total Events</p>
+          <p class="text-3xl sm:text-4xl font-black mt-1 leading-none tracking-tight">{{totalEvents}}</p>
+        </div>
+        <div class="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+      </div>
+      <div class="w-full bg-white/15 rounded-full h-1.5 mb-3 relative z-10 overflow-hidden">
+        <div class="bg-white/80 h-full rounded-full transition-all duration-1000" style="width: 70%"></div>
+      </div>
+      <a href="/events" class="inline-flex items-center gap-1.5 text-blue-100 hover:text-white text-xs font-bold relative z-10 group-hover:underline">
+        Browse all events
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="group-hover:translate-x-1 transition"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- Card 2: Registered Users -->
+    <div class="relative overflow-hidden rounded-2xl p-5 text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group"
+      style="background: linear-gradient(135deg, #064e3b 0%, #059669 60%, #10b981 100%);">
+      <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl group-hover:scale-125 transition duration-500"></div>
+      <div class="flex items-start justify-between mb-4 relative z-10">
+        <div>
+          <p class="text-emerald-200 text-xs font-extrabold uppercase tracking-widest">Active Users</p>
+          <p class="text-3xl sm:text-4xl font-black mt-1 leading-none tracking-tight">{{totalUsers}}</p>
+        </div>
+        <div class="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+      </div>
+      <div class="w-full bg-white/15 rounded-full h-1.5 mb-3 relative z-10 overflow-hidden">
+        <div class="bg-white/80 h-full rounded-full transition-all duration-1000" style="width: 85%"></div>
+      </div>
+      <a href="/users" class="inline-flex items-center gap-1.5 text-emerald-100 hover:text-white text-xs font-bold relative z-10 group-hover:underline">
+        Judges, encoders &amp; admins
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="group-hover:translate-x-1 transition"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- Card 3: Live & Ongoing -->
+    <div class="relative overflow-hidden rounded-2xl p-5 text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group"
+      style="background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 60%, #8b5cf6 100%);">
+      <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl group-hover:scale-125 transition duration-500"></div>
+      <div class="flex items-start justify-between mb-4 relative z-10">
+        <div>
+          <p class="text-purple-200 text-xs font-extrabold uppercase tracking-widest">Ongoing Competitions</p>
+          <p class="text-3xl sm:text-4xl font-black mt-1 leading-none tracking-tight">
+            <span class="inline-flex items-center gap-2">
+              0
+              <span class="w-3 h-3 bg-emerald-400 rounded-full animate-ping"></span>
+            </span>
+          </p>
+        </div>
+        <div class="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        </div>
+      </div>
+      <div class="w-full bg-white/15 rounded-full h-1.5 mb-3 relative z-10 overflow-hidden">
+        <div class="bg-white/80 h-full rounded-full transition-all duration-1000" style="width: 40%"></div>
+      </div>
+      <a href="/events" class="inline-flex items-center gap-1.5 text-purple-100 hover:text-white text-xs font-bold relative z-10 group-hover:underline">
+        Real-time score tabulator
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="group-hover:translate-x-1 transition"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <!-- Card 4: Quick Launchpad -->
+    <div class="relative overflow-hidden rounded-2xl p-5 text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group"
+      style="background: linear-gradient(135deg, #b45309 0%, #d97706 60%, #f59e0b 100%);">
+      <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl group-hover:scale-125 transition duration-500"></div>
+      <div class="flex items-start justify-between mb-3 relative z-10">
+        <div>
+          <p class="text-amber-100 text-xs font-extrabold uppercase tracking-widest">Quick Launch</p>
+          <p class="text-lg font-black mt-1 leading-tight">Create New Competition</p>
+        </div>
+        <div class="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+      </div>
+      <p class="text-amber-100/90 text-xs font-medium mb-3 relative z-10">Setup pageant, sports, or cultural scoring rules in seconds.</p>
+      <a href="/events/create" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition relative z-10">
+        Launch Wizard
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Stage & Round Countdown Timer Widget -->
+  <div class="animate-fadeup-2">
+    {{> countdown_timer }}
+  </div>
+
+  <!-- Main Grid: Recent Events & System Quick Stats -->
+  <div class="grid lg:grid-cols-3 gap-6 animate-fadeup-2">
+
+    <!-- Events List Card (2 Cols) -->
+    <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <h2 class="text-base font-extrabold text-slate-900 tracking-tight">Recent Competitions</h2>
+        </div>
+        <a href="/events" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition">
+          View All Events
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+
+      {{#if recentEvents.length}}
+      <div class="overflow-x-auto flex-1">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-100 bg-slate-50/70 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
+              <th class="py-3 px-6">Event Name</th>
+              <th class="py-3 px-4">Type</th>
+              <th class="py-3 px-4">Date</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-6 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-sm">
+            {{#each recentEvents}}
+            <tr class="hover:bg-slate-50/80 transition group">
+              <td class="py-3.5 px-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-xs font-bold text-white"
+                    style="background: linear-gradient(135deg, #1e3a8a, #2563eb);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="#fbbf24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                  </div>
+                  <div>
+                    <a href="/events/{{id}}" class="font-bold text-slate-900 group-hover:text-blue-600 transition">{{name}}</a>
+                    {{#if venue}}<div class="text-xs text-slate-400 flex items-center gap-1 mt-0.5"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>{{venue}}</div>{{/if}}
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 capitalize border border-slate-200/60">
+                  {{type}}
+                </span>
+              </td>
+              <td class="py-3.5 px-4 text-xs font-semibold text-slate-500 whitespace-nowrap">
+                {{date}}
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="badge {{#if (eq status 'ongoing')}}badge-green{{else}}{{#if (eq status 'completed')}}badge-blue{{else}}{{#if (eq status 'cancelled')}}badge-red{{else}}badge-yellow{{/if}}{{/if}}{{/if}} capitalize">
+                  {{status}}
+                </span>
+              </td>
+              <td class="py-3.5 px-6 text-right">
+                <div class="flex items-center justify-end gap-1.5">
+                  <a href="/events/{{id}}" class="p-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition shadow-xs" title="View Event Dashboard">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </a>
+                  <a href="/events/{{id}}/edit" class="p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-700 hover:text-white transition shadow-xs" title="Edit Event Details">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </a>
+                  <a href="/events/{{id}}/results" class="p-2 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition shadow-xs" title="View Official Tabulation Rankings">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+      {{else}}
+      <div class="py-16 text-center px-4">
+        <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-100 shadow-sm">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+        </div>
+        <h3 class="font-bold text-slate-800 text-base mb-1">No Active Events Found</h3>
+        <p class="text-slate-500 text-xs max-w-sm mx-auto mb-5">Start by creating your first festival competition, pageant, or sports event to initialize judges and criteria.</p>
+        <a href="/events/create" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Create First Competition
+        </a>
+      </div>
+      {{/if}}
+    </div>
+
+    <!-- Right Sidebar Column: Quick Shortcuts & System Overview -->
+    <div class="space-y-6">
+
+      <!-- Quick Action Shortcuts Card -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2.5 bg-slate-50/50">
+          <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <h2 class="text-sm font-extrabold text-slate-900 tracking-tight">Admin Shortcuts</h2>
+        </div>
+
+        <div class="p-3 space-y-1.5">
+
+          <a href="/events/create" class="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50/80 border border-transparent hover:border-blue-100 transition group">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-xs" style="background: linear-gradient(135deg, #1e3a8a, #2563eb);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="flex-1">
+              <div class="text-xs font-bold text-slate-800 group-hover:text-blue-700 transition">Create Competition</div>
+              <div class="text-[11px] text-slate-400 font-medium">Add new event &amp; venue</div>
+            </div>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" class="group-hover:translate-x-1 transition"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+
+          <a href="/events" class="flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-50/80 border border-transparent hover:border-emerald-100 transition group">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-xs" style="background: linear-gradient(135deg, #064e3b, #059669);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
+            </div>
+            <div class="flex-1">
+              <div class="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition">Manage All Events</div>
+              <div class="text-[11px] text-slate-400 font-medium">Configure contestants &amp; judges</div>
+            </div>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" class="group-hover:translate-x-1 transition"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+
+          <a href="/criteria" class="flex items-center gap-3 p-3 rounded-xl hover:bg-purple-50/80 border border-transparent hover:border-purple-100 transition group">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-xs" style="background: linear-gradient(135deg, #4c1d95, #7c3aed);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <div class="flex-1">
+              <div class="text-xs font-bold text-slate-800 group-hover:text-purple-700 transition">Criteria &amp; Weights</div>
+              <div class="text-[11px] text-slate-400 font-medium">Setup 100% scoring weights</div>
+            </div>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" class="group-hover:translate-x-1 transition"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+
+          <a href="/users" class="flex items-center gap-3 p-3 rounded-xl hover:bg-amber-50/80 border border-transparent hover:border-amber-100 transition group">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-xs" style="background: linear-gradient(135deg, #b45309, #d97706);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+            </div>
+            <div class="flex-1">
+              <div class="text-xs font-bold text-slate-800 group-hover:text-amber-700 transition">User Management</div>
+              <div class="text-[11px] text-slate-400 font-medium">Add judges &amp; encoders</div>
+            </div>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" class="group-hover:translate-x-1 transition"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- System Telemetry Panel -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2.5 bg-slate-50/50">
+          <div class="w-7 h-7 rounded-lg bg-slate-200 text-slate-700 flex items-center justify-center font-bold">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <h2 class="text-sm font-extrabold text-slate-900 tracking-tight">System Environment</h2>
+        </div>
+
+        <div class="px-5 py-4 space-y-3.5 text-xs font-medium">
+
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 flex items-center gap-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Account Role
+            </span>
+            <span class="badge badge-blue uppercase tracking-wider text-[10px]">{{userRole}}</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 flex items-center gap-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+              Cloud Database
+            </span>
+            <span class="badge badge-green font-bold text-[10px]">Firebase Firestore</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 flex items-center gap-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              App Framework
+            </span>
+            <span class="text-slate-800 font-bold">XianFire / Express</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500 flex items-center gap-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Municipal Unit
+            </span>
+            <span class="text-slate-800 font-bold">Mansalay, Or. Mindoro</span>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+            <span class="text-slate-500 flex items-center gap-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+              Tabulator Sync
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-emerald-600 font-extrabold text-[11px]">
+              <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
+              Connected
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+</div>
+{{> footer }}
+<script>
+  const d=new Date();
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const el=document.getElementById('today-date');
+  if(el) el.textContent=days[d.getDay()]+', '+months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+</script>
+</body>
+</html>
+

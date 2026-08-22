@@ -1,0 +1,123 @@
+{{> head }}
+<body class="min-h-screen flex" style="background:#f0f4ff">
+  <div class="hidden lg:flex lg:w-[44%] auth-panel-bg flex-col justify-between p-10 relative">
+    <div class="relative z-10">
+      <div class="flex items-center gap-3 mb-14">
+        <div class="w-10 h-10 grad-gold rounded-2xl flex items-center justify-center shadow-xl">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        </div>
+        <span class="text-white font-black text-xl tracking-tight">ScoreSync</span>
+      </div>
+      <h2 class="text-white text-3xl font-black leading-tight tracking-tight mb-4">Request a ScoreSync<br/>Account.</h2>
+      <p class="text-blue-200 text-sm leading-relaxed max-w-xs">Submit an account request to the Administrator for approval and get notified directly on your Gmail once confirmed.</p>
+    </div>
+    <div class="relative z-10">
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="rounded-2xl p-4 text-center" style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.15)">
+          <div class="text-2xl font-black text-yellow-300">Admin</div>
+          <div class="text-blue-200 text-xs mt-1">Confirmation</div>
+        </div>
+        <div class="rounded-2xl p-4 text-center" style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.15)">
+          <div class="text-2xl font-black text-emerald-300">Gmail</div>
+          <div class="text-blue-200 text-xs mt-1">Notification</div>
+        </div>
+      </div>
+      <p class="text-blue-300 text-xs" style="opacity:0.6">&copy; 2026 ScoreSync &mdash; Mansalay, Oriental Mindoro</p>
+    </div>
+  </div>
+  <div class="flex-1 flex items-center justify-center px-6 py-10">
+    <div class="w-full max-w-[420px] animate-fadeup">
+      <div class="flex items-center gap-2.5 justify-center mb-8 lg:hidden">
+        <div class="w-10 h-10 grad-gold rounded-2xl flex items-center justify-center shadow-lg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        </div>
+        <span class="font-black text-xl text-slate-800">ScoreSync</span>
+      </div>
+      <div class="bg-white rounded-2xl p-8" style="box-shadow:0 4px 32px rgba(0,0,0,0.10),0 1px 4px rgba(0,0,0,0.06)">
+        <div class="mb-7">
+          <h1 class="text-2xl font-black text-slate-900 tracking-tight">Request an Account</h1>
+          <p class="text-slate-500 text-sm mt-1">Submit your request to the Administrator for approval.</p>
+        </div>
+        {{#if error_msg}}<div class="alert-error mb-5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>{{error_msg}}</span></div>{{/if}}
+        {{#if success_msg}}<div class="alert-success mb-5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg><span>{{success_msg}}</span></div>{{/if}}
+        <form method="POST" action="/register" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Full Name</label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </span>
+              <input type="text" name="name" placeholder="Juan dela Cruz" required
+                style="width:100%;padding:11px 14px 11px 40px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:0.875rem;color:#0f172a;outline:none;background:#fff;"
+                onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.12)'"
+                onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Email Address</label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              </span>
+              <input type="email" name="email" placeholder="you@example.com" required autocomplete="email"
+                style="width:100%;padding:11px 14px 11px 40px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:0.875rem;color:#0f172a;outline:none;background:#fff;"
+                onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.12)'"
+                onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Password</label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <input type="password" name="password" id="passwordInput" placeholder="Min. 6 characters" required minlength="6" autocomplete="new-password"
+                style="width:100%;padding:11px 42px 11px 40px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:0.875rem;color:#0f172a;outline:none;background:#fff;"
+                onfocus="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 0 3px rgba(59,130,246,0.12)'"
+                onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"/>
+              <button type="button" id="eyeBtn" onclick="togglePassword()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Select Role</label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="cursor-pointer">
+                <input type="radio" name="role" value="judge" class="sr-only peer" required/>
+                <div class="peer-checked:border-purple-500 peer-checked:bg-purple-50 border-2 border-slate-200 rounded-xl p-3.5 text-center transition hover:border-purple-300">
+                  <div class="w-8 h-8 grad-purple rounded-lg flex items-center justify-center mx-auto mb-2 shadow-sm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                  </div>
+                  <div class="font-bold text-slate-800 text-sm">Judge</div>
+                  <div class="text-slate-400 text-xs mt-0.5">Score contestants</div>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="role" value="encoder" class="sr-only peer"/>
+                <div class="peer-checked:border-emerald-500 peer-checked:bg-emerald-50 border-2 border-slate-200 rounded-xl p-3.5 text-center transition hover:border-emerald-300">
+                  <div class="w-8 h-8 grad-green rounded-lg flex items-center justify-center mx-auto mb-2 shadow-sm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                  </div>
+                  <div class="font-bold text-slate-800 text-sm">Encoder</div>
+                  <div class="text-slate-400 text-xs mt-0.5">Manage contestants</div>
+                </div>
+              </label>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary w-full py-3 text-sm justify-center mt-1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            Request Account
+          </button>
+        </form>
+      </div>
+      <p class="text-center text-sm text-slate-500 mt-5">Already have an account? <a href="/login" class="text-blue-600 font-bold hover:underline">Sign in</a></p>
+    </div>
+  </div>
+<script>
+const eyeOpen='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const eyeClose='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+function togglePassword(){const i=document.getElementById('passwordInput'),b=document.getElementById('eyeBtn');if(i.type==='password'){i.type='text';b.innerHTML=eyeClose;}else{i.type='password';b.innerHTML=eyeOpen;}}
+</script>
+</body>
+</html>

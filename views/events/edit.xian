@@ -1,0 +1,131 @@
+{{> head }}
+<body class="bg-slate-50 min-h-screen flex flex-col">
+{{> navbar }}
+<div class="flex flex-1 overflow-hidden">
+{{> sidebar }}
+<main class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+  {{#if error_msg}}<div class="alert-error mb-6 animate-fadeup"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{{error_msg}}</div>{{/if}}
+
+  <div class="page-header animate-fadeup">
+    <div class="breadcrumb"><a href="/events/{{event.id}}">Back to {{event.name}}</a></div>
+    <h1>Edit Event</h1>
+    <p>Update all details for <span class="font-semibold text-blue-600">{{event.name}}</span>.</p>
+  </div>
+
+  <form method="POST" action="/events/{{event.id}}/update" class="animate-fadeup-1">
+    <div class="grid lg:grid-cols-3 gap-5">
+      <div class="lg:col-span-2 space-y-5">
+
+        <div class="card-flat">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 grad-brand rounded-lg flex items-center justify-center shadow-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <h2 class="font-bold text-slate-800">Basic Information</h2>
+          </div>
+          <div class="px-6 py-5 space-y-4">
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Event Name <span class="text-red-500">*</span></label><input type="text" name="name" value="{{event.name}}" required class="form-input-bare"/></div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Description</label><textarea name="description" rows="3" class="form-input-bare resize-none">{{event.description}}</textarea></div>
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Event Type</label>
+                <select name="type" class="form-input-bare bg-white">
+                  <option value="pageant" {{#if (eq event.type 'pageant')}}selected{{/if}}>Pageant (Beauty / Royalty)</option>
+                  <option value="cultural" {{#if (eq event.type 'cultural')}}selected{{/if}}>Street Dancing &amp; Cultural</option>
+                  <option value="float" {{#if (eq event.type 'float')}}selected{{/if}}>Float Parade Competition</option>
+                  <option value="marching" {{#if (eq event.type 'marching')}}selected{{/if}}>Drum &amp; Lyre / Marching Band</option>
+                  <option value="choral" {{#if (eq event.type 'choral')}}selected{{/if}}>Choral &amp; Vocal Contest</option>
+                  <option value="dance" {{#if (eq event.type 'dance')}}selected{{/if}}>Dance Crew / Modern Dance</option>
+                  <option value="booth" {{#if (eq event.type 'booth')}}selected{{/if}}>Agro-Industrial &amp; Booth Display</option>
+                  <option value="sports" {{#if (eq event.type 'sports')}}selected{{/if}}>Sports &amp; Palaro</option>
+                  <option value="academic" {{#if (eq event.type 'academic')}}selected{{/if}}>Academic &amp; Quiz Bee</option>
+                  <option value="culinary" {{#if (eq event.type 'culinary')}}selected{{/if}}>Culinary &amp; Cooking Contest</option>
+                  <option value="talent" {{#if (eq event.type 'talent')}}selected{{/if}}>Talent Show</option>
+                  <option value="other" {{#if (eq event.type 'other')}}selected{{/if}}>Other LGU Competition</option>
+                </select>
+              </div>
+              <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Status</label>
+                <select name="status" class="form-input-bare bg-white">
+                  <option value="upcoming" {{#if (eq event.status 'upcoming')}}selected{{/if}}>Upcoming</option>
+                  <option value="ongoing" {{#if (eq event.status 'ongoing')}}selected{{/if}}>Ongoing</option>
+                  <option value="completed" {{#if (eq event.status 'completed')}}selected{{/if}}>Completed</option>
+                  <option value="cancelled" {{#if (eq event.status 'cancelled')}}selected{{/if}}>Cancelled</option>
+                </select>
+              </div>
+            </div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Organizer</label><input type="text" name="organizer" value="{{event.organizer}}" placeholder="e.g. Municipality of Mansalay" class="form-input-bare"/></div>
+          </div>
+        </div>
+
+        <div class="card-flat">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 grad-green rounded-lg flex items-center justify-center shadow-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            <h2 class="font-bold text-slate-800">Schedule &amp; Venue</h2>
+          </div>
+          <div class="px-6 py-5 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Date</label><input type="date" name="date" value="{{event.date}}" class="form-input-bare"/></div>
+              <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Time</label><input type="time" name="time" value="{{event.time}}" class="form-input-bare"/></div>
+            </div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Venue</label><input type="text" name="venue" value="{{event.venue}}" class="form-input-bare"/></div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Max Contestants</label><input type="number" name="maxContestants" value="{{event.maxContestants}}" min="1" max="200" class="form-input-bare"/></div>
+          </div>
+        </div>
+
+        <div class="card-flat">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 grad-gold rounded-lg flex items-center justify-center shadow-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg></div>
+            <h2 class="font-bold text-slate-800">Prizes &amp; Rules</h2>
+          </div>
+          <div class="px-6 py-5 space-y-4">
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Prizes / Awards</label><textarea name="prizes" rows="3" class="form-input-bare resize-none">{{event.prizes}}</textarea></div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Rules &amp; Mechanics</label><textarea name="rules" rows="4" class="form-input-bare resize-none">{{event.rules}}</textarea></div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Additional Notes</label><textarea name="notes" rows="2" class="form-input-bare resize-none">{{event.notes}}</textarea></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="space-y-5">
+        <div class="card-flat">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 grad-purple rounded-lg flex items-center justify-center shadow-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6.5" cy="17" r="2.5"/></svg></div>
+            <h2 class="font-bold text-slate-800">Event Theme</h2>
+          </div>
+          <div class="px-6 py-5">
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Card Color</label>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="cursor-pointer"><input type="radio" name="theme" value="blue" class="sr-only peer" {{#if (eq event.theme 'blue')}}checked{{/if}} {{#unless event.theme}}checked{{/unless}}/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-blue-500 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6)"></div><p class="text-center text-xs text-slate-500 mt-1">Blue</p></label>
+              <label class="cursor-pointer"><input type="radio" name="theme" value="purple" class="sr-only peer" {{#if (eq event.theme 'purple')}}checked{{/if}}/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-purple-500 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#4c1d95,#8b5cf6)"></div><p class="text-center text-xs text-slate-500 mt-1">Purple</p></label>
+              <label class="cursor-pointer"><input type="radio" name="theme" value="green" class="sr-only peer" {{#if (eq event.theme 'green')}}checked{{/if}}/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-emerald-500 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#064e3b,#10b981)"></div><p class="text-center text-xs text-slate-500 mt-1">Green</p></label>
+              <label class="cursor-pointer"><input type="radio" name="theme" value="gold" class="sr-only peer" {{#if (eq event.theme 'gold')}}checked{{/if}}/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-yellow-400 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#92400e,#fbbf24)"></div><p class="text-center text-xs text-slate-500 mt-1">Gold</p></label>
+              <label class="cursor-pointer"><input type="radio" name="theme" value="rose" class="sr-only peer" {{#if (eq event.theme 'rose')}}checked{{/if}}/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-rose-500 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#881337,#f43f5e)"></div><p class="text-center text-xs text-slate-500 mt-1">Rose</p></label>
+              <label class="cursor-pointer"><input type="radio" name="theme" value="slate" class="sr-only peer" {{#if (eq event.theme 'slate')}}checked{{/if}}/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-slate-500 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#1e293b,#64748b)"></div><p class="text-center text-xs text-slate-500 mt-1">Dark</p></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-flat" style="border-color:#fecaca">
+          <div class="px-6 py-4 border-b border-red-100 flex items-center gap-3">
+            <div class="w-8 h-8 grad-rose rounded-lg flex items-center justify-center shadow-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <h2 class="font-bold text-slate-800">Danger Zone</h2>
+          </div>
+          <div class="px-6 py-5">
+            <p class="text-xs text-slate-500 leading-relaxed mb-3">Deleting this event will permanently remove all contestants, criteria, and scores.</p>
+            <form method="POST" action="/events/{{event.id}}/delete" onsubmit="return confirm('DELETE this event? This CANNOT be undone.')">
+              <button type="submit" class="btn-danger w-full justify-center py-2.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>Delete This Event</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="card-flat">
+          <div class="px-6 py-5 space-y-2">
+            <button type="submit" class="btn-primary w-full py-3 text-sm justify-center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save All Changes</button>
+            <a href="/events/{{event.id}}" class="btn-secondary w-full py-2.5 text-sm justify-center">Cancel</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</main>
+</div>
+{{> footer }}
+</body>
+</html>

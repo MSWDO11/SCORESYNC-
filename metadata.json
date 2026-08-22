@@ -1,0 +1,8 @@
+{
+  "name": "ScoreSync",
+  "description": "Event scoring, tabulation, and stage round countdown timer system",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

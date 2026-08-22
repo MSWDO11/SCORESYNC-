@@ -1,0 +1,26 @@
+{{> head }}
+<body class="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+  <div class="text-center max-w-md animate-fadeup">
+    <div class="w-20 h-20 grad-rose rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+    </div>
+    <div class="text-8xl font-black text-slate-200 leading-none mb-2">403</div>
+    <h1 class="text-2xl font-extrabold text-slate-800 mb-3 tracking-tight">Access Denied</h1>
+    <p class="text-slate-500 text-sm mb-8 leading-relaxed">
+      You don't have permission to view this page.<br/>
+      Please contact your administrator if you think this is a mistake.
+    </p>
+    <div class="flex gap-3 justify-center">
+      <a href="/dashboard" class="btn-primary text-sm">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Go to Dashboard
+      </a>
+      <a href="/logout" class="btn-secondary text-sm">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </a>
+    </div>
+  </div>
+{{> footer }}
+</body>
+</html>

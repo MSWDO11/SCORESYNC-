@@ -1,0 +1,915 @@
+<!-- ScoreSync Event Stage & Round Countdown Timer Component -->
+<div id="scoresync-timer-component" class="scoresync-timer-root bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden transition-all duration-300">
+  
+  <!-- Header Bar -->
+  <div class="px-5 py-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="text-sm font-extrabold text-white tracking-tight" id="st-header-title">Stage &amp; Round Timer</h2>
+          <span id="st-status-badge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-slate-700 text-slate-300 border border-slate-600">
+            Ready
+          </span>
+        </div>
+        <p class="text-[11px] text-slate-400" id="st-current-stage-desc">Track contestant stage duration, Q&amp;A limits, and round intervals.</p>
+      </div>
+    </div>
+
+    <!-- Header Actions -->
+    <div class="flex items-center gap-2">
+      <!-- Sound Mute/Unmute Toggle -->
+      <button type="button" id="st-btn-sound" onclick="ScoreSyncTimer.toggleSound()" title="Toggle Sound Alert"
+        class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white border border-white/10 text-xs font-bold transition flex items-center gap-1">
+        <span id="st-sound-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </span>
+        <span class="text-[11px] hidden sm:inline" id="st-sound-label">Audio On</span>
+      </button>
+
+      <!-- Stage Presentation Mode (Full-screen) -->
+      <button type="button" onclick="ScoreSyncTimer.toggleFullscreen()" title="Full-screen Stage View (F11 / Stage Monitor)"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-sm transition">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
+        <span class="hidden sm:inline">Stage View</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stage Configuration Ribbon -->
+  <div class="px-5 py-3 bg-slate-50 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+    
+    <!-- Stage Selector & Custom Name -->
+    <div class="flex flex-wrap items-center gap-2 flex-1 min-w-[260px]">
+      <label for="st-stage-select" class="font-bold text-slate-600 uppercase tracking-wider text-[11px]">Stage / Round:</label>
+      <select id="st-stage-select" onchange="ScoreSyncTimer.onStageSelectChange(this.value)"
+        class="px-3 py-1.5 rounded-xl border border-slate-300 bg-white font-bold text-slate-800 shadow-2xs focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs">
+        <optgroup label="Pageant & Contest Presets">
+          <option value="60" data-name="Q&amp;A Round (1 min)" selected>Q&amp;A Round &mdash; 01:00</option>
+          <option value="180" data-name="Talent Showcase (3 mins)">Talent Showcase &mdash; 03:00</option>
+          <option value="90" data-name="Casual Wear / Runway (1.5 mins)">Casual Wear / Runway &mdash; 01:30</option>
+          <option value="120" data-name="Evening Gown / Formal (2 mins)">Evening Gown / Formal &mdash; 02:00</option>
+          <option value="300" data-name="Speech / Defense (5 mins)">Speech / Defense &mdash; 05:00</option>
+          <option value="120" data-name="Judge Scoring Period (2 mins)">Judge Scoring Grace &mdash; 02:00</option>
+          <option value="600" data-name="Stage Intermission (10 mins)">Intermission / Break &mdash; 10:00</option>
+          <option value="30" data-name="Quick Speed Round (30s)">Quick Speed Round &mdash; 00:30</option>
+        </optgroup>
+        <optgroup label="Custom Options">
+          <option value="custom" data-name="Custom Duration">Custom Duration...</option>
+        </optgroup>
+      </select>
+
+      <!-- Optional Contestant Tag -->
+      <div class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-xl border border-slate-200">
+        <span class="text-slate-400 font-medium text-[11px]">Contestant:</span>
+        <input type="text" id="st-contestant-input" placeholder="e.g. #1 Maria Santos" value=""
+          class="w-32 sm:w-40 bg-transparent text-slate-800 font-bold focus:outline-none placeholder:text-slate-400 text-xs">
+      </div>
+    </div>
+
+    <!-- Custom Time Setter (hidden by default unless Custom is selected) -->
+    <div id="st-custom-controls" class="hidden items-center gap-1.5">
+      <span class="font-bold text-slate-500">Min:</span>
+      <input type="number" id="st-custom-min" min="0" max="120" value="3" class="w-12 px-2 py-1 rounded-lg border border-slate-300 text-center font-bold text-xs bg-white">
+      <span class="font-bold text-slate-500">Sec:</span>
+      <input type="number" id="st-custom-sec" min="0" max="59" value="0" class="w-12 px-2 py-1 rounded-lg border border-slate-300 text-center font-bold text-xs bg-white">
+      <button type="button" onclick="ScoreSyncTimer.applyCustomTime()" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700">Set</button>
+    </div>
+
+    <!-- Quick Adjustment Buttons -->
+    <div class="flex items-center gap-1">
+      <button type="button" onclick="ScoreSyncTimer.adjustTime(-15)" title="Subtract 15 seconds"
+        class="px-2 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-[11px] transition shadow-2xs">
+        -15s
+      </button>
+      <button type="button" onclick="ScoreSyncTimer.adjustTime(15)" title="Add 15 seconds"
+        class="px-2 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-[11px] transition shadow-2xs">
+        +15s
+      </button>
+      <button type="button" onclick="ScoreSyncTimer.adjustTime(60)" title="Add 1 minute"
+        class="px-2 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-[11px] transition shadow-2xs">
+        +1m
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Countdown Stage Display Area -->
+  <div class="p-6 sm:p-8 flex flex-col items-center justify-center relative bg-gradient-to-b from-white to-slate-50/50">
+    
+    <div class="w-full max-w-md flex flex-col items-center">
+      
+      <!-- Current Active Round Banner -->
+      <div class="text-center mb-4">
+        <span id="st-active-label" class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-100">
+          Q&amp;A Round (1 min)
+        </span>
+        <div id="st-contestant-display" class="text-xs text-slate-500 font-semibold mt-1 h-4">
+          <!-- Dynamically updated -->
+        </div>
+      </div>
+
+      <!-- Circular / Digital Time Display Wrap -->
+      <div class="relative w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center">
+        
+        <!-- SVG Radial Progress Ring -->
+        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 200 200">
+          <!-- Background track -->
+          <circle cx="100" cy="100" r="88" class="text-slate-100" stroke="currentColor" stroke-width="12" fill="transparent"></circle>
+          <!-- Progress dynamic stroke -->
+          <circle id="st-progress-ring" cx="100" cy="100" r="88"
+            class="text-indigo-600 transition-all duration-300"
+            stroke="currentColor" stroke-width="12" stroke-linecap="round"
+            stroke-dasharray="552.92" stroke-dashoffset="0" fill="transparent"></circle>
+        </svg>
+
+        <!-- Digital Numbers Center -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+          <div id="st-digits" class="font-mono text-5xl sm:text-6xl font-black tracking-tight text-slate-900 transition-colors duration-200">
+            01:00
+          </div>
+          <div id="st-subtext" class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mt-1">
+            Time Remaining
+          </div>
+          <div id="st-overtime-label" class="hidden text-xs font-black text-rose-600 animate-pulse mt-0.5">
+            OVERTIME
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Enhanced Dynamic Linear Progress Bar Section -->
+      <div class="w-full mt-5 bg-slate-50/80 rounded-2xl p-3.5 border border-slate-200/90 shadow-2xs">
+        
+        <!-- Progress Bar Metadata Header -->
+        <div class="flex items-center justify-between gap-2 text-xs font-bold mb-2">
+          <div class="flex items-center gap-1.5 text-slate-700">
+            <span id="st-progress-dot" class="w-2 h-2 rounded-full bg-indigo-500"></span>
+            <span class="text-[11px] uppercase tracking-wider text-slate-500">Stage Progress:</span>
+            <span id="st-progress-time-ratio" class="font-mono text-slate-800 text-xs">00:00 / 01:00</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span id="st-progress-percent-badge" class="px-2 py-0.5 rounded-full text-[11px] font-black tracking-tight bg-indigo-100 text-indigo-700 border border-indigo-200">
+              100% Left
+            </span>
+          </div>
+        </div>
+
+        <!-- Dynamic Multi-State Progress Track -->
+        <div class="relative w-full bg-slate-200/90 rounded-full h-3.5 sm:h-4 overflow-hidden border border-slate-300/70 shadow-inner p-0.5">
+          <!-- Dynamic Progress Fill -->
+          <div id="st-linear-progress"
+            class="h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-indigo-500 via-blue-500 to-indigo-600 relative overflow-hidden shadow-xs"
+            style="width: 100%;">
+            <!-- Subtle Shimmer Overlay -->
+            <div class="absolute inset-0 bg-white/20 opacity-40"></div>
+          </div>
+        </div>
+
+        <!-- Milestone Markers (100%, 75%, 50%, 25%, 0%) -->
+        <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 mt-1.5 px-0.5">
+          <span class="hover:text-slate-700 transition cursor-default" title="Start of stage">Start (100%)</span>
+          <span class="hidden sm:inline hover:text-slate-700 transition cursor-default">75%</span>
+          <span class="hover:text-slate-700 transition cursor-default font-semibold" title="Mid-stage mark">50% (Half)</span>
+          <span class="hidden sm:inline hover:text-slate-700 transition cursor-default">25%</span>
+          <span class="hover:text-slate-700 transition cursor-default" title="Time's up">End (0s)</span>
+        </div>
+
+      </div>
+
+      <!-- Action Button Group -->
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3 w-full">
+        
+        <!-- Reset Button -->
+        <button type="button" id="st-btn-reset" onclick="ScoreSyncTimer.reset()"
+          class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-xs hover:border-slate-300 transition flex items-center gap-1.5 active:scale-95">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          Reset
+        </button>
+
+        <!-- Main Start / Pause Primary Button -->
+        <button type="button" id="st-btn-toggle" onclick="ScoreSyncTimer.togglePlay()"
+          class="px-7 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm shadow-md shadow-indigo-500/25 transition flex items-center gap-2 active:scale-95">
+          <span id="st-play-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </span>
+          <span id="st-play-label">Start Timer</span>
+        </button>
+
+        <!-- Record Stage & Next Contestant Button -->
+        <button type="button" id="st-btn-log" onclick="ScoreSyncTimer.logAndNext()"
+          class="px-4 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs transition flex items-center gap-1.5 active:scale-95">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Log &amp; Next
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Stage Log / History Section -->
+  <div class="px-5 py-4 bg-slate-50 border-t border-slate-200/80">
+    <div class="flex items-center justify-between mb-2.5">
+      <div class="flex items-center gap-2">
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Completed Stage Logs</h3>
+        <span id="st-log-count" class="px-2 py-0.2 rounded-full text-[10px] font-bold bg-slate-200 text-slate-700">0 records</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="ScoreSyncTimer.copyLogs()" title="Copy logs to clipboard"
+          class="text-[11px] font-bold text-slate-500 hover:text-indigo-600 transition flex items-center gap-1">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copy
+        </button>
+        <span class="text-slate-300">|</span>
+        <button type="button" onclick="ScoreSyncTimer.clearLogs()"
+          class="text-[11px] font-bold text-slate-400 hover:text-rose-600 transition">
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Log Items Container -->
+    <div id="st-log-container" class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+      <div id="st-log-empty" class="text-center py-4 text-xs text-slate-400 italic">
+        No completed stage records yet. Click &ldquo;Log &amp; Next&rdquo; when a contestant finishes their round.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Full-screen Stage Presentation Overlay Modal (High-Contrast Auditorium Display) -->
+<div id="scoresync-fullscreen-modal" class="fixed inset-0 z-50 bg-slate-950 text-white hidden flex-col items-center justify-between p-6 sm:p-12 transition-all duration-300">
+  
+  <!-- Top Bar -->
+  <div class="w-full flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center font-black text-white shadow-lg">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"></path></svg>
+      </div>
+      <div>
+        <h1 class="text-lg sm:text-xl font-black text-white tracking-tight">ScoreSync Stage Timer</h1>
+        <p class="text-xs text-slate-400" id="st-fs-stage-sub">Official Competition Stage Display</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button type="button" onclick="ScoreSyncTimer.toggleFullscreen()"
+        class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition flex items-center gap-1.5">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        Exit Fullscreen (ESC)
+      </button>
+    </div>
+  </div>
+
+  <!-- Center Big Digits & Stage Info -->
+  <div class="flex flex-col items-center justify-center my-auto text-center w-full max-w-4xl">
+    
+    <div id="st-fs-contestant" class="text-xl sm:text-3xl font-extrabold text-indigo-400 tracking-wide mb-3 min-h-[36px]">
+      <!-- Active Contestant Info -->
+    </div>
+
+    <div class="inline-block px-5 py-1.5 rounded-full text-sm sm:text-base font-extrabold bg-slate-800 text-slate-200 border border-slate-700 mb-6" id="st-fs-stage-name">
+      Q&amp;A Round (1 min)
+    </div>
+
+    <!-- Massive High-Visibility Monospace Digits -->
+    <div id="st-fs-digits" class="font-mono text-7xl sm:text-9xl md:text-[14rem] font-black tracking-tighter text-white select-none leading-none drop-shadow-2xl transition-colors duration-200">
+      01:00
+    </div>
+
+    <div id="st-fs-status" class="text-sm sm:text-lg font-bold tracking-widest uppercase text-slate-400 mt-4">
+      Ready &bull; Press Spacebar to Start / Pause
+    </div>
+
+    <!-- Large High-Contrast Linear Stage Progress Meter -->
+    <div class="w-full max-w-2xl mt-8 bg-slate-900/90 rounded-2xl p-4 border border-slate-800 shadow-2xl">
+      <!-- Fullscreen Progress Header -->
+      <div class="flex items-center justify-between text-xs sm:text-sm font-bold mb-2.5">
+        <div class="flex items-center gap-2 text-slate-300">
+          <span id="st-fs-progress-dot" class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
+          <span class="uppercase tracking-widest text-[11px] text-slate-400 font-extrabold">Stage Elapsed / Total:</span>
+          <span id="st-fs-progress-time-ratio" class="font-mono text-white font-black text-sm">00:00 / 01:00</span>
+        </div>
+        <div>
+          <span id="st-fs-progress-percent" class="px-3 py-1 rounded-full text-xs font-black tracking-wide bg-indigo-950 text-indigo-300 border border-indigo-700/60 shadow-xs">
+            100% Left
+          </span>
+        </div>
+      </div>
+
+      <!-- Large Progress Track -->
+      <div class="w-full bg-slate-800/90 rounded-full h-5 sm:h-6 overflow-hidden border border-slate-700/80 shadow-inner p-0.5">
+        <div id="st-fs-progress" class="bg-gradient-to-r from-indigo-500 via-blue-500 to-indigo-600 h-full rounded-full transition-all duration-300 ease-out relative overflow-hidden shadow-md" style="width: 100%;">
+          <div class="absolute inset-0 bg-white/20 opacity-30"></div>
+        </div>
+      </div>
+
+      <!-- Milestone Markers (Full-screen) -->
+      <div class="flex items-center justify-between text-[11px] font-extrabold text-slate-500 mt-2 px-1">
+        <span>Start</span>
+        <span>75%</span>
+        <span>50% (Half-Time)</span>
+        <span>25%</span>
+        <span>Time's Up (0s)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Stage Controls Bar -->
+  <div class="w-full flex flex-wrap items-center justify-center gap-4 pt-6 border-t border-slate-800/80">
+    <button type="button" onclick="ScoreSyncTimer.reset()"
+      class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 transition">
+      Reset
+    </button>
+    <button type="button" onclick="ScoreSyncTimer.togglePlay()" id="st-fs-btn-toggle"
+      class="px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-base shadow-lg shadow-indigo-600/30 transition flex items-center gap-2">
+      <span id="st-fs-play-label">Start Timer</span>
+    </button>
+    <button type="button" onclick="ScoreSyncTimer.adjustTime(30)"
+      class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 transition">
+      +30s
+    </button>
+    <button type="button" onclick="ScoreSyncTimer.logAndNext()"
+      class="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-md transition">
+      Log &amp; Next Stage
+    </button>
+  </div>
+
+</div>
+
+<!-- Audio and Timer Controller Script Engine -->
+<script>
+window.ScoreSyncTimer = (function() {
+  const CIRCLE_CIRCUMFERENCE = 552.92; // 2 * Math.PI * 88
+  
+  let totalDuration = 60; // seconds
+  let remainingSeconds = 60;
+  let isRunning = false;
+  let isOvertime = false;
+  let intervalId = null;
+  let soundEnabled = true;
+  let logs = [];
+  let stageName = "Q&A Round (1 min)";
+  let audioCtx = null;
+
+  // Initialize Web Audio synthesizer for venue alerts
+  function getAudioContext() {
+    if (!audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) {
+        audioCtx = new AudioContext();
+      }
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playTone(freq, type, duration, delay = 0) {
+    if (!soundEnabled) return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      setTimeout(() => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      }, delay);
+    } catch (e) {
+      console.warn("Audio context playback error:", e);
+    }
+  }
+
+  function playWarningBeep() {
+    playTone(660, 'sine', 0.15);
+  }
+
+  function playFinalBuzzer() {
+    // 3 harmonic beeps
+    playTone(880, 'square', 0.2, 0);
+    playTone(880, 'square', 0.2, 220);
+    playTone(880, 'square', 0.45, 440);
+  }
+
+  function formatTime(sec) {
+    const isNeg = sec < 0;
+    const absSec = Math.abs(sec);
+    const m = Math.floor(absSec / 60);
+    const s = absSec % 60;
+    const pad = (n) => String(n).padStart(2, '0');
+    return (isNeg ? '+' : '') + pad(m) + ':' + pad(s);
+  }
+
+  function updateUI() {
+    const digitsEl = document.getElementById('st-digits');
+    const fsDigitsEl = document.getElementById('st-fs-digits');
+    const subtextEl = document.getElementById('st-subtext');
+    const statusBadge = document.getElementById('st-status-badge');
+    const ringEl = document.getElementById('st-progress-ring');
+    const linearEl = document.getElementById('st-linear-progress');
+    const fsProgressEl = document.getElementById('st-fs-progress');
+    const overtimeLabel = document.getElementById('st-overtime-label');
+    const fsStatusEl = document.getElementById('st-fs-status');
+    const contestantInput = document.getElementById('st-contestant-input');
+    const contestantDisplay = document.getElementById('st-contestant-display');
+    const fsContestant = document.getElementById('st-fs-contestant');
+    const activeLabel = document.getElementById('st-active-label');
+    const fsStageName = document.getElementById('st-fs-stage-name');
+
+    const formatted = formatTime(remainingSeconds);
+    if (digitsEl) digitsEl.textContent = formatted;
+    if (fsDigitsEl) fsDigitsEl.textContent = formatted;
+
+    const contestantText = contestantInput ? contestantInput.value.trim() : '';
+    if (contestantDisplay) {
+      contestantDisplay.textContent = contestantText ? `Active: ${contestantText}` : '';
+    }
+    if (fsContestant) {
+      fsContestant.textContent = contestantText ? `Active: ${contestantText}` : '';
+    }
+    if (activeLabel) activeLabel.textContent = stageName;
+    if (fsStageName) fsStageName.textContent = stageName;
+
+    // Linear progress bar elements
+    const timeRatioEl = document.getElementById('st-progress-time-ratio');
+    const percentBadgeEl = document.getElementById('st-progress-percent-badge');
+    const progressDotEl = document.getElementById('st-progress-dot');
+    const fsTimeRatioEl = document.getElementById('st-fs-progress-time-ratio');
+    const fsPercentBadgeEl = document.getElementById('st-fs-progress-percent');
+    const fsProgressDotEl = document.getElementById('st-fs-progress-dot');
+
+    // Calculate progress fraction & elapsed time
+    let fraction = 0;
+    if (totalDuration > 0) {
+      fraction = Math.max(0, Math.min(1, remainingSeconds / totalDuration));
+    }
+    const percent = Math.round(fraction * 100);
+    const elapsedSec = Math.max(0, totalDuration - remainingSeconds);
+    const ratioString = `${formatTime(elapsedSec)} / ${formatTime(totalDuration)}`;
+
+    if (timeRatioEl) timeRatioEl.textContent = ratioString;
+    if (fsTimeRatioEl) fsTimeRatioEl.textContent = ratioString;
+
+    if (ringEl) {
+      const offset = CIRCLE_CIRCUMFERENCE - (fraction * CIRCLE_CIRCUMFERENCE);
+      ringEl.style.strokeDashoffset = offset;
+    }
+
+    // Dynamic Progress Bar Urgency Styling & Colors
+    if (remainingSeconds < 0) {
+      // Overtime State (< 0s)
+      if (digitsEl) digitsEl.className = 'font-mono text-5xl sm:text-6xl font-black tracking-tight text-rose-600 animate-pulse';
+      if (fsDigitsEl) fsDigitsEl.className = 'font-mono text-7xl sm:text-9xl md:text-[14rem] font-black tracking-tighter text-rose-500 animate-pulse select-none leading-none drop-shadow-2xl';
+      if (ringEl) ringEl.setAttribute('class', 'text-rose-500 transition-all duration-300');
+      
+      if (linearEl) {
+        linearEl.style.width = '100%';
+        linearEl.className = 'h-full rounded-full transition-all duration-300 ease-out bg-rose-600 animate-pulse relative overflow-hidden shadow-sm';
+      }
+      if (fsProgressEl) {
+        fsProgressEl.style.width = '100%';
+        fsProgressEl.className = 'h-full rounded-full transition-all duration-300 ease-out bg-rose-600 animate-pulse relative overflow-hidden shadow-md';
+      }
+
+      if (percentBadgeEl) {
+        percentBadgeEl.textContent = `Overtime (+${Math.abs(remainingSeconds)}s)`;
+        percentBadgeEl.className = 'px-2 py-0.5 rounded-full text-[11px] font-black tracking-tight bg-rose-100 text-rose-700 border border-rose-300 animate-pulse';
+      }
+      if (fsPercentBadgeEl) {
+        fsPercentBadgeEl.textContent = `OVERTIME (+${Math.abs(remainingSeconds)}s)`;
+        fsPercentBadgeEl.className = 'px-3 py-1 rounded-full text-xs font-black tracking-wide bg-rose-950 text-rose-300 border border-rose-700 animate-pulse shadow-sm';
+      }
+      if (progressDotEl) progressDotEl.className = 'w-2 h-2 rounded-full bg-rose-500 animate-ping';
+      if (fsProgressDotEl) fsProgressDotEl.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping';
+
+      if (statusBadge) {
+        statusBadge.textContent = 'OVERTIME';
+        statusBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-rose-600 text-white border border-rose-500 animate-pulse';
+      }
+      if (overtimeLabel) overtimeLabel.classList.remove('hidden');
+      if (subtextEl) subtextEl.textContent = 'Elapsed Overtime';
+      if (fsStatusEl) fsStatusEl.textContent = 'STAGE TIME EXCEEDED (OVERTIME)';
+    } else if (remainingSeconds <= 10 && remainingSeconds > 0) {
+      // Critical Final 10 Seconds
+      if (digitsEl) digitsEl.className = 'font-mono text-5xl sm:text-6xl font-black tracking-tight text-amber-600 animate-pulse';
+      if (fsDigitsEl) fsDigitsEl.className = 'font-mono text-7xl sm:text-9xl md:text-[14rem] font-black tracking-tighter text-amber-400 select-none leading-none drop-shadow-2xl';
+      if (ringEl) ringEl.setAttribute('class', 'text-amber-500 transition-all duration-300');
+      
+      if (linearEl) {
+        linearEl.style.width = `${percent}%`;
+        linearEl.className = 'h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 animate-pulse relative overflow-hidden shadow-xs';
+      }
+      if (fsProgressEl) {
+        fsProgressEl.style.width = `${percent}%`;
+        fsProgressEl.className = 'h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 animate-pulse relative overflow-hidden shadow-md';
+      }
+
+      if (percentBadgeEl) {
+        percentBadgeEl.textContent = `${percent}% Left (Final ${remainingSeconds}s)`;
+        percentBadgeEl.className = 'px-2 py-0.5 rounded-full text-[11px] font-black tracking-tight bg-amber-100 text-amber-800 border border-amber-300 animate-pulse';
+      }
+      if (fsPercentBadgeEl) {
+        fsPercentBadgeEl.textContent = `${percent}% REMAINING (FINAL ${remainingSeconds}s)`;
+        fsPercentBadgeEl.className = 'px-3 py-1 rounded-full text-xs font-black tracking-wide bg-amber-950 text-amber-300 border border-amber-600 animate-pulse shadow-sm';
+      }
+      if (progressDotEl) progressDotEl.className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
+      if (fsProgressDotEl) fsProgressDotEl.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse';
+
+      if (statusBadge) {
+        statusBadge.textContent = isRunning ? 'FINAL 10s' : 'PAUSED';
+        statusBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-500 text-white border border-amber-400';
+      }
+      if (overtimeLabel) overtimeLabel.classList.add('hidden');
+      if (subtextEl) subtextEl.textContent = 'Time Remaining';
+      if (fsStatusEl) fsStatusEl.textContent = 'FINAL SECONDS REMAINING';
+    } else if (percent <= 25 && remainingSeconds > 0) {
+      // Final Quarter (11s to 25%)
+      if (digitsEl) digitsEl.className = 'font-mono text-5xl sm:text-6xl font-black tracking-tight text-slate-900 transition-colors duration-200';
+      if (fsDigitsEl) fsDigitsEl.className = 'font-mono text-7xl sm:text-9xl md:text-[14rem] font-black tracking-tighter text-amber-300 select-none leading-none drop-shadow-2xl';
+      if (ringEl) ringEl.setAttribute('class', 'text-amber-500 transition-all duration-300');
+
+      if (linearEl) {
+        linearEl.style.width = `${percent}%`;
+        linearEl.className = 'h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-amber-500 to-orange-500 relative overflow-hidden shadow-xs';
+      }
+      if (fsProgressEl) {
+        fsProgressEl.style.width = `${percent}%`;
+        fsProgressEl.className = 'h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-amber-500 to-orange-500 relative overflow-hidden shadow-md';
+      }
+
+      if (percentBadgeEl) {
+        percentBadgeEl.textContent = `${percent}% Left`;
+        percentBadgeEl.className = 'px-2 py-0.5 rounded-full text-[11px] font-black tracking-tight bg-orange-50 text-orange-700 border border-orange-200';
+      }
+      if (fsPercentBadgeEl) {
+        fsPercentBadgeEl.textContent = `${percent}% REMAINING`;
+        fsPercentBadgeEl.className = 'px-3 py-1 rounded-full text-xs font-black tracking-wide bg-orange-950 text-orange-300 border border-orange-700 shadow-xs';
+      }
+      if (progressDotEl) progressDotEl.className = 'w-2 h-2 rounded-full bg-orange-500';
+      if (fsProgressDotEl) fsProgressDotEl.className = 'w-2.5 h-2.5 rounded-full bg-orange-400';
+
+      if (statusBadge) {
+        if (isRunning) {
+          statusBadge.textContent = 'RUNNING';
+          statusBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-600 text-white border border-emerald-500';
+        } else {
+          statusBadge.textContent = 'PAUSED';
+          statusBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-500 text-white border border-amber-400';
+        }
+      }
+      if (overtimeLabel) overtimeLabel.classList.add('hidden');
+      if (subtextEl) subtextEl.textContent = 'Time Remaining';
+      if (fsStatusEl) fsStatusEl.textContent = isRunning ? 'FINAL QUARTER IN PROGRESS &bull; PRESS SPACEBAR TO PAUSE' : 'PAUSED &bull; PRESS SPACEBAR TO RESUME';
+    } else {
+      // Normal / Start State (> 25%)
+      if (digitsEl) digitsEl.className = 'font-mono text-5xl sm:text-6xl font-black tracking-tight text-slate-900 transition-colors duration-200';
+      if (fsDigitsEl) fsDigitsEl.className = 'font-mono text-7xl sm:text-9xl md:text-[14rem] font-black tracking-tighter text-white select-none leading-none drop-shadow-2xl';
+      if (ringEl) ringEl.setAttribute('class', 'text-indigo-600 transition-all duration-300');
+      
+      if (linearEl) {
+        linearEl.style.width = `${percent}%`;
+        linearEl.className = 'h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-indigo-500 via-blue-500 to-indigo-600 relative overflow-hidden shadow-xs';
+      }
+      if (fsProgressEl) {
+        fsProgressEl.style.width = `${percent}%`;
+        fsProgressEl.className = 'h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-indigo-500 via-blue-500 to-indigo-600 relative overflow-hidden shadow-md';
+      }
+
+      if (percentBadgeEl) {
+        percentBadgeEl.textContent = `${percent}% Left`;
+        percentBadgeEl.className = 'px-2 py-0.5 rounded-full text-[11px] font-black tracking-tight bg-indigo-100 text-indigo-700 border border-indigo-200';
+      }
+      if (fsPercentBadgeEl) {
+        fsPercentBadgeEl.textContent = `${percent}% REMAINING`;
+        fsPercentBadgeEl.className = 'px-3 py-1 rounded-full text-xs font-black tracking-wide bg-indigo-950 text-indigo-300 border border-indigo-700/60 shadow-xs';
+      }
+      if (progressDotEl) progressDotEl.className = isRunning ? 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse' : 'w-2 h-2 rounded-full bg-indigo-500';
+      if (fsProgressDotEl) fsProgressDotEl.className = isRunning ? 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse' : 'w-2.5 h-2.5 rounded-full bg-indigo-400';
+
+      if (statusBadge) {
+        if (isRunning) {
+          statusBadge.textContent = 'RUNNING';
+          statusBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-600 text-white border border-emerald-500';
+        } else if (remainingSeconds === totalDuration) {
+          statusBadge.textContent = 'READY';
+          statusBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-slate-700 text-slate-300 border border-slate-600';
+        } else {
+          statusBadge.textContent = 'PAUSED';
+          statusBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-500 text-white border border-amber-400';
+        }
+      }
+      if (overtimeLabel) overtimeLabel.classList.add('hidden');
+      if (subtextEl) subtextEl.textContent = 'Time Remaining';
+      if (fsStatusEl) fsStatusEl.textContent = isRunning ? 'STAGE IN PROGRESS &bull; PRESS SPACEBAR TO PAUSE' : 'PAUSED &bull; PRESS SPACEBAR TO RESUME';
+    }
+
+    // Play/Pause button labels & icons
+    const playIcon = document.getElementById('st-play-icon');
+    const playLabel = document.getElementById('st-play-label');
+    const fsPlayLabel = document.getElementById('st-fs-play-label');
+
+    if (isRunning) {
+      if (playLabel) playLabel.textContent = 'Pause';
+      if (fsPlayLabel) fsPlayLabel.textContent = 'Pause Timer';
+      if (playIcon) {
+        playIcon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+      }
+    } else {
+      if (playLabel) playLabel.textContent = remainingSeconds === totalDuration ? 'Start Timer' : 'Resume';
+      if (fsPlayLabel) fsPlayLabel.textContent = remainingSeconds === totalDuration ? 'Start Timer' : 'Resume Timer';
+      if (playIcon) {
+        playIcon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+      }
+    }
+  }
+
+  function tick() {
+    remainingSeconds--;
+
+    // Sound prompts
+    if (remainingSeconds === 10) {
+      playWarningBeep();
+    } else if (remainingSeconds === 3 || remainingSeconds === 2 || remainingSeconds === 1) {
+      playTone(440, 'sine', 0.1);
+    } else if (remainingSeconds === 0) {
+      playFinalBuzzer();
+    }
+
+    updateUI();
+  }
+
+  function start() {
+    getAudioContext();
+    if (isRunning) return;
+    isRunning = true;
+    intervalId = setInterval(tick, 1000);
+    updateUI();
+  }
+
+  function pause() {
+    if (!isRunning) return;
+    isRunning = false;
+    clearInterval(intervalId);
+    intervalId = null;
+    updateUI();
+  }
+
+  function togglePlay() {
+    if (isRunning) {
+      pause();
+    } else {
+      start();
+    }
+  }
+
+  function reset() {
+    pause();
+    remainingSeconds = totalDuration;
+    updateUI();
+  }
+
+  function adjustTime(deltaSec) {
+    getAudioContext();
+    remainingSeconds += deltaSec;
+    totalDuration = Math.max(totalDuration, remainingSeconds);
+    updateUI();
+  }
+
+  function setDuration(sec, name) {
+    pause();
+    totalDuration = sec;
+    remainingSeconds = sec;
+    if (name) stageName = name;
+    updateUI();
+  }
+
+  function onStageSelectChange(val) {
+    const select = document.getElementById('st-stage-select');
+    const customDiv = document.getElementById('st-custom-controls');
+    
+    if (val === 'custom') {
+      if (customDiv) customDiv.classList.remove('hidden');
+      if (customDiv) customDiv.classList.add('flex');
+    } else {
+      if (customDiv) {
+        customDiv.classList.add('hidden');
+        customDiv.classList.remove('flex');
+      }
+      const opt = select.options[select.selectedIndex];
+      const name = opt.getAttribute('data-name') || opt.text;
+      setDuration(parseInt(val, 10), name);
+    }
+  }
+
+  function applyCustomTime() {
+    const minInput = document.getElementById('st-custom-min');
+    const secInput = document.getElementById('st-custom-sec');
+    const m = parseInt(minInput ? minInput.value : 0, 10) || 0;
+    const s = parseInt(secInput ? secInput.value : 0, 10) || 0;
+    const total = (m * 60) + s;
+    if (total > 0) {
+      setDuration(total, `Custom Stage (${m}m ${s}s)`);
+    }
+  }
+
+  function toggleSound() {
+    soundEnabled = !soundEnabled;
+    const label = document.getElementById('st-sound-label');
+    const icon = document.getElementById('st-sound-icon');
+    if (soundEnabled) {
+      getAudioContext();
+      if (label) label.textContent = 'Audio On';
+      if (icon) icon.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
+      playTone(520, 'sine', 0.1);
+    } else {
+      if (label) label.textContent = 'Audio Off';
+      if (icon) icon.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`;
+    }
+  }
+
+  function toggleFullscreen() {
+    const modal = document.getElementById('scoresync-fullscreen-modal');
+    if (!modal) return;
+    getAudioContext();
+    if (modal.classList.contains('hidden')) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    } else {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+      if (document.exitFullscreen && document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+    updateUI();
+  }
+
+  function logAndNext() {
+    getAudioContext();
+    const contestantInput = document.getElementById('st-contestant-input');
+    const contestant = contestantInput ? contestantInput.value.trim() || 'General Stage' : 'General Stage';
+    const elapsedSec = totalDuration - remainingSeconds;
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    let statusText = 'On Time';
+    let statusClass = 'text-emerald-700 bg-emerald-50 border-emerald-200';
+    if (remainingSeconds < 0) {
+      statusText = `Overtime (+${Math.abs(remainingSeconds)}s)`;
+      statusClass = 'text-rose-700 bg-rose-50 border-rose-200 font-extrabold';
+    }
+
+    const logEntry = {
+      id: Date.now(),
+      stage: stageName,
+      contestant: contestant,
+      allocated: formatTime(totalDuration),
+      elapsed: formatTime(elapsedSec),
+      statusText: statusText,
+      statusClass: statusClass,
+      timestamp: timeStr
+    };
+
+    logs.unshift(logEntry);
+    renderLogs();
+    reset();
+
+    // Increment contestant number if pattern matches #1, #2...
+    if (contestantInput && contestantInput.value) {
+      const match = contestantInput.value.match(/(.*?)(\d+)(.*)/);
+      if (match) {
+        const nextNum = parseInt(match[2], 10) + 1;
+        contestantInput.value = `${match[1]}${nextNum}${match[3]}`;
+      }
+    }
+    updateUI();
+  }
+
+  function renderLogs() {
+    const container = document.getElementById('st-log-container');
+    const countBadge = document.getElementById('st-log-count');
+    if (!container) return;
+
+    if (countBadge) countBadge.textContent = `${logs.length} records`;
+
+    if (logs.length === 0) {
+      container.innerHTML = `
+        <div id="st-log-empty" class="text-center py-4 text-xs text-slate-400 italic">
+          No completed stage records yet. Click &ldquo;Log &amp; Next&rdquo; when a contestant finishes their round.
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = logs.map(l => `
+      <div class="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 text-xs shadow-2xs">
+        <div class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+          <span class="font-bold text-slate-900">${escapeHtml(l.contestant)}</span>
+          <span class="text-slate-400">&bull;</span>
+          <span class="text-slate-600 font-medium">${escapeHtml(l.stage)}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="font-mono text-slate-700 font-bold">${l.elapsed} / ${l.allocated}</span>
+          <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${l.statusClass}">${l.statusText}</span>
+          <span class="text-[10px] text-slate-400 font-mono">${l.timestamp}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function copyLogs() {
+    if (logs.length === 0) {
+      alert("No logs to copy yet.");
+      return;
+    }
+    const lines = logs.map(l => `[${l.timestamp}] ${l.contestant} - ${l.stage}: ${l.elapsed} / ${l.allocated} (${l.statusText})`);
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
+      alert("Stage logs copied to clipboard!");
+    }).catch(() => {
+      alert("Logs:\n" + lines.join('\n'));
+    });
+  }
+
+  function clearLogs() {
+    if (logs.length > 0 && confirm("Clear all stage logs?")) {
+      logs = [];
+      renderLogs();
+    }
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // Keyboard shortcut listener (Spacebar for Play/Pause, ESC for exit fullscreen)
+  document.addEventListener('keydown', (e) => {
+    // Check if user is typing in an input
+    const tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+    if (e.code === 'Space') {
+      e.preventDefault();
+      togglePlay();
+    } else if (e.code === 'Escape') {
+      const modal = document.getElementById('scoresync-fullscreen-modal');
+      if (modal && !modal.classList.contains('hidden')) {
+        toggleFullscreen();
+      }
+    }
+  });
+
+  // Initialize display on load
+  document.addEventListener('DOMContentLoaded', () => {
+    updateUI();
+  });
+
+  return {
+    start,
+    pause,
+    togglePlay,
+    reset,
+    adjustTime,
+    setDuration,
+    onStageSelectChange,
+    applyCustomTime,
+    toggleSound,
+    toggleFullscreen,
+    logAndNext,
+    copyLogs,
+    clearLogs
+  };
+})();
+</script>

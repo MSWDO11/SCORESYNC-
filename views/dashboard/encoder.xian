@@ -1,0 +1,108 @@
+{{> head }}
+<body class="bg-slate-50 min-h-screen flex flex-col">
+{{> navbar }}
+<div class="flex flex-1 overflow-hidden">
+{{> sidebar }}
+<main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+  {{#if success_msg}}
+  <div class="alert-success animate-fadeup flex items-center gap-3 p-4 rounded-xl shadow-sm border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm font-semibold">
+    <div class="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center flex-shrink-0">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <span class="flex-1">{{success_msg}}</span>
+  </div>
+  {{/if}}
+
+  {{#if error_msg}}
+  <div class="alert-error animate-fadeup flex items-center gap-3 p-4 rounded-xl shadow-sm border border-rose-200 bg-rose-50 text-rose-800 text-sm font-semibold">
+    <div class="w-7 h-7 rounded-lg bg-rose-500 text-white flex items-center justify-center flex-shrink-0">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <span class="flex-1">{{error_msg}}</span>
+  </div>
+  {{/if}}
+
+  <!-- Header Banner -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-7 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative overflow-hidden animate-fadeup">
+    <div class="space-y-1">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-100">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        Data Encoder Panel
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight pt-1">
+        Welcome, <span class="bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent">{{userName}}</span> 👋
+      </h1>
+      <p class="text-slate-500 text-sm font-medium">Manage contestant rosters, numbers, photos, and team details for active events.</p>
+    </div>
+  </div>
+
+  <!-- Instruction Banner -->
+  <div class="p-5 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 shadow-sm flex items-start gap-4 animate-fadeup-1">
+    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center flex-shrink-0 shadow-md shadow-emerald-500/20">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+    </div>
+    <div>
+      <h3 class="font-extrabold text-emerald-950 text-sm">Encoder Responsibilities</h3>
+      <p class="text-emerald-800/90 text-xs font-medium mt-0.5 leading-relaxed">
+        Select an event below and click <span class="px-2 py-0.5 rounded bg-emerald-600 text-white font-bold text-[11px]">Contestants</span> to input participant names, bio/details, and numbers before scoring starts.
+      </p>
+    </div>
+  </div>
+
+  <!-- Events List Card -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden animate-fadeup-2">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <h2 class="text-base font-extrabold text-slate-900 tracking-tight">Events &mdash; Contestant Management</h2>
+      </div>
+    </div>
+
+    {{#if recentEvents.length}}
+    <div class="divide-y divide-slate-100">
+      {{#each recentEvents}}
+      <div class="p-5 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/80 transition group">
+        <div class="flex items-center gap-4">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 text-white shadow-xs font-bold"
+            style="background: linear-gradient(135deg, #064e3b, #059669);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-base group-hover:text-emerald-700 transition">{{name}}</h3>
+            <p class="text-slate-500 text-xs mt-0.5 capitalize">
+              <span>{{type}}</span> &bull; <span>{{date}}</span>
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2.5 self-end sm:self-center">
+          <a href="/events/{{id}}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Contestants
+          </a>
+          <a href="/events/{{id}}/results" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 transition">
+            Results
+          </a>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    <div class="py-16 text-center text-slate-400 px-4">
+      <div class="w-16 h-16 bg-emerald-50 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-100 shadow-sm">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <h3 class="font-bold text-slate-700 text-base mb-1">No Events Assigned</h3>
+      <p class="text-slate-400 text-xs max-w-sm mx-auto">There are currently no active competition events for contestant encoding.</p>
+    </div>
+    {{/if}}
+  </div>
+
+</main>
+</div>
+{{> footer }}
+</body>
+</html>
+

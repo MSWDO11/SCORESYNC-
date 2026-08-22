@@ -1,0 +1,269 @@
+{{> head }}
+<body class="bg-slate-50 min-h-screen flex flex-col">
+{{> navbar }}
+<div class="flex flex-1 overflow-hidden">
+{{> sidebar }}
+<main class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+  {{#if success_msg}}<div class="alert-success animate-fadeup"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>{{success_msg}}</div>{{/if}}
+  {{#if error_msg}}<div class="alert-error animate-fadeup"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{{error_msg}}</div>{{/if}}
+
+  <div class="flex items-start justify-between animate-fadeup">
+    <div class="page-header mb-0">
+      <div class="breadcrumb"><a href="/dashboard">Dashboard</a><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>Users</span></div>
+      <h1>User Management</h1>
+      <p>Manage all registered ScoreSync users.</p>
+    </div>
+    <button type="button" onclick="toggleAddUserModal()" class="btn-primary text-sm flex-shrink-0 mt-1">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      Add User
+    </button>
+  </div>
+
+  {{#if notifyGmail}}
+  <div class="card-flat p-5 border-2 border-emerald-400 bg-emerald-50 flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fadeup">
+    <div class="flex items-start gap-3">
+      <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <h3 class="font-bold text-emerald-950 text-base">Account Approved for {{notifyName}} ({{notifyEmail}})</h3>
+        <p class="text-emerald-800 text-xs mt-0.5">Send a Gmail notification directly to their inbox to confirm their account approval.</p>
+      </div>
+    </div>
+    <a href="{{notifyGmail}}" target="_blank" class="btn-sm text-xs px-5 py-2.5 flex items-center justify-center gap-2 bg-red-600 text-white hover:bg-red-700 border-none shadow-md font-bold flex-shrink-0">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      Send Gmail Notification
+    </a>
+  </div>
+  {{/if}}
+
+  <!-- Stats -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fadeup-1">
+    <div class="card-flat px-5 py-4 flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#1e3a8a,#2563eb)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div><p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total</p><p class="text-2xl font-black text-slate-800">{{totalUsers}}</p></div>
+    </div>
+    <div class="card-flat px-5 py-4 flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#1e3a8a,#2563eb)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div><p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Admins</p><p class="text-2xl font-black text-blue-700">{{adminCount}}</p></div>
+    </div>
+    <div class="card-flat px-5 py-4 flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#4c1d95,#7c3aed)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div><p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Judges</p><p class="text-2xl font-black text-purple-700">{{judgeCount}}</p></div>
+    </div>
+    <div class="card-flat px-5 py-4 flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#064e3b,#059669)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+      <div><p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Encoders</p><p class="text-2xl font-black text-emerald-700">{{encoderCount}}</p></div>
+    </div>
+  </div>
+
+  <!-- Pending Account Requests -->
+  {{#if pendingUsers.length}}
+  <div class="section-card border-2 border-amber-300 bg-amber-50/20 animate-fadeup-1">
+    <div class="section-header bg-amber-100/50 border-b border-amber-200">
+      <h2 class="text-amber-900 flex items-center gap-2 font-bold">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Pending Account Requests ({{pendingCount}})
+      </h2>
+      <span class="badge badge-yellow">Action Required</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Applicant Name</th>
+            <th>Email Address</th>
+            <th>Requested Role</th>
+            <th>Date Requested</th>
+            <th class="text-right pr-5">Confirm &amp; Notify</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each pendingUsers}}
+          <tr class="hover:bg-amber-100/30">
+            <td>
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center text-amber-900 font-black text-sm bg-amber-200 shadow-sm">
+                  {{#if name}}{{name.[0]}}{{else}}U{{/if}}
+                </div>
+                <div>
+                  <div class="font-bold text-slate-800 text-sm">{{name}}</div>
+                  <div class="text-amber-700 text-xs font-semibold">Pending Approval</div>
+                </div>
+              </div>
+            </td>
+            <td class="text-slate-700 font-medium text-sm">{{email}}</td>
+            <td><span class="badge badge-purple uppercase font-extrabold text-[10px]">{{role}}</span></td>
+            <td class="text-slate-500 text-xs">{{createdAt}}</td>
+            <td class="text-right pr-5">
+              <div class="flex items-center justify-end gap-2">
+                <form method="POST" action="/users/{{id}}/approve" class="inline">
+                  <button type="submit" class="btn-sm btn-sm-green text-xs px-3 py-1.5 flex items-center gap-1 shadow-sm">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Approve
+                  </button>
+                </form>
+                <form method="POST" action="/users/{{id}}/reject" onsubmit="return confirm('Reject account request for {{name}}?')" class="inline">
+                  <button type="submit" class="btn-sm btn-sm-red text-xs px-2.5 py-1.5 flex items-center gap-1">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    Reject
+                  </button>
+                </form>
+                <a href="{{gmailUrl}}" target="_blank" class="btn-sm text-xs px-2.5 py-1.5 flex items-center gap-1 bg-red-600 text-white hover:bg-red-700 border-none shadow-sm" title="Send email via Gmail">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  Gmail
+                </a>
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {{/if}}
+
+  <!-- Table -->
+  <div class="section-card animate-fadeup-2">
+    <div class="section-header">
+      <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>All Users</h2>
+      <button type="button" onclick="toggleAddUserModal()" class="btn-sm btn-sm-blue text-xs"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add User</button>
+    </div>
+    {{#if users.length}}
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Change Role</th><th class="text-right pr-5">Action</th></tr></thead>
+        <tbody>
+          {{#each users}}
+          <tr>
+            <td>
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-black flex-shrink-0 shadow-sm"
+                  style="background:{{#if (eq role 'admin')}}linear-gradient(135deg,#1e3a8a,#2563eb){{else}}{{#if (eq role 'judge')}}linear-gradient(135deg,#4c1d95,#7c3aed){{else}}linear-gradient(135deg,#064e3b,#059669){{/if}}{{/if}}">
+                  {{#if name}}{{name.[0]}}{{else}}U{{/if}}
+                </div>
+                <div>
+                  <div class="font-semibold text-slate-800 text-sm">{{name}}</div>
+                  <div class="text-slate-400 text-xs mt-0.5 capitalize">{{role}}</div>
+                </div>
+              </div>
+            </td>
+            <td class="text-slate-500 text-sm">{{email}}</td>
+            <td><span class="badge {{#if (eq role 'admin')}}badge-blue{{else}}{{#if (eq role 'judge')}}badge-purple{{else}}badge-green{{/if}}{{/if}}">{{role}}</span></td>
+            <td class="text-slate-400 text-xs">{{createdAt}}</td>
+            <td>
+              <form method="POST" action="/users/{{id}}/role" class="flex items-center gap-2">
+                <select name="role" class="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-400">
+                  <option value="admin" {{#if (eq role 'admin')}}selected{{/if}}>Admin</option>
+                  <option value="judge" {{#if (eq role 'judge')}}selected{{/if}}>Judge</option>
+                  <option value="encoder" {{#if (eq role 'encoder')}}selected{{/if}}>Encoder</option>
+                </select>
+                <button type="submit" class="btn-sm btn-sm-blue text-xs px-2.5 py-1.5"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>
+              </form>
+            </td>
+            <td class="text-right pr-5">
+              <div class="flex items-center justify-end gap-2">
+                <a href="{{gmailUrl}}" target="_blank" class="btn-sm text-xs px-2.5 py-1.5 flex items-center gap-1 bg-red-600 text-white hover:bg-red-700 border-none shadow-sm" title="Send email to {{email}} via Gmail">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  Gmail
+                </a>
+                <form method="POST" action="/users/{{id}}/delete" onsubmit="return confirm('Remove {{name}}?')" class="inline">
+                  <button type="submit" class="btn-sm btn-sm-red text-xs px-2.5 py-1.5" title="Delete User"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    {{else}}
+    <div class="py-16 text-center text-slate-400">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" stroke-width="1.5" class="mx-auto mb-4"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+      <p class="font-semibold text-slate-600 mb-1">No users yet</p>
+      <a href="/register" class="btn-primary text-sm mt-3 inline-flex"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add First User</a>
+    </div>
+    {{/if}}
+  </div>
+
+  <!-- Role guide -->
+  <div class="card-flat p-5 flex items-start gap-4 animate-fadeup-3">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 flex-shrink-0" style="background:linear-gradient(135deg,#92400e,#d97706)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="flex-1">
+      <p class="font-semibold text-slate-700 text-sm mb-3">Role Permissions</p>
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div class="rounded-xl px-4 py-3" style="background:#eff6ff;border:1px solid #bfdbfe">
+          <div class="flex items-center gap-2 mb-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="font-bold text-blue-800 text-sm">Administrator</span></div>
+          <p class="text-blue-600 text-xs leading-relaxed">Full access. Create events, manage users, set criteria, view all results.</p>
+        </div>
+        <div class="rounded-xl px-4 py-3" style="background:#faf5ff;border:1px solid #ddd6fe">
+          <div class="flex items-center gap-2 mb-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="font-bold text-purple-800 text-sm">Judge</span></div>
+          <p class="text-purple-600 text-xs leading-relaxed">Can enter scores for ongoing events and view published results.</p>
+        </div>
+        <div class="rounded-xl px-4 py-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+          <div class="flex items-center gap-2 mb-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span class="font-bold text-emerald-800 text-sm">Encoder</span></div>
+          <p class="text-emerald-600 text-xs leading-relaxed">Can add and edit contestants for events. View-only for results.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- Add User Modal -->
+<div id="addUserModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
+    <div class="p-5 bg-gradient-to-r from-blue-900 to-indigo-900 text-white flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="19 8 19 14 22 11 16 11"/></svg>
+        <h3 class="font-bold text-base">Add New User</h3>
+      </div>
+      <button type="button" onclick="toggleAddUserModal()" class="text-slate-300 hover:text-white text-lg font-bold p-1">&times;</button>
+    </div>
+
+    <form method="POST" action="/users" class="p-6 space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Full Name</label>
+        <input type="text" name="name" required placeholder="e.g. Maria Santos" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Email Address</label>
+        <input type="email" name="email" required placeholder="maria@example.com" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Password</label>
+        <input type="password" name="password" required minlength="6" placeholder="At least 6 characters" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Assign System Role</label>
+        <select name="role" required class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 font-semibold text-slate-800">
+          <option value="judge">Judge (Can enter scores & view results)</option>
+          <option value="encoder">Encoder (Can manage contestants & view results)</option>
+          <option value="admin">Administrator (Full system control)</option>
+        </select>
+      </div>
+
+      <div class="pt-3 flex items-center justify-end gap-2">
+        <button type="button" onclick="toggleAddUserModal()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition">Cancel</button>
+        <button type="submit" class="btn-primary text-xs px-5 py-2.5 rounded-xl shadow-md">Create Account</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function toggleAddUserModal() {
+    const modal = document.getElementById('addUserModal');
+    modal.classList.toggle('hidden');
+  }
+</script>
+
+{{> footer }}
+</body>
+</html>

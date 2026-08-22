@@ -1,0 +1,25 @@
+{
+  "name": "SCORESYNC",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node index.js",
+    "start": "node index.js",
+    "build": "echo 'No build required'",
+    "xian-start": "node index.js",
+    "xian": "nodemon index.js",
+    "migrate": "node migrate.js",
+    "create:model": "node create.js model",
+    "create:controller": "node create.js controller"
+  },
+  "dependencies": {
+    "@google/genai": "^2.16.0",
+    "connect-flash": "^0.1.1",
+    "express": "^4.19.2",
+    "express-session": "^1.17.3",
+    "firebase": "^10.12.0",
+    "hbs": "^4.2.0",
+    "inquirer": "^9.2.15"
+  }
+}

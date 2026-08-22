@@ -1,0 +1,9 @@
+<footer class="mt-auto py-4 px-6 flex items-center justify-between text-xs text-slate-400 border-t border-slate-100 bg-white flex-shrink-0">
+  <span>&copy; 2026 <span class="font-bold text-blue-600">ScoreSync</span> &mdash; Municipality of Mansalay, Oriental Mindoro</span>
+  <span class="hidden sm:flex items-center gap-1.5">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="#f97316"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/></svg>
+    Powered by <span class="font-semibold text-slate-500">XianFire Framework</span>
+  </span>
+</footer>
+</body>
+</html>

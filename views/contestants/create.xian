@@ -1,0 +1,43 @@
+{{> head }}
+<body class="bg-slate-50 min-h-screen flex flex-col">
+{{> navbar }}
+<div class="flex flex-1 overflow-hidden">
+{{> sidebar }}
+<main class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+  {{#if error_msg}}<div class="alert-error mb-6 animate-fadeup"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{{error_msg}}</div>{{/if}}
+  <div class="page-header animate-fadeup">
+    <div class="breadcrumb"><a href="/events/{{event.id}}">Back to {{event.name}}</a></div>
+    <h1>Add Contestant</h1>
+    <p>Register a new contestant for <span class="font-semibold text-blue-600">{{event.name}}</span>.</p>
+  </div>
+  <div class="card-flat max-w-xl animate-fadeup-1">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+      <div class="w-9 h-9 grad-brand rounded-xl flex items-center justify-center shadow-sm">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      </div>
+      <div><h2 class="font-bold text-slate-800">Contestant Information</h2><p class="text-slate-400 text-xs">Fields marked * are required</p></div>
+    </div>
+    <form method="POST" action="/events/{{event.id}}/contestants" class="px-6 py-5 space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Full Name <span class="text-red-500">*</span></label><input type="text" name="name" placeholder="Contestant name" required class="form-input-bare"/></div>
+        <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">No.</label><input type="text" name="number" placeholder="e.g. 01" class="form-input-bare"/></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Barangay</label><input type="text" name="barangay" placeholder="e.g. Poblacion" class="form-input-bare"/></div>
+        <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Age</label><input type="number" name="age" placeholder="22" min="1" max="100" class="form-input-bare"/></div>
+      </div>
+      <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Gender</label>
+        <select name="gender" class="form-input-bare bg-white"><option value="">Select...</option><option value="female">Female</option><option value="male">Male</option><option value="other">Other</option></select>
+      </div>
+      <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Notes</label><textarea name="description" rows="2" placeholder="Optional notes..." class="form-input-bare resize-none"></textarea></div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-primary text-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>Add Contestant</button>
+        <a href="/events/{{event.id}}" class="btn-secondary text-sm">Cancel</a>
+      </div>
+    </form>
+  </div>
+</main>
+</div>
+{{> footer }}
+</body>
+</html>

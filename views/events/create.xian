@@ -1,0 +1,127 @@
+{{> head }}
+<body class="bg-slate-50 min-h-screen flex flex-col">
+{{> navbar }}
+<div class="flex flex-1 overflow-hidden">
+{{> sidebar }}
+<main class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+  {{#if error_msg}}<div class="alert-error mb-6 animate-fadeup"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{{error_msg}}</div>{{/if}}
+
+  <div class="page-header animate-fadeup">
+    <div class="breadcrumb"><a href="/events">Back to Events</a></div>
+    <h1>Create New Event</h1>
+    <p>Fill in all the details to set up a new competition event.</p>
+  </div>
+
+  <form method="POST" action="/events" class="animate-fadeup-1">
+    <div class="grid lg:grid-cols-3 gap-5">
+      <div class="lg:col-span-2 space-y-5">
+
+        <div class="card-flat">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 grad-brand rounded-lg flex items-center justify-center shadow-sm">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <h2 class="font-bold text-slate-800">Basic Information</h2>
+          </div>
+          <div class="px-6 py-5 space-y-4">
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Event Name <span class="text-red-500">*</span></label><input type="text" name="name" placeholder="e.g. Mutya ng Mansalay 2026" required class="form-input-bare"/></div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Description</label><textarea name="description" rows="3" placeholder="Describe this competition event..." class="form-input-bare resize-none"></textarea></div>
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Event Type</label>
+                <select name="type" class="form-input-bare bg-white">
+                  <option value="pageant">Pageant (Beauty / Royalty)</option>
+                  <option value="cultural">Street Dancing &amp; Cultural</option>
+                  <option value="float">Float Parade Competition</option>
+                  <option value="marching">Drum &amp; Lyre / Marching Band</option>
+                  <option value="choral">Choral &amp; Vocal Contest</option>
+                  <option value="dance">Dance Crew / Modern Dance</option>
+                  <option value="booth">Agro-Industrial &amp; Booth Display</option>
+                  <option value="sports">Sports &amp; Palaro</option>
+                  <option value="academic">Academic &amp; Quiz Bee</option>
+                  <option value="culinary">Culinary &amp; Cooking Contest</option>
+                  <option value="talent">Talent Show</option>
+                  <option value="other">Other LGU Competition</option>
+                </select>
+              </div>
+              <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Status</label>
+                <select name="status" class="form-input-bare bg-white"><option value="upcoming">Upcoming</option><option value="ongoing">Ongoing</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+              </div>
+            </div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Organizer</label><input type="text" name="organizer" placeholder="e.g. Municipality of Mansalay — Tourism Office" class="form-input-bare"/></div>
+          </div>
+        </div>
+
+        <div class="card-flat">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 grad-green rounded-lg flex items-center justify-center shadow-sm">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <h2 class="font-bold text-slate-800">Schedule &amp; Venue</h2>
+          </div>
+          <div class="px-6 py-5 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Date</label><input type="date" name="date" class="form-input-bare"/></div>
+              <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Time</label><input type="time" name="time" class="form-input-bare"/></div>
+            </div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Venue</label><input type="text" name="venue" placeholder="e.g. Mansalay Town Plaza" class="form-input-bare"/></div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Max Contestants</label><input type="number" name="maxContestants" placeholder="e.g. 20" min="1" max="200" class="form-input-bare"/></div>
+          </div>
+        </div>
+
+        <div class="card-flat">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 grad-gold rounded-lg flex items-center justify-center shadow-sm">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+            </div>
+            <h2 class="font-bold text-slate-800">Prizes &amp; Rules</h2>
+          </div>
+          <div class="px-6 py-5 space-y-4">
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Prizes / Awards</label><textarea name="prizes" rows="3" placeholder="e.g. 1st Place — ₱10,000 + Crown" class="form-input-bare resize-none"></textarea></div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Rules &amp; Mechanics</label><textarea name="rules" rows="4" placeholder="List the competition rules..." class="form-input-bare resize-none"></textarea></div>
+            <div><label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">Additional Notes</label><textarea name="notes" rows="2" class="form-input-bare resize-none"></textarea></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="space-y-5">
+        <div class="card-flat">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 grad-purple rounded-lg flex items-center justify-center shadow-sm">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2.5"/><circle cx="6.5" cy="17" r="2.5"/></svg>
+            </div>
+            <h2 class="font-bold text-slate-800">Event Theme</h2>
+          </div>
+          <div class="px-6 py-5">
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Card Color</label>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="cursor-pointer"><input type="radio" name="theme" value="blue" class="sr-only peer" checked/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-blue-500 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6)"></div><p class="text-center text-xs text-slate-500 mt-1">Blue</p></label>
+              <label class="cursor-pointer"><input type="radio" name="theme" value="purple" class="sr-only peer"/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-purple-500 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#4c1d95,#8b5cf6)"></div><p class="text-center text-xs text-slate-500 mt-1">Purple</p></label>
+              <label class="cursor-pointer"><input type="radio" name="theme" value="green" class="sr-only peer"/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-emerald-500 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#064e3b,#10b981)"></div><p class="text-center text-xs text-slate-500 mt-1">Green</p></label>
+              <label class="cursor-pointer"><input type="radio" name="theme" value="gold" class="sr-only peer"/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-yellow-400 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#92400e,#fbbf24)"></div><p class="text-center text-xs text-slate-500 mt-1">Gold</p></label>
+              <label class="cursor-pointer"><input type="radio" name="theme" value="rose" class="sr-only peer"/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-rose-500 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#881337,#f43f5e)"></div><p class="text-center text-xs text-slate-500 mt-1">Rose</p></label>
+              <label class="cursor-pointer"><input type="radio" name="theme" value="slate" class="sr-only peer"/><div class="h-10 rounded-lg peer-checked:ring-2 peer-checked:ring-slate-500 peer-checked:ring-offset-2 transition" style="background:linear-gradient(135deg,#1e293b,#64748b)"></div><p class="text-center text-xs text-slate-500 mt-1">Dark</p></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-flat">
+          <div class="px-6 py-4 border-b border-slate-100"><h2 class="font-bold text-slate-800 text-sm flex items-center gap-2"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Ready to Create</h2></div>
+          <div class="px-6 py-4 space-y-2 text-sm text-slate-600">
+            <div class="flex items-center gap-2"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Saved to Firebase Firestore</div>
+            <div class="flex items-center gap-2"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Add contestants after creation</div>
+            <div class="flex items-center gap-2"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Define scoring criteria separately</div>
+          </div>
+          <div class="px-6 pb-5 space-y-2">
+            <button type="submit" class="btn-primary w-full py-3 text-sm justify-center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>Create Event</button>
+            <a href="/events" class="btn-secondary w-full py-2.5 text-sm justify-center">Cancel</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</main>
+</div>
+{{> footer }}
+</body>
+</html>
