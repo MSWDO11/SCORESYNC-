@@ -1,156 +1,226 @@
 {{> head }}
-<body class="bg-slate-50 min-h-screen flex flex-col">
+<style>
+  @media print {
+    .no-print { display:none !important; }
+    .print-only { display:block !important; }
+    body { background:#fff !important; color:#000 !important; }
+    .results-main { padding:0 !important; }
+    .cert-section { page-break-before: always; }
+  }
+  .print-only { display:none; }
+  .podium-glow-1 { box-shadow:0 0 40px rgba(251,191,36,0.25), 0 8px 32px rgba(0,0,0,0.4); }
+  .podium-glow-2 { box-shadow:0 0 24px rgba(148,163,184,0.2), 0 8px 24px rgba(0,0,0,0.3); }
+  .podium-glow-3 { box-shadow:0 0 24px rgba(251,146,60,0.2), 0 8px 24px rgba(0,0,0,0.3); }
+  @keyframes rise { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  .rise-1 { animation:rise 0.5s 0.1s ease-out both; }
+  .rise-2 { animation:rise 0.5s 0.25s ease-out both; }
+  .rise-3 { animation:rise 0.5s 0.4s ease-out both; }
+  @keyframes pop { 0%{transform:scale(0.7);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+  .rank-pop { animation:pop 0.4s 0.6s ease-out both; }
+  .table-dark thead tr { background:rgba(15,17,30,0.8); }
+  .table-dark tbody tr { transition:background 0.15s; }
+  .table-dark tbody tr:hover { background:rgba(99,102,241,0.06); }
+  .rank-badge-1 { background:linear-gradient(135deg,#92400e,#fbbf24); box-shadow:0 0 10px rgba(251,191,36,0.4); }
+  .rank-badge-2 { background:linear-gradient(135deg,#334155,#94a3b8); box-shadow:0 0 8px rgba(148,163,184,0.3); }
+  .rank-badge-3 { background:linear-gradient(135deg,#78350f,#f97316); box-shadow:0 0 8px rgba(249,115,22,0.3); }
+</style>
+<body class="min-h-screen flex flex-col" style="background:#07090f;color:#e2e8f0;">
 {{> navbar }}
 <div class="flex flex-1 overflow-hidden">
 {{> sidebar }}
-<main class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+<main class="results-main flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
 
-  <div class="flex items-start justify-between animate-fadeup no-print">
-    <div class="page-header mb-0">
-      <div class="breadcrumb"><a href="/events/{{event.id}}">Back to {{event.name}}</a></div>
-      <h1>Official Results</h1>
-      <p>Tabulated from <span class="font-semibold text-blue-600">{{judgeCount}}</span> judge(s)</p>
-    </div>
-    <div class="flex items-center gap-3">
-      <div class="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-600">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-        <span>Auto-refresh:</span>
-        <select id="autoRefreshInterval" class="bg-transparent font-bold text-blue-600 outline-none cursor-pointer">
-          <option value="0">Off</option>
-          <option value="5" selected>Every 5s</option>
-          <option value="10">Every 10s</option>
-          <option value="30">Every 30s</option>
-        </select>
-        <span id="refreshCountdown" class="text-[11px] font-mono text-slate-400 min-w-[20px] text-right">5s</span>
+  <!-- Page header -->
+  <div class="flex items-start justify-between no-print">
+    <div>
+      <div class="flex items-center gap-2 text-xs mb-1" style="color:#475569;">
+        <a href="/events/{{event.id}}" class="hover:text-indigo-400 transition" style="color:#475569;">← Back to {{event.name}}</a>
       </div>
-      <button onclick="window.print()" class="btn-sm btn-sm-gray flex-shrink-0 no-print">
+      <h1 class="text-2xl font-black tracking-tight" style="color:#e0e7ff;">Official Results</h1>
+      <p class="text-sm mt-0.5" style="color:#475569;">Tabulated from <span class="font-bold" style="color:#a5b4fc;">{{judgeCount}}</span> judge(s) &bull; <span class="font-bold" style="color:#a5b4fc;">{{event.name}}</span>
+        {{#if tabPrefs.olympicRule}}<span class="ml-2 px-2 py-0.5 rounded-full text-[10px] font-black" style="background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);color:#a5b4fc;">Olympic Rule ON</span>{{/if}}
+        <span class="ml-1 px-2 py-0.5 rounded-full text-[10px] font-black" style="background:rgba(15,17,30,0.8);border:1px solid rgba(99,102,241,0.15);color:#475569;">{{tabPrefs.decimalPrecision}}dp</span>
+      </p>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap justify-end">
+      <!-- Auto-refresh -->
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold" style="background:rgba(15,17,30,0.9);border:1px solid rgba(99,102,241,0.2);color:#94a3b8;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38"/></svg>
+        <span>Refresh:</span>
+        <select id="autoRefreshInterval" class="bg-transparent font-bold outline-none cursor-pointer" style="color:#a5b4fc;">
+          <option value="0">Off</option>
+          <option value="5" selected>5s</option>
+          <option value="10">10s</option>
+          <option value="30">30s</option>
+        </select>
+        <span id="refreshCountdown" class="font-mono text-[11px] min-w-[20px]" style="color:#475569;">5s</span>
+      </div>
+      <!-- Print -->
+      <button onclick="window.print()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition" style="background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);color:#a5b4fc;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Print
+        Print / Export
       </button>
     </div>
   </div>
 
+  <!-- Auto-refresh script -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const select = document.getElementById("autoRefreshInterval");
-      const countdown = document.getElementById("refreshCountdown");
-      if (!select || !countdown) return;
-
-      let timer = null;
-      let secondsLeft = parseInt(select.value, 10);
-
-      function startTimer() {
+    document.addEventListener('DOMContentLoaded', () => {
+      const sel = document.getElementById('autoRefreshInterval');
+      const cd  = document.getElementById('refreshCountdown');
+      let timer, secs;
+      function start() {
         clearInterval(timer);
-        const intervalSec = parseInt(select.value, 10);
-        if (intervalSec <= 0) {
-          countdown.textContent = "Paused";
-          return;
-        }
-        secondsLeft = intervalSec;
-        countdown.textContent = secondsLeft + "s";
-
-        timer = setInterval(() => {
-          secondsLeft--;
-          if (secondsLeft <= 0) {
-            clearInterval(timer);
-            window.location.reload();
-          } else {
-            countdown.textContent = secondsLeft + "s";
-          }
-        }, 1000);
+        secs = parseInt(sel.value, 10);
+        if (secs <= 0) { cd.textContent = 'Off'; return; }
+        cd.textContent = secs + 's';
+        timer = setInterval(() => { if (--secs <= 0) location.reload(); else cd.textContent = secs + 's'; }, 1000);
       }
-
-      select.addEventListener("change", startTimer);
-      startTimer();
+      sel.addEventListener('change', start);
+      start();
     });
   </script>
 
   {{#if ranked.length}}
-  <div class="card-flat p-6 animate-fadeup-1">
-    <h2 class="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Top Finishers</h2>
-    <div class="flex items-end justify-center gap-4 max-w-lg mx-auto">
+
+  <!-- ── PODIUM ── -->
+  <div class="rounded-2xl p-6 sm:p-10 relative overflow-hidden" style="background:linear-gradient(135deg,#0d0f1a 0%,#111827 60%,#0d0f1a 100%);border:1px solid rgba(99,102,241,0.18);">
+    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse at 50% 0%,rgba(99,102,241,0.1) 0%,transparent 65%);"></div>
+    <div class="absolute pointer-events-none" style="width:300px;height:300px;top:-80px;right:-60px;background:rgba(251,191,36,0.05);border-radius:50%;filter:blur(60px);"></div>
+
+    <h2 class="text-center text-xs font-black uppercase tracking-widest mb-8 relative z-10" style="color:#4f46e5;letter-spacing:0.2em;">Top Finishers</h2>
+
+    <div class="flex items-end justify-center gap-3 sm:gap-6 max-w-xl mx-auto relative z-10">
+
+      <!-- 2nd place -->
       {{#each ranked}}{{#if (eq rank 2)}}
-      <div class="flex-1 text-center">
-        <div class="text-4xl mb-2">🥈</div>
-        <div class="rounded-2xl p-4 border-2 border-slate-200 bg-slate-50">
-          <div class="text-xs text-slate-400 uppercase font-bold tracking-wide mb-1">2nd</div>
-          <div class="font-extrabold text-slate-800 text-sm leading-tight">{{name}}</div>
-          {{#if barangay}}<div class="text-slate-400 text-xs mt-1">Brgy. {{barangay}}</div>{{/if}}
-          <div class="text-2xl font-black text-slate-700 mt-2">{{finalScoreDisplay}}<span class="text-sm font-normal">%</span></div>
+      <div class="flex-1 text-center rise-2">
+        <div class="text-4xl mb-3 rank-pop">🥈</div>
+        <div class="rounded-2xl p-4 sm:p-5 podium-glow-2" style="background:rgba(30,41,59,0.8);border:1px solid rgba(148,163,184,0.25);">
+          <div class="text-[10px] font-black uppercase tracking-widest mb-1.5" style="color:#94a3b8;">2nd Place</div>
+          <div class="font-extrabold text-sm leading-tight mb-1" style="color:#e0e7ff;">{{name}}</div>
+          {{#if barangay}}<div class="text-[11px] mb-3" style="color:#475569;">Brgy. {{barangay}}</div>{{/if}}
+          <div class="text-2xl sm:text-3xl font-black" style="color:#94a3b8;">{{finalScoreDisplay}}<span class="text-sm font-normal" style="color:#475569;">%</span></div>
         </div>
+        <div class="mt-3 mx-auto rounded-t-lg" style="width:70%;height:40px;background:rgba(148,163,184,0.15);border:1px solid rgba(148,163,184,0.2);border-bottom:none;"></div>
       </div>
       {{/if}}{{/each}}
+
+      <!-- 1st place -->
       {{#each ranked}}{{#if (eq rank 1)}}
-      <div class="flex-1 text-center -mt-4">
-        <div class="text-5xl mb-2">🥇</div>
-        <div class="rounded-2xl p-5 border-2 border-yellow-300 shadow-lg" style="background:linear-gradient(180deg,#fffbeb,#fef3c7)">
-          <div class="text-xs text-yellow-600 uppercase font-bold tracking-wide mb-1">Champion</div>
-          <div class="font-extrabold text-slate-900 text-base leading-tight">{{name}}</div>
-          {{#if barangay}}<div class="text-slate-500 text-xs mt-1">Brgy. {{barangay}}</div>{{/if}}
-          <div class="text-3xl font-black text-yellow-600 mt-2">{{finalScoreDisplay}}<span class="text-sm font-normal">%</span></div>
+      <div class="flex-1 text-center -mt-6 rise-1">
+        <div class="text-5xl mb-3 rank-pop">🥇</div>
+        <div class="rounded-2xl p-5 sm:p-6 podium-glow-1" style="background:linear-gradient(135deg,rgba(120,53,15,0.4),rgba(30,20,0,0.6));border:2px solid rgba(251,191,36,0.4);">
+          <div class="text-[10px] font-black uppercase tracking-widest mb-1.5" style="color:#fbbf24;letter-spacing:0.18em;">Champion</div>
+          <div class="font-extrabold text-base leading-tight mb-1" style="color:#fef3c7;">{{name}}</div>
+          {{#if barangay}}<div class="text-xs mb-3" style="color:#92400e;">Brgy. {{barangay}}</div>{{/if}}
+          <div class="text-3xl sm:text-4xl font-black" style="color:#fbbf24;">{{finalScoreDisplay}}<span class="text-sm font-normal" style="color:#d97706;">%</span></div>
         </div>
+        <div class="mt-3 mx-auto rounded-t-lg" style="width:70%;height:60px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.2);border-bottom:none;"></div>
       </div>
       {{/if}}{{/each}}
+
+      <!-- 3rd place -->
       {{#each ranked}}{{#if (eq rank 3)}}
-      <div class="flex-1 text-center">
-        <div class="text-4xl mb-2">🥉</div>
-        <div class="rounded-2xl p-4 border-2 border-orange-200 bg-orange-50">
-          <div class="text-xs text-orange-500 uppercase font-bold tracking-wide mb-1">3rd</div>
-          <div class="font-extrabold text-slate-800 text-sm leading-tight">{{name}}</div>
-          {{#if barangay}}<div class="text-slate-400 text-xs mt-1">Brgy. {{barangay}}</div>{{/if}}
-          <div class="text-2xl font-black text-orange-600 mt-2">{{finalScoreDisplay}}<span class="text-sm font-normal">%</span></div>
+      <div class="flex-1 text-center rise-3">
+        <div class="text-4xl mb-3 rank-pop">🥉</div>
+        <div class="rounded-2xl p-4 sm:p-5 podium-glow-3" style="background:rgba(28,20,10,0.7);border:1px solid rgba(251,146,60,0.25);">
+          <div class="text-[10px] font-black uppercase tracking-widest mb-1.5" style="color:#f97316;">3rd Place</div>
+          <div class="font-extrabold text-sm leading-tight mb-1" style="color:#fed7aa;">{{name}}</div>
+          {{#if barangay}}<div class="text-[11px] mb-3" style="color:#78350f;">Brgy. {{barangay}}</div>{{/if}}
+          <div class="text-2xl sm:text-3xl font-black" style="color:#f97316;">{{finalScoreDisplay}}<span class="text-sm font-normal" style="color:#c2410c;">%</span></div>
         </div>
+        <div class="mt-3 mx-auto rounded-t-lg" style="width:70%;height:24px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.2);border-bottom:none;"></div>
       </div>
       {{/if}}{{/each}}
+
     </div>
   </div>
 
-  <div class="section-card animate-fadeup-2 overflow-x-auto">
-    <div class="section-header">
-      <h2>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-        Full Tabulation Sheet
-      </h2>
-      <span class="badge badge-blue">{{event.name}}</span>
+  <!-- ── FULL TABULATION TABLE ── -->
+  <div class="rounded-2xl overflow-hidden" style="background:rgba(13,15,26,0.95);border:1px solid rgba(99,102,241,0.18);">
+    <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid rgba(99,102,241,0.12);background:rgba(15,17,30,0.8);">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(99,102,241,0.2);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <h2 class="text-sm font-extrabold" style="color:#e0e7ff;">Full Tabulation Sheet</h2>
+      </div>
+      <span class="px-2.5 py-1 rounded-full text-[11px] font-bold" style="background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);color:#a5b4fc;">{{event.name}}</span>
     </div>
-    <table class="data-table min-w-max">
-      <thead>
-        <tr>
-          <th class="w-12 text-center">Rank</th>
-          <th class="w-10">No.</th>
-          <th>Contestant</th>
-          <th>Barangay</th>
-          {{#each criteria}}<th class="text-center">{{name}}<br/><span class="text-[10px] font-normal normal-case text-slate-400">{{weight}}%</span></th>{{/each}}
-          <th class="text-center text-blue-700">Final Score</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each ranked}}
-        <tr class="{{#if (eq rank 1)}}bg-yellow-50{{/if}}">
-          <td class="text-center">
-            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-black
-              {{#if (eq rank 1)}}bg-yellow-400 text-white
-              {{else}}{{#if (eq rank 2)}}bg-slate-300 text-white
-              {{else}}{{#if (eq rank 3)}}bg-orange-400 text-white
-              {{else}}bg-slate-100 text-slate-500{{/if}}{{/if}}{{/if}}">{{rank}}</span>
-          </td>
-          <td class="text-slate-400 font-mono text-sm">{{number}}</td>
-          <td class="font-semibold text-slate-800">{{name}}</td>
-          <td class="text-slate-500 text-sm">{{barangay}}</td>
-          {{#each breakdown}}<td class="text-center"><div class="font-semibold text-slate-700">{{avg}}</div><div class="text-[11px] text-slate-400">({{weighted}}%)</div></td>{{/each}}
-          <td class="text-center"><span class="font-extrabold text-blue-700 text-base">{{finalScoreDisplay}}%</span></td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
+    <div class="overflow-x-auto">
+      <table class="table-dark w-full text-left border-collapse min-w-max">
+        <thead>
+          <tr>
+            <th class="py-3 px-5 text-[11px] font-extrabold uppercase tracking-wider text-center" style="color:#475569;border-bottom:1px solid rgba(99,102,241,0.12);">Rank</th>
+            <th class="py-3 px-4 text-[11px] font-extrabold uppercase tracking-wider" style="color:#475569;border-bottom:1px solid rgba(99,102,241,0.12);">No.</th>
+            <th class="py-3 px-4 text-[11px] font-extrabold uppercase tracking-wider" style="color:#475569;border-bottom:1px solid rgba(99,102,241,0.12);">Contestant</th>
+            <th class="py-3 px-4 text-[11px] font-extrabold uppercase tracking-wider" style="color:#475569;border-bottom:1px solid rgba(99,102,241,0.12);">Barangay</th>
+            {{#each criteria}}
+            <th class="py-3 px-4 text-[11px] font-extrabold uppercase tracking-wider text-center" style="color:#475569;border-bottom:1px solid rgba(99,102,241,0.12);">{{name}}<br/><span class="text-[10px] font-normal normal-case" style="color:#334155;">{{weight}}%</span></th>
+            {{/each}}
+            <th class="py-3 px-5 text-[11px] font-extrabold uppercase tracking-wider text-center" style="color:#6366f1;border-bottom:1px solid rgba(99,102,241,0.12);">Final Score</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y" style="border-color:rgba(99,102,241,0.08);">
+          {{#each ranked}}
+          <tr style="{{#if (eq rank 1)}}background:rgba(120,53,15,0.12);{{/if}}">
+            <td class="py-3.5 px-5 text-center">
+              <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-black text-white
+                {{#if (eq rank 1)}}rank-badge-1{{else}}{{#if (eq rank 2)}}rank-badge-2{{else}}{{#if (eq rank 3)}}rank-badge-3{{else}}{{/if}}{{/if}}{{/if}}"
+                style="{{#unless (eq rank 1)}}{{#unless (eq rank 2)}}{{#unless (eq rank 3)}}background:rgba(30,32,48,0.9);color:#475569;{{/unless}}{{/unless}}{{/unless}}">
+                {{rank}}
+              </span>
+            </td>
+            <td class="py-3.5 px-4 font-mono text-sm" style="color:#475569;">{{number}}</td>
+            <td class="py-3.5 px-4 font-semibold" style="color:#e0e7ff;">{{name}}</td>
+            <td class="py-3.5 px-4 text-sm" style="color:#475569;">{{barangay}}</td>
+            {{#each breakdown}}
+            <td class="py-3.5 px-4 text-center">
+              <div class="font-semibold text-sm" style="color:#c7d2fe;">{{avg}}</div>
+              <div class="text-[11px]" style="color:#334155;">({{weighted}}%)</div>
+            </td>
+            {{/each}}
+            <td class="py-3.5 px-5 text-center">
+              <span class="font-extrabold text-base" style="color:{{#if (eq rank 1)}}#fbbf24{{else}}#a5b4fc{{/if}};">{{finalScoreDisplay}}%</span>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
   </div>
+
+  <!-- ── PRINT CERTIFICATE SECTION ── -->
+  <div class="cert-section rounded-2xl p-6 no-print" style="background:rgba(13,15,26,0.95);border:1px solid rgba(99,102,241,0.18);">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(99,102,241,0.2);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <h2 class="text-sm font-extrabold" style="color:#e0e7ff;">Official Tally Sheet Preview</h2>
+      </div>
+      <button onclick="window.print()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 4px 16px rgba(99,102,241,0.35);">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print Official Sheet
+      </button>
+    </div>
+    <div class="rounded-xl p-5" style="background:rgba(7,9,15,0.7);border:1px solid rgba(99,102,241,0.1);">
+      <p class="text-xs" style="color:#334155;">Clicking <strong style="color:#a5b4fc;">Print Official Sheet</strong> opens the browser print dialog. The printed output includes: event name, judge count, full ranked tabulation with per-criteria breakdown, and final scores — formatted for official documentation.</p>
+    </div>
+  </div>
+
   {{else}}
-  <div class="card-flat py-20 text-center text-slate-400 animate-fadeup-1">
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" stroke-width="1.5" class="mx-auto mb-4"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-    <p class="font-semibold text-base mb-1">No scores submitted yet.</p>
-    <p class="text-sm">Judges need to submit scores before results appear.</p>
+  <!-- Empty state -->
+  <div class="rounded-2xl py-24 flex flex-col items-center justify-center text-center" style="background:rgba(13,15,26,0.95);border:1px solid rgba(99,102,241,0.15);">
+    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5" style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    </div>
+    <p class="font-bold text-base mb-1" style="color:#475569;">No scores submitted yet.</p>
+    <p class="text-sm" style="color:#334155;">Judges need to submit scores before results appear here.</p>
   </div>
   {{/if}}
+
 </main>
 </div>
 {{> footer }}

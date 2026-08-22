@@ -26,14 +26,28 @@ const DEFAULT_SUGGESTIONS = [
   }
 ];
 
+// Default tabulation prefs (used as fallback when not yet saved)
+const DEFAULT_PREFS = {
+  decimalPrecision: "2",
+  outlierThreshold: "15",
+  realtimeRanks: true,
+  olympicRule: false,
+};
+
 export const settingsPage = async (req, res) => {
   try {
     let userData = {};
+    let tabPrefs = { ...DEFAULT_PREFS };
+
     if (req.session.userId) {
       const userRef = doc(db, "users", req.session.userId);
       const snap = await getDoc(userRef);
       if (snap.exists()) {
         userData = snap.data();
+        // Load saved tabulation prefs if they exist on the user doc
+        if (userData.tabPrefs) {
+          tabPrefs = { ...DEFAULT_PREFS, ...userData.tabPrefs };
+        }
       }
     }
 
@@ -62,7 +76,8 @@ export const settingsPage = async (req, res) => {
       municipality: "Mansalay, Oriental Mindoro",
       systemVersion: "v2.5.0-PROD",
       aiModel: "Gemini 2.5 Flash",
-      suggestions: allSuggestions
+      suggestions: allSuggestions,
+      tabPrefs,
     });
   } catch (err) {
     console.error("Settings page error:", err);
@@ -78,19 +93,34 @@ export const settingsPage = async (req, res) => {
       municipality: "Mansalay, Oriental Mindoro",
       systemVersion: "v2.5.0-PROD",
       aiModel: "Gemini 2.5 Flash",
-      suggestions: DEFAULT_SUGGESTIONS
+      suggestions: DEFAULT_SUGGESTIONS,
+      tabPrefs: DEFAULT_PREFS,
     });
   }
 };
 
 export const updateSettings = async (req, res) => {
   try {
-    const { name } = req.body;
-    if (name && req.session.userId) {
+    const { name, decimalPrecision, outlierThreshold, realtimeRanks, olympicRule } = req.body;
+    if (req.session.userId) {
       const userRef = doc(db, "users", req.session.userId);
-      await updateDoc(userRef, { name: name.trim() });
-      req.session.userName = name.trim();
-      req.flash("success_msg", "Account settings updated successfully!");
+      const updates = {};
+
+      if (name) {
+        updates.name = name.trim();
+        req.session.userName = name.trim();
+      }
+
+      // Persist tabulation prefs as a sub-object on the user document
+      updates.tabPrefs = {
+        decimalPrecision: decimalPrecision || "2",
+        outlierThreshold: outlierThreshold || "15",
+        realtimeRanks:    realtimeRanks === "on",
+        olympicRule:      olympicRule === "on",
+      };
+
+      await updateDoc(userRef, updates);
+      req.flash("success_msg", "Settings saved successfully!");
     }
     res.redirect("/settings");
   } catch (err) {

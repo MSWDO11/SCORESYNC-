@@ -1,8 +1,21 @@
 import { db } from "../models/firebaseConfig.js";
 import {
   collection, addDoc, getDocs, getDoc, doc,
-  setDoc, query, where, serverTimestamp,
+  setDoc, query, where, serverTimestamp, collectionGroup,
 } from "firebase/firestore";
+
+// Load admin's saved tabulation preferences from Firestore
+async function loadTabPrefs() {
+  const DEFAULT = { decimalPrecision: "2", olympicRule: false };
+  try {
+    const usersSnap = await getDocs(collection(db, "users"));
+    const adminDoc  = usersSnap.docs.find(d => d.data().role === "admin");
+    if (adminDoc && adminDoc.data().tabPrefs) {
+      return { ...DEFAULT, ...adminDoc.data().tabPrefs };
+    }
+  } catch (_) {}
+  return DEFAULT;
+}
 
 // Scores stored at: events/{eventId}/scores/{judgeId_contestantId_criteriaId}
 
@@ -102,11 +115,12 @@ export const submitScores = async (req, res) => {
 export const resultsPage = async (req, res) => {
   const { eventId } = req.params;
   try {
-    const [eSnap, cSnap, crSnap, sSnap] = await Promise.all([
+    const [eSnap, cSnap, crSnap, sSnap, tabPrefs] = await Promise.all([
       getDoc(doc(db, "events", eventId)),
       getDocs(collection(db, "events", eventId, "contestants")),
       getDocs(collection(db, "events", eventId, "criteria")),
       getDocs(collection(db, "events", eventId, "scores")),
+      loadTabPrefs(),
     ]);
 
     if (!eSnap.exists()) return res.redirect("/events");
@@ -116,47 +130,63 @@ export const resultsPage = async (req, res) => {
     const criteria    = crSnap.docs.map(d => ({ id: d.id, ...d.data() }));
     const allScores   = sSnap.docs.map(d => d.data());
 
+    const precision  = parseInt(tabPrefs.decimalPrecision) || 2;
+    const useOlympic = tabPrefs.olympicRule === true;
+
     // Count unique judges who submitted
-    const judgeSet = new Set(allScores.map(s => s.judgeId));
+    const judgeSet   = new Set(allScores.map(s => s.judgeId));
     const judgeCount = judgeSet.size || 1;
 
     // For each contestant: weighted average across all judges
     const ranked = contestants.map(c => {
       let totalWeighted = 0;
       const breakdown = criteria.map(cr => {
-        const judgeScores = allScores.filter(
-          s => s.contestantId === c.id && s.criteriaId === cr.id
-        );
-        const avg = judgeScores.length
-          ? judgeScores.reduce((sum, s) => sum + s.score, 0) / judgeScores.length
+        let judgeScores = allScores
+          .filter(s => s.contestantId === c.id && s.criteriaId === cr.id)
+          .map(s => s.score);
+
+        // Olympic rule: drop highest & lowest if 5+ judges
+        if (useOlympic && judgeScores.length >= 5) {
+          judgeScores = judgeScores.slice().sort((a, b) => a - b).slice(1, -1);
+        }
+
+        const avg      = judgeScores.length
+          ? judgeScores.reduce((sum, v) => sum + v, 0) / judgeScores.length
           : 0;
         const weighted = (avg / (cr.maxScore || 100)) * (cr.weight || 0);
         totalWeighted += weighted;
-        return { name: cr.name, weight: cr.weight, avg: avg.toFixed(2), weighted: weighted.toFixed(2) };
+
+        return {
+          name:     cr.name,
+          weight:   cr.weight,
+          avg:      avg.toFixed(precision),
+          weighted: weighted.toFixed(precision),
+        };
       });
       return {
         ...c,
         breakdown,
-        finalScore: totalWeighted.toFixed(4),
-        finalScoreDisplay: totalWeighted.toFixed(2),
+        finalScore:        totalWeighted.toFixed(4),
+        finalScoreDisplay: totalWeighted.toFixed(precision),
       };
     });
 
-    // Sort by finalScore descending, assign rank
+    // Sort descending, assign rank
     ranked.sort((a, b) => b.finalScore - a.finalScore);
     ranked.forEach((c, i) => { c.rank = i + 1; });
 
     res.render("scoring/results", {
-      title: `Results — ${event.name}`,
+      title:       `Results — ${event.name}`,
       event,
       ranked,
       criteria,
       judgeCount,
-      userName: req.session.userName,
-      userRole: req.session.userRole,
+      tabPrefs,
+      userName:    req.session.userName,
+      userRole:    req.session.userRole,
       userInitial: (req.session.userName || "U")[0].toUpperCase(),
-      isAdmin: req.session.userRole === "admin",
-      isJudge: req.session.userRole === "judge",
+      isAdmin:     req.session.userRole === "admin",
+      isJudge:     req.session.userRole === "judge",
     });
   } catch (err) {
     console.error(err);
