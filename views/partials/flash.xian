@@ -1,0 +1,12 @@
+{{#if success_msg}}
+<div class="mx-4 sm:mx-6 lg:mx-8 mt-4 flex items-center gap-2.5 p-3.5 rounded-xl text-sm font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+  <span>{{success_msg}}</span>
+</div>
+{{/if}}
+{{#if error_msg}}
+<div class="mx-4 sm:mx-6 lg:mx-8 mt-4 flex items-center gap-2.5 p-3.5 rounded-xl text-sm font-semibold bg-red-50 border border-red-200 text-red-800">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <span>{{error_msg}}</span>
+</div>
+{{/if}}
