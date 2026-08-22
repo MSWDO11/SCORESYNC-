@@ -115,4 +115,13 @@ router.get( "/settings",                requireAuth, settingsPage);
 router.post("/settings/update",         requireAuth, updateSettings);
 router.post("/settings/suggest-feature", requireAuth, suggestFeature);
 
+// ─── Payment Inventory (admin only) ──────────────────────────────────────────
+import {
+  inventoryPage, addPaymentRecord, deletePaymentRecord,
+} from "../controllers/inventoryController.js";
+
+router.get( "/inventory",           requireAuth, requireRole("admin"), inventoryPage);
+router.post("/inventory",           requireAuth, requireRole("admin"), addPaymentRecord);
+router.post("/inventory/:id/delete",requireAuth, requireRole("admin"), deletePaymentRecord);
+
 export default router;
