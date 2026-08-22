@@ -174,6 +174,133 @@
 
   </div>
 
+  <!-- Income & Revenue Summary Section -->
+  {{#if paidEventsCount}}
+  <div class="animate-fadeup-1 space-y-4">
+
+    <!-- Section Header -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-sm" style="background:linear-gradient(135deg,#064e3b,#16a34a)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h2 class="text-base font-extrabold text-slate-900 tracking-tight">Ticketed Events — Income Overview</h2>
+      </div>
+      <span class="px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold border border-green-100">{{paidEventsCount}} Ticketed Event{{#if (gt paidEventsCount 1)}}s{{/if}}</span>
+    </div>
+
+    <!-- Income KPI Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+      <!-- Total Revenue -->
+      <div class="relative overflow-hidden rounded-2xl p-5 text-white shadow-md" style="background:linear-gradient(135deg,#064e3b,#16a34a)">
+        <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div class="relative z-10">
+          <p class="text-green-200 text-xs font-extrabold uppercase tracking-widest mb-1">Total Revenue</p>
+          <p class="text-3xl font-black leading-none">₱{{totalIncome}}</p>
+          <p class="text-green-100 text-xs mt-1.5">Across all ticketed events</p>
+        </div>
+        <div class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center border border-white/20">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+      </div>
+
+      <!-- Tickets Sold -->
+      <div class="relative overflow-hidden rounded-2xl p-5 text-white shadow-md" style="background:linear-gradient(135deg,#0f766e,#14b8a6)">
+        <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div class="relative z-10">
+          <p class="text-teal-100 text-xs font-extrabold uppercase tracking-widest mb-1">Total Tickets Sold</p>
+          <p class="text-3xl font-black leading-none">{{totalTicketsSold}}</p>
+          <p class="text-teal-100 text-xs mt-1.5">Combined across all events</p>
+        </div>
+        <div class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center border border-white/20">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+        </div>
+      </div>
+
+      <!-- Paid Events Count -->
+      <div class="relative overflow-hidden rounded-2xl p-5 text-white shadow-md" style="background:linear-gradient(135deg,#1e1b4b,#4338ca)">
+        <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div class="relative z-10">
+          <p class="text-indigo-200 text-xs font-extrabold uppercase tracking-widest mb-1">Ticketed Events</p>
+          <p class="text-3xl font-black leading-none">{{paidEventsCount}}</p>
+          <p class="text-indigo-100 text-xs mt-1.5">Events with QR payment enabled</p>
+        </div>
+        <div class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center border border-white/20">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="17" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/></svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Per-Event Income Breakdown Table -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-lg bg-green-100 text-green-700 flex items-center justify-center">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <h3 class="text-sm font-extrabold text-slate-900">Revenue Breakdown by Event</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-100 bg-slate-50/70 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
+              <th class="py-3 px-6">Event</th>
+              <th class="py-3 px-4">Type</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4 text-right">Ticket Price</th>
+              <th class="py-3 px-4 text-right">Sold / Cap</th>
+              <th class="py-3 px-4 text-right">Sell-through</th>
+              <th class="py-3 px-6 text-right">Revenue</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-sm">
+            {{#each incomeByEvent}}
+            <tr class="hover:bg-slate-50/80 transition group">
+              <td class="py-3.5 px-6">
+                <a href="/events/{{id}}" class="font-bold text-slate-900 group-hover:text-blue-600 transition text-sm">{{name}}</a>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 capitalize border border-slate-200/60">{{type}}</span>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="badge {{#if (eq status 'ongoing')}}badge-green{{else}}{{#if (eq status 'completed')}}badge-blue{{else}}{{#if (eq status 'cancelled')}}badge-red{{else}}badge-yellow{{/if}}{{/if}}{{/if}} capitalize">{{status}}</span>
+              </td>
+              <td class="py-3.5 px-4 text-right font-semibold text-slate-700 text-xs">₱{{ticketPrice}}</td>
+              <td class="py-3.5 px-4 text-right text-xs font-semibold text-slate-600">
+                {{ticketsSold}}{{#if ticketCapacity}} / {{ticketCapacity}}{{/if}}
+              </td>
+              <td class="py-3.5 px-4 text-right">
+                {{#if ticketCapacity}}
+                <div class="flex items-center justify-end gap-2">
+                  <div class="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-teal-400 to-emerald-500 rounded-full" style="width:{{#if ticketCapacity}}{{sellThroughPct ticketsSold ticketCapacity}}{{else}}0{{/if}}%"></div>
+                  </div>
+                  <span class="text-xs font-bold text-slate-500" data-sold="{{ticketsSold}}" data-cap="{{ticketCapacity}}" data-pct="true">—</span>
+                </div>
+                {{else}}
+                <span class="text-xs text-slate-400">—</span>
+                {{/if}}
+              </td>
+              <td class="py-3.5 px-6 text-right">
+                <span class="font-black text-green-700 text-sm" data-income="{{income}}">₱<span data-fmt-income="{{income}}">{{income}}</span></span>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+          <tfoot class="border-t-2 border-slate-200 bg-slate-50">
+            <tr>
+              <td colspan="6" class="py-3.5 px-6 text-xs font-extrabold text-slate-600 uppercase tracking-wider text-right">Total Revenue</td>
+              <td class="py-3.5 px-6 text-right font-black text-green-700">₱{{totalIncome}}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+  </div>
+  {{/if}}
+
   <!-- Stage & Round Countdown Timer Widget -->
   <div class="animate-fadeup-2">
     {{> countdown_timer }}
@@ -400,6 +527,27 @@
   const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
   const el=document.getElementById('today-date');
   if(el) el.textContent=days[d.getDay()]+', '+months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+
+  // Compute sell-through % for income table rows
+  document.querySelectorAll('[data-pct="true"]').forEach(function(span) {
+    const sold = parseInt(span.getAttribute('data-sold')) || 0;
+    const cap  = parseInt(span.getAttribute('data-cap'))  || 0;
+    if (cap > 0) {
+      const pct = Math.min((sold / cap) * 100, 100).toFixed(1);
+      span.textContent = pct + '%';
+      // Also update the bar in same cell
+      const bar = span.parentElement.querySelector('.bg-gradient-to-r');
+      if (bar) bar.style.width = pct + '%';
+    } else {
+      span.textContent = '—';
+    }
+  });
+
+  // Format income values with peso commas
+  document.querySelectorAll('[data-fmt-income]').forEach(function(span) {
+    const val = parseFloat(span.getAttribute('data-fmt-income')) || 0;
+    span.textContent = val.toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
+  });
 </script>
 </body>
 </html>

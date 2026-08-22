@@ -45,24 +45,40 @@ export const storeEvent = async (req, res) => {
   const {
     name, description, date, time, venue, type, status,
     organizer, maxContestants, prizes, rules, theme, notes,
+    paymentEnabled, ticketPrice, ticketCapacity,
+    qrPaymentUrl, paymentAccountName, paymentNumber, ticketsSold,
   } = req.body;
+
+  const isPaymentEnabled = paymentEnabled === "true";
+  const parsedTicketPrice    = parseFloat(ticketPrice)    || 0;
+  const parsedTicketCapacity = parseInt(ticketCapacity)   || 0;
+  const parsedTicketsSold    = parseInt(ticketsSold)      || 0;
+
   try {
     await addDoc(collection(db, EVENTS), {
-      name:           name || "",
-      description:    description || "",
-      date:           date || "",
-      time:           time || "",
-      venue:          venue || "",
-      type:           type || "pageant",
-      status:         status || "upcoming",
-      organizer:      organizer || "",
-      maxContestants: maxContestants || "",
-      prizes:         prizes || "",
-      rules:          rules || "",
-      theme:          theme || "blue",
-      notes:          notes || "",
-      createdBy:      req.session.userId,
-      createdAt:      serverTimestamp(),
+      name:               name || "",
+      description:        description || "",
+      date:               date || "",
+      time:               time || "",
+      venue:              venue || "",
+      type:               type || "pageant",
+      status:             status || "upcoming",
+      organizer:          organizer || "",
+      maxContestants:     maxContestants || "",
+      prizes:             prizes || "",
+      rules:              rules || "",
+      theme:              theme || "blue",
+      notes:              notes || "",
+      // Payment / ticketing fields
+      paymentEnabled:     isPaymentEnabled,
+      ticketPrice:        parsedTicketPrice,
+      ticketCapacity:     parsedTicketCapacity,
+      qrPaymentUrl:       qrPaymentUrl || "",
+      paymentAccountName: paymentAccountName || "",
+      paymentNumber:      paymentNumber || "",
+      ticketsSold:        parsedTicketsSold,
+      createdBy:          req.session.userId,
+      createdAt:          serverTimestamp(),
     });
     req.flash("success_msg", `Event "${name}" created successfully.`);
     res.redirect("/events");
@@ -134,16 +150,32 @@ export const updateEvent = async (req, res) => {
   const {
     name, description, date, time, venue, type, status,
     organizer, maxContestants, prizes, rules, theme, notes,
+    paymentEnabled, ticketPrice, ticketCapacity,
+    qrPaymentUrl, paymentAccountName, paymentNumber, ticketsSold,
   } = req.body;
+
+  const isPaymentEnabled = paymentEnabled === "true";
+  const parsedTicketPrice    = parseFloat(ticketPrice)    || 0;
+  const parsedTicketCapacity = parseInt(ticketCapacity)   || 0;
+  const parsedTicketsSold    = parseInt(ticketsSold)      || 0;
+
   try {
     await updateDoc(doc(db, EVENTS, req.params.id), {
       name, description, date, time, venue, type, status,
-      organizer:      organizer      || "",
-      maxContestants: maxContestants || "",
-      prizes:         prizes         || "",
-      rules:          rules          || "",
-      theme:          theme          || "blue",
-      notes:          notes          || "",
+      organizer:          organizer          || "",
+      maxContestants:     maxContestants     || "",
+      prizes:             prizes             || "",
+      rules:              rules              || "",
+      theme:              theme              || "blue",
+      notes:              notes              || "",
+      // Payment / ticketing fields
+      paymentEnabled:     isPaymentEnabled,
+      ticketPrice:        parsedTicketPrice,
+      ticketCapacity:     parsedTicketCapacity,
+      qrPaymentUrl:       qrPaymentUrl       || "",
+      paymentAccountName: paymentAccountName || "",
+      paymentNumber:      paymentNumber      || "",
+      ticketsSold:        parsedTicketsSold,
     });
     req.flash("success_msg", `Event "${name}" updated successfully.`);
     res.redirect(`/events/${req.params.id}`);

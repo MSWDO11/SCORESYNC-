@@ -176,6 +176,151 @@
   </div>
   {{/if}}
 
+  {{#if event.paymentEnabled}}
+  <!-- Payment & QR Code Section -->
+  <div class="grid lg:grid-cols-2 gap-5 animate-fadeup-2">
+
+    <!-- QR Payment Card -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="17" width="3" height="3"/>
+            <rect x="18" y="14" width="3" height="3"/><rect x="14" y="14" width="2" height="2"/>
+          </svg>
+          QR Payment
+        </h2>
+        <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-teal-100 text-teal-700 border border-teal-200 uppercase tracking-wider">Ticketed Event</span>
+      </div>
+      <div class="px-5 py-5 flex flex-col items-center gap-4">
+        {{#if event.qrPaymentUrl}}
+        <div class="p-3 bg-white border-2 border-teal-200 rounded-2xl shadow-sm">
+          <img src="{{event.qrPaymentUrl}}" alt="QR Payment Code" class="w-48 h-48 object-contain rounded-xl" onerror="this.parentElement.innerHTML='<div class=\'w-48 h-48 flex flex-col items-center justify-center bg-slate-50 rounded-xl text-slate-400 text-xs text-center p-4 gap-2\'><svg width=\'40\' height=\'40\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'#cbd5e1\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'7\' height=\'7\'/><rect x=\'14\' y=\'3\' width=\'7\' height=\'7\'/><rect x=\'3\' y=\'14\' width=\'7\' height=\'7\'/></svg>QR image unavailable</div>'"/>
+        </div>
+        {{else}}
+        <div class="w-48 h-48 flex flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-xs text-center p-4 gap-2">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="17" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/></svg>
+          No QR image uploaded
+        </div>
+        {{/if}}
+        <div class="w-full space-y-2 text-sm">
+          {{#if event.paymentAccountName}}
+          <div class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-lg border border-slate-100">
+            <span class="text-slate-500 text-xs font-semibold">Account Name</span>
+            <span class="font-bold text-slate-800 text-xs">{{event.paymentAccountName}}</span>
+          </div>
+          {{/if}}
+          {{#if event.paymentNumber}}
+          <div class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-lg border border-slate-100">
+            <span class="text-slate-500 text-xs font-semibold">Account / Number</span>
+            <span class="font-bold text-slate-800 text-xs font-mono">{{event.paymentNumber}}</span>
+          </div>
+          {{/if}}
+          <div class="flex items-center justify-between px-3 py-2.5 bg-teal-50 rounded-lg border border-teal-100">
+            <span class="text-teal-700 text-xs font-bold flex items-center gap-1.5">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Ticket Price
+            </span>
+            <span class="font-black text-teal-800 text-base">
+              {{#if event.ticketPrice}}₱{{event.ticketPrice}}{{else}}Free{{/if}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Income Summary Card -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          Income Summary
+        </h2>
+        {{#if isAdmin}}
+        <a href="/events/{{event.id}}/edit" class="btn-sm btn-sm-gray text-xs px-3 py-1.5">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Update Tickets Sold
+        </a>
+        {{/if}}
+      </div>
+      <div class="px-5 py-5 space-y-4">
+
+        <!-- Total Income KPI -->
+        <div class="p-4 rounded-2xl text-white relative overflow-hidden" style="background:linear-gradient(135deg,#064e3b,#16a34a)">
+          <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+          <div class="relative z-10">
+            <div class="text-green-200 text-xs font-bold uppercase tracking-wider mb-1">Total Revenue</div>
+            <div class="text-3xl font-black">
+              ₱{{#if event.ticketsSold}}{{#if event.ticketPrice}}<span id="incomeTotal">—</span>{{else}}0.00{{/if}}{{else}}0.00{{/if}}
+            </div>
+            <div class="text-green-100 text-xs mt-1">Ticket Price × Tickets Sold</div>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-center">
+            <div class="text-2xl font-black text-slate-800">{{#if event.ticketsSold}}{{event.ticketsSold}}{{else}}0{{/if}}</div>
+            <div class="text-[11px] text-slate-500 font-semibold mt-0.5">Tickets Sold</div>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-center">
+            <div class="text-2xl font-black text-slate-800">{{#if event.ticketCapacity}}{{event.ticketCapacity}}{{else}}—{{/if}}</div>
+            <div class="text-[11px] text-slate-500 font-semibold mt-0.5">Total Capacity</div>
+          </div>
+        </div>
+
+        <!-- Sell-through progress bar -->
+        {{#if event.ticketCapacity}}
+        <div>
+          <div class="flex justify-between text-xs font-semibold text-slate-500 mb-1.5">
+            <span>Sell-through Rate</span>
+            <span id="sellThroughPct">—</span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+            <div id="sellThroughBar" class="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all duration-700" style="width:0%"></div>
+          </div>
+        </div>
+        {{/if}}
+
+        <!-- Remaining tickets -->
+        {{#if event.ticketCapacity}}
+        <div class="flex items-center justify-between px-3 py-2.5 bg-amber-50 rounded-lg border border-amber-100">
+          <span class="text-amber-700 text-xs font-bold">Remaining Tickets</span>
+          <span class="font-black text-amber-800 text-sm" id="remainingTickets">—</span>
+        </div>
+        {{/if}}
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      const price    = parseFloat("{{event.ticketPrice}}")    || 0;
+      const sold     = parseInt("{{event.ticketsSold}}")      || 0;
+      const capacity = parseInt("{{event.ticketCapacity}}")   || 0;
+      const income   = price * sold;
+
+      const totalEl = document.getElementById('incomeTotal');
+      if (totalEl) totalEl.textContent = income.toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+      if (capacity > 0) {
+        const pct = Math.min((sold / capacity) * 100, 100).toFixed(1);
+        const bar = document.getElementById('sellThroughBar');
+        const pctEl = document.getElementById('sellThroughPct');
+        const remEl = document.getElementById('remainingTickets');
+        if (bar)   { setTimeout(()=>{ bar.style.width = pct + '%'; }, 200); }
+        if (pctEl) pctEl.textContent = pct + '%';
+        if (remEl) remEl.textContent = Math.max(capacity - sold, 0).toLocaleString();
+      }
+    })();
+  </script>
+  {{/if}}
+
 </main>
 </div>
 {{> footer }}
