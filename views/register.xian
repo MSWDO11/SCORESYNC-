@@ -61,7 +61,7 @@
           <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#4c1d95,#7c3aed);box-shadow:0 0 12px rgba(124,58,237,0.3);">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           </div>
-          <div><div class="text-sm font-bold" style="color:#e0e7ff;">Role-Based Access</div><div class="text-xs mt-0.5" style="color:#475569;">Judge or Encoder portal</div></div>
+          <div><div class="text-sm font-bold" style="color:#e0e7ff;">Role-Based Access</div><div class="text-xs mt-0.5" style="color:#475569;">Judge, Organizer or Participant portal</div></div>
         </div>
       </div>
     </div>
@@ -95,7 +95,7 @@
 
         <div class="mb-7">
           <h1 class="text-2xl font-black tracking-tight" style="color:#e0e7ff;">Create Account</h1>
-          <p class="text-sm mt-1" style="color:#475569;">Submit your request to the Administrator for approval.</p>
+          <p class="text-sm mt-1" style="color:#475569;">Participants join instantly. Judge &amp; Organizer accounts require Admin approval.</p>
         </div>
 
         {{#if error_msg}}
@@ -152,7 +152,7 @@
           <!-- Role -->
           <div>
             <label class="block text-xs font-bold uppercase tracking-widest mb-3" style="color:#475569;">Select Role</label>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-3 gap-3">
               <label class="cursor-pointer">
                 <input type="radio" name="role" value="judge" class="sr-only" required id="roleJudge" onchange="styleRoles()"/>
                 <div id="cardJudge" class="role-card">
@@ -164,16 +164,29 @@
                 </div>
               </label>
               <label class="cursor-pointer">
-                <input type="radio" name="role" value="encoder" class="sr-only" id="roleEncoder" onchange="styleRoles()"/>
-                <div id="cardEncoder" class="role-card">
+                <input type="radio" name="role" value="organizer" class="sr-only" id="roleOrganizer" onchange="styleRoles()"/>
+                <div id="cardOrganizer" class="role-card">
                   <div class="w-9 h-9 rounded-xl flex items-center justify-center mx-auto mb-2.5" style="background:linear-gradient(135deg,#064e3b,#10b981);box-shadow:0 0 12px rgba(16,185,129,0.3);">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
                   </div>
-                  <div class="font-bold text-sm" style="color:#e0e7ff;">Encoder</div>
-                  <div class="text-xs mt-0.5" style="color:#475569;">Manage contestants</div>
+                  <div class="font-bold text-sm" style="color:#e0e7ff;">Organizer</div>
+                  <div class="text-xs mt-0.5" style="color:#475569;">Manage events</div>
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="role" value="participant" class="sr-only" id="roleParticipant" onchange="styleRoles()"/>
+                <div id="cardParticipant" class="role-card">
+                  <div class="w-9 h-9 rounded-xl flex items-center justify-center mx-auto mb-2.5" style="background:linear-gradient(135deg,#0f766e,#14b8a6);box-shadow:0 0 12px rgba(20,184,166,0.3);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  </div>
+                  <div class="font-bold text-sm" style="color:#e0e7ff;">Participant</div>
+                  <div class="text-xs mt-0.5" style="color:#475569;">Join events</div>
                 </div>
               </label>
             </div>
+            <p id="participantNote" class="hidden text-xs mt-2 p-2 rounded-lg" style="background:rgba(20,184,166,0.1);border:1px solid rgba(20,184,166,0.2);color:#0f766e;">
+              ✓ Participant accounts are approved instantly — no waiting required!
+            </p>
           </div>
 
           <button type="submit" class="btn-register">
@@ -191,13 +204,44 @@
 const eyeOpen='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 const eyeClose='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 function togglePwd(){const i=document.getElementById('passwordInput'),b=document.getElementById('eyeIcon');if(i.type==='password'){i.type='text';b.outerHTML=eyeClose;}else{i.type='password';b.outerHTML=eyeOpen;}}
-function styleRoles(){
-  const j=document.getElementById('roleJudge').checked;
-  const e=document.getElementById('roleEncoder').checked;
+
+function styleRoles() {
+  const j = document.getElementById('roleJudge').checked;
+  const o = document.getElementById('roleOrganizer').checked;
+  const p = document.getElementById('roleParticipant').checked;
+
+  // Judge card
   document.getElementById('cardJudge').style.borderColor = j ? '#6366f1' : 'rgba(99,102,241,0.15)';
   document.getElementById('cardJudge').style.background  = j ? 'rgba(99,102,241,0.15)' : 'rgba(15,17,30,0.6)';
-  document.getElementById('cardEncoder').style.borderColor = e ? '#10b981' : 'rgba(99,102,241,0.15)';
-  document.getElementById('cardEncoder').style.background  = e ? 'rgba(16,185,129,0.12)' : 'rgba(15,17,30,0.6)';
+  document.getElementById('cardJudge').style.boxShadow   = j ? '0 0 0 3px rgba(99,102,241,0.2)' : 'none';
+
+  // Organizer card
+  document.getElementById('cardOrganizer').style.borderColor = o ? '#10b981' : 'rgba(99,102,241,0.15)';
+  document.getElementById('cardOrganizer').style.background  = o ? 'rgba(16,185,129,0.12)' : 'rgba(15,17,30,0.6)';
+  document.getElementById('cardOrganizer').style.boxShadow   = o ? '0 0 0 3px rgba(16,185,129,0.15)' : 'none';
+
+  // Participant card
+  document.getElementById('cardParticipant').style.borderColor = p ? '#14b8a6' : 'rgba(99,102,241,0.15)';
+  document.getElementById('cardParticipant').style.background  = p ? 'rgba(20,184,166,0.12)' : 'rgba(15,17,30,0.6)';
+  document.getElementById('cardParticipant').style.boxShadow   = p ? '0 0 0 3px rgba(20,184,166,0.15)' : 'none';
+
+  // Show instant approval note for participant
+  const note = document.getElementById('participantNote');
+  note.classList.toggle('hidden', !p);
+
+  // Update button label
+  const btn = document.querySelector('.btn-register span:last-child') || document.querySelector('.btn-register');
+  const submitBtn = document.querySelector('.btn-register');
+  if (p) {
+    submitBtn.style.background = 'linear-gradient(135deg,#0f766e,#14b8a6)';
+    submitBtn.style.boxShadow  = '0 4px 24px rgba(20,184,166,0.45)';
+  } else if (o) {
+    submitBtn.style.background = 'linear-gradient(135deg,#064e3b,#059669)';
+    submitBtn.style.boxShadow  = '0 4px 24px rgba(16,185,129,0.45)';
+  } else {
+    submitBtn.style.background = 'linear-gradient(135deg,#6366f1,#8b5cf6)';
+    submitBtn.style.boxShadow  = '0 4px 24px rgba(99,102,241,0.45)';
+  }
 }
 </script>
 </body>
