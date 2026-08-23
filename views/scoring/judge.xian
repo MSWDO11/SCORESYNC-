@@ -36,8 +36,27 @@
 
   {{#if contestants.length}}
   <form id="scoringForm" method="POST" action="/events/{{event.id}}/scoring" class="space-y-5 animate-fadeup-1">
+
+    <!-- Contestant Selector Tab Bar -->
+    <div class="card-flat p-3 overflow-x-auto">
+      <div class="flex items-center gap-2 min-w-max" id="contestantTabs">
+        {{#each contestants}}
+        <button type="button"
+          onclick="switchContestant('{{id}}')"
+          id="tab-{{id}}"
+          class="contestant-tab flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition whitespace-nowrap flex-shrink-0 border"
+          style="background:#f1f5f9;border-color:#e2e8f0;color:#64748b;">
+          <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0" style="background:#e2e8f0;color:#475569;">{{number}}</span>
+          <span>{{name}}</span>
+          <span class="tab-score-badge px-2 py-0.5 rounded-full text-[10px] font-black" style="background:#e2e8f0;color:#64748b;" id="tab-badge-{{id}}">0%</span>
+        </button>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Contestant Panels (one visible at a time) -->
     {{#each contestants}}
-    <div class="section-card overflow-hidden contestant-card" data-contestant-id="{{id}}">
+    <div class="section-card overflow-hidden contestant-card" data-contestant-id="{{id}}" id="panel-{{id}}" style="display:none;">
       <div class="px-6 py-4 flex items-center justify-between relative overflow-hidden" style="background:linear-gradient(135deg,#1e3a8a,#2563eb)">
         <div class="absolute right-0 top-0 w-32 h-32 rounded-full translate-x-10 -translate-y-10" style="background:rgba(255,255,255,0.05)"></div>
         <div class="flex items-center gap-4 relative">
@@ -57,6 +76,16 @@
           </div>
         </div>
       </div>
+      <!-- Navigation arrows -->
+      <div class="px-5 pt-4 flex items-center justify-between">
+        <button type="button" onclick="prevContestant()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition" style="background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> Previous
+        </button>
+        <span class="text-xs font-semibold text-slate-400" id="contestantCounter-{{id}}"></span>
+        <button type="button" onclick="nextContestant()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition" style="background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;">
+          Next <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
       <div class="p-5 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {{#each scores}}
         <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 hover:border-blue-200 hover:bg-blue-50 transition score-box">
@@ -64,12 +93,12 @@
             <span class="text-sm font-semibold text-slate-700 leading-snug">{{criteriaName}}</span>
             <span class="badge badge-purple flex-shrink-0 ml-2">{{weight}}%</span>
           </div>
-          <input type="number" 
-            name="scores[{{../id}}][{{criteriaId}}]" 
-            value="{{value}}" 
-            min="0" 
-            max="{{maxScore}}" 
-            step="0.01" 
+          <input type="number"
+            name="scores[{{../id}}][{{criteriaId}}]"
+            value="{{value}}"
+            min="0"
+            max="{{maxScore}}"
+            step="0.01"
             placeholder="0"
             data-weight="{{weight}}"
             data-max="{{maxScore}}"
@@ -107,6 +136,61 @@
       const eventId = "{{event.id}}";
       const storageKey = `scoresync_draft_${eventId}`;
 
+      // Build ordered list of contestant IDs from tabs
+      const tabs = Array.from(document.querySelectorAll(".contestant-tab"));
+      const contestantIds = tabs.map(t => t.id.replace("tab-", ""));
+      let currentIndex = 0;
+
+      // Show a specific contestant panel
+      function switchContestant(id) {
+        // Hide all panels
+        document.querySelectorAll(".contestant-card").forEach(p => p.style.display = "none");
+        // Deactivate all tabs
+        tabs.forEach(t => {
+          t.style.background = "#f1f5f9";
+          t.style.borderColor = "#e2e8f0";
+          t.style.color = "#64748b";
+          t.querySelector(".tab-score-badge").style.background = "#e2e8f0";
+          t.querySelector(".tab-score-badge").style.color = "#64748b";
+        });
+        // Show target panel
+        const panel = document.getElementById("panel-" + id);
+        if (panel) panel.style.display = "";
+        // Activate tab
+        const tab = document.getElementById("tab-" + id);
+        if (tab) {
+          tab.style.background = "#1e40af";
+          tab.style.borderColor = "#1d4ed8";
+          tab.style.color = "#fff";
+          tab.querySelector(".tab-score-badge").style.background = "rgba(255,255,255,0.2)";
+          tab.querySelector(".tab-score-badge").style.color = "#fff";
+          // Scroll tab into view
+          tab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+        }
+        // Update counter
+        currentIndex = contestantIds.indexOf(id);
+        const counter = document.getElementById("contestantCounter-" + id);
+        if (counter) counter.textContent = `${currentIndex + 1} of ${contestantIds.length}`;
+      }
+
+      function nextContestant() {
+        const next = (currentIndex + 1) % contestantIds.length;
+        switchContestant(contestantIds[next]);
+      }
+
+      function prevContestant() {
+        const prev = (currentIndex - 1 + contestantIds.length) % contestantIds.length;
+        switchContestant(contestantIds[prev]);
+      }
+
+      // Expose globally for inline onclick
+      window.switchContestant = switchContestant;
+      window.nextContestant   = nextContestant;
+      window.prevContestant   = prevContestant;
+
+      // Show first contestant by default
+      if (contestantIds.length > 0) switchContestant(contestantIds[0]);
+
       function calculateTotals() {
         const contestantCards = document.querySelectorAll(".contestant-card");
         const draftData = {};
@@ -116,7 +200,6 @@
           const inputs = card.querySelectorAll(".score-input");
           let totalWeighted = 0;
           let completedCount = 0;
-
           draftData[contestantId] = {};
 
           inputs.forEach(input => {
@@ -128,11 +211,8 @@
 
             if (!isNaN(val) && valStr !== "") {
               completedCount++;
-              // Cap at max if user enters more
               const clampedVal = Math.min(Math.max(0, val), max);
-              if (clampedVal !== val) {
-                input.value = clampedVal;
-              }
+              if (clampedVal !== val) input.value = clampedVal;
               const weightedPct = (clampedVal / max) * weight;
               totalWeighted += weightedPct;
               weightedSpan.textContent = weightedPct.toFixed(2) + "%";
@@ -142,59 +222,65 @@
             }
           });
 
-          const totalDisplay = card.querySelector(".contestant-total-score");
+          const totalDisplay  = card.querySelector(".contestant-total-score");
           const progressDisplay = card.querySelector(".contestant-progress");
-
           if (totalDisplay) totalDisplay.textContent = totalWeighted.toFixed(2) + "%";
           if (progressDisplay) {
             progressDisplay.textContent = `${completedCount}/${inputs.length} completed`;
+            progressDisplay.className = completedCount === inputs.length && inputs.length > 0
+              ? "px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/30 text-emerald-100 border border-emerald-400/40 contestant-progress"
+              : "px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-900/50 text-blue-100 border border-blue-400/30 contestant-progress";
+          }
+
+          // Update tab badge score
+          const badge = document.getElementById("tab-badge-" + contestantId);
+          if (badge) {
+            badge.textContent = totalWeighted.toFixed(1) + "%";
+            // Green badge if fully completed
             if (completedCount === inputs.length && inputs.length > 0) {
-              progressDisplay.className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/30 text-emerald-100 border border-emerald-400/40 contestant-progress";
-            } else {
-              progressDisplay.className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-900/50 text-blue-100 border border-blue-400/30 contestant-progress";
+              badge.style.background = completedCount === inputs.length ? "#166534" : "#e2e8f0";
+              badge.style.color = completedCount === inputs.length ? "#bbf7d0" : "#64748b";
             }
           }
         });
 
-        // Save draft to localStorage automatically
-        try {
-          localStorage.setItem(storageKey, JSON.stringify(draftData));
-        } catch(e){}
+        try { localStorage.setItem(storageKey, JSON.stringify(draftData)); } catch(e){}
       }
 
-      // Auto fill demo scores feature
+      // Auto fill demo scores
       const autoFillBtn = document.getElementById("autoFillBtn");
       if (autoFillBtn) {
         autoFillBtn.addEventListener("click", () => {
-          const inputs = document.querySelectorAll(".score-input");
-          inputs.forEach(input => {
+          document.querySelectorAll(".score-input").forEach(input => {
             const max = parseFloat(input.dataset.max) || 100;
-            // Generate realistic score between 75% and 98% of max
             const minScore = max * 0.75;
-            const randScore = Math.floor((minScore + Math.random() * (max - minScore)) * 10) / 10;
-            input.value = randScore;
+            input.value = Math.floor((minScore + Math.random() * (max - minScore)) * 10) / 10;
           });
           calculateTotals();
         });
       }
 
-      // Clear draft feature
+      // Clear draft
       const clearDraftBtn = document.getElementById("clearDraftBtn");
       if (clearDraftBtn) {
         clearDraftBtn.addEventListener("click", () => {
-          if (confirm("Are you sure you want to clear draft scores on this form?")) {
+          if (confirm("Clear all draft scores?")) {
             localStorage.removeItem(storageKey);
-            const inputs = document.querySelectorAll(".score-input");
-            inputs.forEach(input => { if(!input.hasAttribute("data-initial")) input.value = ""; });
+            document.querySelectorAll(".score-input").forEach(input => { if (!input.hasAttribute("data-initial")) input.value = ""; });
             calculateTotals();
           }
         });
       }
 
-      // Listen for input changes
-      form.addEventListener("input", calculateTotals);
+      // Keyboard shortcut: left/right arrows to navigate contestants
+      document.addEventListener("keydown", e => {
+        const tag = e.target.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+        if (e.key === "ArrowRight") nextContestant();
+        if (e.key === "ArrowLeft")  prevContestant();
+      });
 
-      // Initial calculation on load
+      form.addEventListener("input", calculateTotals);
       calculateTotals();
     });
   </script>
