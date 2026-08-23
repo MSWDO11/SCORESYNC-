@@ -1,8 +1,8 @@
-<footer class="mt-auto py-4 px-6 flex items-center justify-between text-xs text-slate-400 border-t border-slate-100 bg-white flex-shrink-0">
-  <span>&copy; 2026 <span class="font-bold text-blue-600">ScoreSync</span> &mdash; Municipality of Mansalay, Oriental Mindoro</span>
+<footer class="mt-auto py-4 px-6 flex items-center justify-between text-xs flex-shrink-0" style="background:transparent;border-top:1px solid rgba(255,255,255,0.07);color:#475569;">
+  <span>&copy; 2026 <span class="font-bold" style="color:#a5b4fc;">ScoreSync</span> &mdash; Municipality of Mansalay, Oriental Mindoro</span>
   <span class="hidden sm:flex items-center gap-1.5">
     Made with <svg width="10" height="10" viewBox="0 0 24 24" fill="#ef4444"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-    <span class="font-semibold text-slate-500">Mindoro State University Bongabong Campus</span>
+    <span class="font-semibold" style="color:#6366f1;">Mindoro State University Bongabong Campus</span>
   </span>
 </footer>
 </body>
