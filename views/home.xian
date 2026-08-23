@@ -219,7 +219,7 @@
 
 <!-- Footer -->
 <footer class="py-8 px-6 text-center text-xs" style="color:#334155;border-top:1px solid rgba(99,102,241,0.1);">
-  &copy; 2026 ScoreSync &mdash; Mansalay, Oriental Mindoro &bull; Powered by Firebase &amp; Gemini AI
+  &copy; 2026 ScoreSync &mdash; Mansalay, Oriental Mindoro
 </footer>
 
 {{> footer }}
