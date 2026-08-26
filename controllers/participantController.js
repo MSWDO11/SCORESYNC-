@@ -1,6 +1,6 @@
 import { db } from "../models/firebaseConfig.js";
 import {
-  collection, addDoc, getDocs, doc, getDoc, serverTimestamp, query, where,
+  collection, addDoc, getDocs, doc, getDoc, serverTimestamp, query, where, orderBy,
 } from "firebase/firestore";
 
 // ─── Participant joins an event ───────────────────────────────────────────────
@@ -13,7 +13,6 @@ export const joinEvent = async (req, res) => {
       return res.redirect("/dashboard");
     }
 
-    // Check event exists and is still active
     const evDoc = await getDoc(doc(db, "events", eventId));
     if (!evDoc.exists()) {
       req.flash("error_msg", "Event not found.");
@@ -28,7 +27,7 @@ export const joinEvent = async (req, res) => {
     // Check if already joined
     const existing = await getDocs(
       query(collection(db, "event_participants"),
-        where("eventId",     "==", eventId),
+        where("eventId",      "==", eventId),
         where("participantId","==", req.session.userId)
       )
     );
@@ -40,6 +39,9 @@ export const joinEvent = async (req, res) => {
     await addDoc(collection(db, "event_participants"), {
       eventId,
       eventName:     ev.name || "Unknown Event",
+      eventDate:     ev.date || "",
+      eventVenue:    ev.venue || "",
+      eventType:     ev.type || "",
       participantId: req.session.userId,
       fullName:      (fullName || req.session.userName || "").trim(),
       contactNumber: (contactNumber || "").trim(),
@@ -50,10 +52,55 @@ export const joinEvent = async (req, res) => {
     });
 
     req.flash("success_msg", `You have successfully joined "${ev.name}"! See you there.`);
-    res.redirect("/dashboard");
+    res.redirect("/participant/registrations");
   } catch (err) {
     console.error("Join event error:", err);
     req.flash("error_msg", "Failed to join event. Please try again.");
+    res.redirect("/dashboard");
+  }
+};
+
+// ─── Participant views their own registrations ────────────────────────────────
+export const myRegistrations = async (req, res) => {
+  try {
+    const snap = await getDocs(
+      query(
+        collection(db, "event_participants"),
+        where("participantId", "==", req.session.userId),
+        orderBy("joinedAt", "desc")
+      )
+    );
+
+    const registrations = snap.docs.map(d => {
+      const data = d.data();
+      return {
+        id:            d.id,
+        eventId:       data.eventId       || "",
+        eventName:     data.eventName     || "Unknown Event",
+        eventDate:     data.eventDate     || "",
+        eventVenue:    data.eventVenue    || "",
+        eventType:     data.eventType     || "",
+        fullName:      data.fullName      || "",
+        contactNumber: data.contactNumber || "",
+        barangay:      data.barangay      || "",
+        notes:         data.notes         || "",
+        status:        data.status        || "registered",
+        joinedAt:      data.joinedAt?.toDate?.()?.toLocaleString("en-PH") || "—",
+      };
+    });
+
+    res.render("participant/registrations", {
+      title:         "My Registrations",
+      userName:      req.session.userName,
+      userRole:      req.session.userRole,
+      userInitial:   (req.session.userName || "U")[0].toUpperCase(),
+      isParticipant: true,
+      registrations,
+      count:         registrations.length,
+    });
+  } catch (err) {
+    console.error("My registrations error:", err);
+    req.flash("error_msg", "Could not load your registrations.");
     res.redirect("/dashboard");
   }
 };

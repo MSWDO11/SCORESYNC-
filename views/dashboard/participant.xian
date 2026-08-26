@@ -26,6 +26,10 @@
       </div>
       <h1 class="text-2xl sm:text-3xl font-black tracking-tight" style="color:#e0e7ff;">Hello, <span style="color:#a5b4fc;">{{userName}}!</span></h1>
       <p class="text-sm mt-1" style="color:#64748b;">Browse open events below and click <strong style="color:#a5b4fc;">Join Event</strong> to register your participation.</p>
+      <a href="/participant/registrations" class="inline-flex items-center gap-1.5 mt-3 text-xs font-bold transition" style="color:#a5b4fc;" onmouseover="this.style.color='#e0e7ff'" onmouseout="this.style.color='#a5b4fc'">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        View My Registrations →
+      </a>
     </div>
   </div>
 

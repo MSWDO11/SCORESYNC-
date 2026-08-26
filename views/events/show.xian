@@ -74,7 +74,7 @@
       <a href="/events/{{event.id}}/scoring" class="btn-sm btn-sm-purple"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Score This Event</a>
       <a href="/events/{{event.id}}/results" class="btn-sm btn-sm-green"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Results</a>
       {{/if}}
-      {{#if isEncoder}}
+      {{#if isOrganizer}}
       <a href="#scoresync-timer-component" onclick="document.getElementById('scoresync-timer-component')?.scrollIntoView({behavior:'smooth'})" class="btn-sm btn-sm-blue"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Stage Timer</a>
       <a href="/events/{{event.id}}/contestants/add" class="btn-sm btn-sm-blue"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg> Add Contestant</a>
       <a href="/events/{{event.id}}/results" class="btn-sm btn-sm-green"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Results</a>
@@ -93,6 +93,7 @@
       <div class="section-header">
         <h2><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Contestants <span class="ml-1.5 bg-blue-100 text-blue-600 text-xs font-bold px-2 py-0.5 rounded-full">{{contestants.length}}</span></h2>
         {{#if isAdmin}}<a href="/events/{{event.id}}/contestants/add" class="btn-primary btn-sm text-xs px-3 py-1.5"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</a>{{/if}}
+        {{#if isOrganizer}}<a href="/events/{{event.id}}/contestants/add" class="btn-primary btn-sm text-xs px-3 py-1.5"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add</a>{{/if}}
       </div>
       {{#if contestants.length}}
       <div class="divide-y divide-slate-50">

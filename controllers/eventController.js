@@ -4,6 +4,22 @@ import {
   updateDoc, deleteDoc, query, orderBy, serverTimestamp,
 } from "firebase/firestore";
 
+// Helper: build role locals from session
+function roleLocals(req) {
+  const role = req.session.userRole || "";
+  return {
+    userName:      req.session.userName,
+    userRole:      role,
+    userInitial:   (req.session.userName || "U")[0].toUpperCase(),
+    isSuperAdmin:  role === "superadmin",
+    isAdmin:       role === "admin" || role === "superadmin",
+    isOrganizer:   role === "organizer",
+    isJudge:       role === "judge",
+    isParticipant: role === "participant",
+    isEncoder:     role === "organizer", // legacy compat for templates
+  };
+}
+
 const EVENTS = "events";
 
 // ─── List all events ──────────────────────────────────────────────────────────
@@ -15,12 +31,7 @@ export const listEvents = async (req, res) => {
     res.render("events/index", {
       title: "Events",
       events,
-      userName:    req.session.userName,
-      userRole:    req.session.userRole,
-      userInitial: (req.session.userName || "U")[0].toUpperCase(),
-      isAdmin:     req.session.userRole === "admin",
-      isJudge:     req.session.userRole === "judge",
-      isEncoder:   req.session.userRole === "encoder",
+      ...roleLocals(req),
     });
   } catch (err) {
     console.error(err);
@@ -111,12 +122,7 @@ export const showEvent = async (req, res) => {
       event,
       contestants,
       criteria,
-      userName:    req.session.userName,
-      userRole:    req.session.userRole,
-      userInitial: (req.session.userName || "U")[0].toUpperCase(),
-      isAdmin:     req.session.userRole === "admin",
-      isJudge:     req.session.userRole === "judge",
-      isEncoder:   req.session.userRole === "encoder",
+      ...roleLocals(req),
     });
   } catch (err) {
     console.error(err);

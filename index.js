@@ -21,11 +21,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(process.cwd(), "public")));
 
 // ─── Session & Flash ──────────────────────────────────────────────────────────
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret && process.env.NODE_ENV === "production") {
+  console.error("FATAL: SESSION_SECRET environment variable is not set. Refusing to start in production.");
+  process.exit(1);
+}
 app.use(session({
-  secret: process.env.SESSION_SECRET || "scoresync-secret-2026",
+  secret: sessionSecret || "scoresync-dev-secret-change-in-prod",
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 8 }, // 8 hours
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 8, // 8 hours
+    httpOnly: true,              // prevent JS access to cookie
+    sameSite: "lax",             // CSRF protection
+  },
 }));
 app.use(flash());
 

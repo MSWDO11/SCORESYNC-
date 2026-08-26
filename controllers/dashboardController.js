@@ -130,11 +130,14 @@ export const dashboardPage = async (req, res) => {
         .filter(e => ["upcoming","ongoing"].includes(e.status))
         .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
 
+      const ongoingCount = activeEvents.filter(e => e.status === "ongoing").length;
+
       return res.render("dashboard/organizer", {
         ...base,
         activeEvents,
         recentEvents: activeEvents.slice(0, 5),
         totalActive:  activeEvents.length,
+        ongoingCount,
       });
     }
 

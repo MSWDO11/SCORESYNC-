@@ -1,0 +1,126 @@
+{{> head }}
+<body class="bg-slate-50 min-h-screen flex flex-col">
+{{> navbar }}
+<div class="flex flex-1 overflow-hidden">
+{{> sidebar }}
+<main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+  {{#if success_msg}}<div class="flex items-center gap-2.5 p-3.5 rounded-xl text-sm font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>{{success_msg}}</div>{{/if}}
+  {{#if error_msg}}<div class="flex items-center gap-2.5 p-3.5 rounded-xl text-sm font-semibold bg-red-50 border border-red-200 text-red-800"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/></svg>{{error_msg}}</div>{{/if}}
+
+  <!-- Header -->
+  <div class="flex items-start justify-between flex-wrap gap-4">
+    <div>
+      <h1 class="text-2xl font-black text-slate-900 tracking-tight">My Registrations</h1>
+      <p class="text-sm text-slate-500 mt-0.5">Events you have signed up to attend.</p>
+    </div>
+    <a href="/dashboard" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition"
+      style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 4px 14px rgba(99,102,241,0.35);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Join Another Event
+    </a>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Total Joined</div>
+      <div class="text-3xl font-black text-indigo-600">{{count}}</div>
+      <div class="text-xs text-slate-400 mt-1">Event(s) registered</div>
+    </div>
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Confirmed</div>
+      <div class="text-3xl font-black text-emerald-600" id="confirmedCount">—</div>
+      <div class="text-xs text-slate-400 mt-1">Status: Registered</div>
+    </div>
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm col-span-2 sm:col-span-1">
+      <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Participant</div>
+      <div class="text-base font-black text-slate-800 truncate">{{userName}}</div>
+      <div class="text-xs text-slate-400 mt-1">Logged in as Participant</div>
+    </div>
+  </div>
+
+  <!-- Registrations list -->
+  {{#if registrations.length}}
+  <div class="space-y-3">
+    {{#each registrations}}
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:border-indigo-200 transition">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            style="background:linear-gradient(135deg,#4f46e5,#7c3aed);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div>
+            <div class="font-extrabold text-slate-900 text-base">{{eventName}}</div>
+            <div class="text-xs text-slate-400 mt-0.5 capitalize">
+              {{eventType}}{{#if eventDate}} &bull; {{eventDate}}{{/if}}{{#if eventVenue}} &bull; {{eventVenue}}{{/if}}
+            </div>
+          </div>
+        </div>
+        <span class="px-2.5 py-1 rounded-full text-[11px] font-black capitalize
+          {{#if (eq status 'registered')}}bg-emerald-50 text-emerald-700 border border-emerald-200
+          {{else}}{{#if (eq status 'cancelled')}}bg-red-50 text-red-700 border border-red-200
+          {{else}}bg-slate-100 text-slate-600 border border-slate-200{{/if}}{{/if}}">
+          {{status}}
+        </span>
+      </div>
+      <div class="px-6 py-3 grid sm:grid-cols-3 gap-3 text-sm">
+        <div>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Name</span>
+          <span class="font-semibold text-slate-700">{{fullName}}</span>
+        </div>
+        {{#if contactNumber}}
+        <div>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Contact</span>
+          <span class="font-semibold text-slate-700">{{contactNumber}}</span>
+        </div>
+        {{/if}}
+        {{#if barangay}}
+        <div>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Barangay</span>
+          <span class="font-semibold text-slate-700">{{barangay}}</span>
+        </div>
+        {{/if}}
+        <div>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Registered On</span>
+          <span class="font-semibold text-slate-700 text-xs">{{joinedAt}}</span>
+        </div>
+        {{#if notes}}
+        <div class="sm:col-span-2">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Notes</span>
+          <span class="text-slate-600 text-xs">{{notes}}</span>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <div class="bg-white rounded-2xl border border-slate-200 py-20 flex flex-col items-center justify-center text-center shadow-sm">
+    <div class="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <p class="font-bold text-slate-500 text-base">You haven't joined any events yet.</p>
+    <p class="text-sm text-slate-400 mt-1 mb-5">Browse open events and click <strong>Join Event</strong> to register.</p>
+    <a href="/dashboard" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm text-white transition"
+      style="background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 4px 14px rgba(99,102,241,0.3);">
+      Browse Events
+    </a>
+  </div>
+  {{/if}}
+
+</main>
+</div>
+
+<script>
+  // Count registrations with status "registered"
+  const cards = document.querySelectorAll('.bg-white.rounded-2xl.border');
+  const confirmed = Array.from(cards).filter(c => c.querySelector('.bg-emerald-50')).length;
+  const el = document.getElementById('confirmedCount');
+  if (el) el.textContent = confirmed;
+</script>
+
+{{> footer }}
+</body>
+</html>

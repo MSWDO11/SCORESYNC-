@@ -8,7 +8,7 @@ import { homePage } from "../controllers/homeController.js";
 import {
   loginPage, registerPage, forgotPasswordPage,
   loginUser, registerUser, forgotPassword, logoutUser,
-  setupPage, setupAdmin, fixRole,
+  setupPage, setupAdmin,
 } from "../controllers/authController.js";
 
 router.get( "/",                homePage);
@@ -23,18 +23,6 @@ router.get( "/logout",          logoutUser);
 // One-time admin setup (works only when zero users exist)
 router.get( "/setup",           setupPage);
 router.post("/setup",           setupAdmin);
-
-// Emergency role fixer: /fix-role?email=x@x.com&role=admin
-router.get( "/fix-role",        fixRole);
-
-// ─── Session debug (remove after testing) ────────────────────────────────────
-router.get("/debug-session", requireAuth, (req, res) => {
-  res.json({
-    userId:   req.session.userId,
-    userName: req.session.userName,
-    userRole: req.session.userRole,
-  });
-});
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 import { dashboardPage } from "../controllers/dashboardController.js";
@@ -124,9 +112,10 @@ router.get( "/inventory",           requireAuth, requireRole("admin","superadmin
 router.post("/inventory",           requireAuth, requireRole("admin","superadmin"), addPaymentRecord);
 router.post("/inventory/:id/delete",requireAuth, requireRole("admin","superadmin"), deletePaymentRecord);
 
-// ─── Participant join form ────────────────────────────────────────────────────
-import { joinEvent } from "../controllers/participantController.js";
+// ─── Participant join form + my registrations ─────────────────────────────────
+import { joinEvent, myRegistrations } from "../controllers/participantController.js";
 
-router.post("/participant/join", requireAuth, requireRole("participant"), joinEvent);
+router.post("/participant/join",          requireAuth, requireRole("participant"), joinEvent);
+router.get( "/participant/registrations", requireAuth, requireRole("participant"), myRegistrations);
 
 export default router;
