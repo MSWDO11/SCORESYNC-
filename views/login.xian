@@ -52,7 +52,7 @@
           <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#064e3b,#10b981);box-shadow:0 0 12px rgba(16,185,129,0.3);">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
-          <div><div class="text-sm font-bold" style="color:#e0e7ff;">Role-Based Access</div><div class="text-xs mt-0.5" style="color:#475569;">Admin, Judge &amp; Encoder portals</div></div>
+          <div><div class="text-sm font-bold" style="color:#e0e7ff;">Role-Based Access</div><div class="text-xs mt-0.5" style="color:#475569;">Admin, Judge &amp; Organizer portals</div></div>
         </div>
         <div class="feature-pill">
           <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#4c1d95,#7c3aed);box-shadow:0 0 12px rgba(124,58,237,0.3);">

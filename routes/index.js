@@ -74,11 +74,11 @@ import {
   editContestantPage, updateContestant, deleteContestant,
 } from "../controllers/contestantController.js";
 
-router.get( "/events/:eventId/contestants/add",              requireAuth, requireRole("admin","encoder"), addContestantPage);
-router.post("/events/:eventId/contestants",                  requireAuth, requireRole("admin","encoder"), storeContestant);
-router.get( "/events/:eventId/contestants/:id/edit",         requireAuth, requireRole("admin","encoder"), editContestantPage);
-router.post("/events/:eventId/contestants/:id/update",       requireAuth, requireRole("admin","encoder"), updateContestant);
-router.post("/events/:eventId/contestants/:id/delete",       requireAuth, requireRole("admin"),           deleteContestant);
+router.get( "/events/:eventId/contestants/add",              requireAuth, requireRole("admin","organizer"), addContestantPage);
+router.post("/events/:eventId/contestants",                  requireAuth, requireRole("admin","organizer"), storeContestant);
+router.get( "/events/:eventId/contestants/:id/edit",         requireAuth, requireRole("admin","organizer"), editContestantPage);
+router.post("/events/:eventId/contestants/:id/update",       requireAuth, requireRole("admin","organizer"), updateContestant);
+router.post("/events/:eventId/contestants/:id/delete",       requireAuth, requireRole("admin"),             deleteContestant);
 
 // ─── Criteria (admin only) ────────────────────────────────────────────────────
 import {
@@ -115,13 +115,18 @@ router.get( "/settings",                requireAuth, settingsPage);
 router.post("/settings/update",         requireAuth, updateSettings);
 router.post("/settings/suggest-feature", requireAuth, suggestFeature);
 
-// ─── Payment Inventory (admin only) ──────────────────────────────────────────
+// ─── Payment Inventory (admin + superadmin) ───────────────────────────────────
 import {
   inventoryPage, addPaymentRecord, deletePaymentRecord,
 } from "../controllers/inventoryController.js";
 
-router.get( "/inventory",           requireAuth, requireRole("admin"), inventoryPage);
-router.post("/inventory",           requireAuth, requireRole("admin"), addPaymentRecord);
-router.post("/inventory/:id/delete",requireAuth, requireRole("admin"), deletePaymentRecord);
+router.get( "/inventory",           requireAuth, requireRole("admin","superadmin"), inventoryPage);
+router.post("/inventory",           requireAuth, requireRole("admin","superadmin"), addPaymentRecord);
+router.post("/inventory/:id/delete",requireAuth, requireRole("admin","superadmin"), deletePaymentRecord);
+
+// ─── Participant join form ────────────────────────────────────────────────────
+import { joinEvent } from "../controllers/participantController.js";
+
+router.post("/participant/join", requireAuth, requireRole("participant"), joinEvent);
 
 export default router;

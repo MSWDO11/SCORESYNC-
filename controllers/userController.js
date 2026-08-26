@@ -29,9 +29,11 @@ export const listUsers = async (req, res) => {
     const activeUsers  = allUsers.filter(u => u.status !== "pending");
 
     // Count by role
-    const adminCount   = allUsers.filter(u => u.role === "admin" && u.status !== "pending").length;
-    const judgeCount   = allUsers.filter(u => u.role === "judge" && u.status !== "pending").length;
-    const encoderCount = allUsers.filter(u => u.role === "encoder" && u.status !== "pending").length;
+    const adminCount       = allUsers.filter(u => u.role === "admin"       && u.status !== "pending").length;
+    const superAdminCount  = allUsers.filter(u => u.role === "superadmin"  && u.status !== "pending").length;
+    const judgeCount       = allUsers.filter(u => u.role === "judge"       && u.status !== "pending").length;
+    const encoderCount     = allUsers.filter(u => (u.role === "organizer" || u.role === "encoder") && u.status !== "pending").length;
+    const participantCount = allUsers.filter(u => u.role === "participant"  && u.status !== "pending").length;
 
     const notifyEmail = req.query.notifyEmail;
     const notifyName  = req.query.notifyName;
@@ -45,6 +47,8 @@ export const listUsers = async (req, res) => {
       adminCount,
       judgeCount,
       encoderCount,
+      participantCount,
+      superAdminCount,
       totalUsers:   activeUsers.length,
       userName:     req.session.userName,
       userRole:     req.session.userRole,
@@ -109,7 +113,7 @@ export const rejectUser = async (req, res) => {
 export const updateUserRole = async (req, res) => {
   const { id } = req.params;
   const { role } = req.body;
-  const allowed = ["admin", "judge", "encoder"];
+  const allowed = ["superadmin", "admin", "organizer", "judge", "participant"];
 
   if (!allowed.includes(role)) {
     req.flash("error_msg", "Invalid role.");
@@ -117,7 +121,7 @@ export const updateUserRole = async (req, res) => {
   }
 
   // Prevent admin from removing their own admin role
-  if (id === req.session.userId && role !== "admin") {
+  if (id === req.session.userId && !["admin","superadmin"].includes(role)) {
     req.flash("error_msg", "You cannot change your own role.");
     return res.redirect("/users");
   }
@@ -156,7 +160,7 @@ export const deleteUser = async (req, res) => {
 // ─── Create user (admin) ──────────────────────────────────────────────────────
 export const createUser = async (req, res) => {
   const { name, email, password, role } = req.body;
-  const allowed = ["admin", "judge", "encoder"];
+  const allowed = ["superadmin", "admin", "organizer", "judge", "participant"];
 
   if (!name || !email || !password || !allowed.includes(role)) {
     req.flash("error_msg", "Please fill in all required fields and select a valid role.");

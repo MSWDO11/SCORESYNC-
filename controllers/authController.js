@@ -77,7 +77,7 @@ export const setupAdmin = async (req, res) => {
 
 export const fixRole = async (req, res) => {
   const { email, role } = req.query;
-  const allowed = ["admin", "judge", "encoder"];
+  const allowed = ["superadmin", "admin", "organizer", "judge", "participant"];
 
   if (!email || !allowed.includes(role)) {
     return res.json({ error: "Provide ?email=...&role=admin|judge|encoder" });
@@ -118,8 +118,8 @@ export const loginUser = async (req, res) => {
     const snap = await getDoc(doc(db, "users", uid));
     const profile = snap.exists() ? snap.data() : {};
 
-    // Check account status (Admin accounts are exempt and auto-approved)
-    if (profile.role !== "admin" && profile.status === "pending") {
+    // Check account status (superadmin & admin accounts are exempt and auto-approved)
+    if (!["admin","superadmin"].includes(profile.role) && profile.status === "pending") {
       await signOut(auth);
       req.flash(
         "error_msg",
@@ -128,7 +128,7 @@ export const loginUser = async (req, res) => {
       return res.redirect("/login");
     }
 
-    if (profile.role !== "admin" && profile.status === "rejected") {
+    if (!["admin","superadmin"].includes(profile.role) && profile.status === "rejected") {
       await signOut(auth);
       req.flash("error_msg", "Your account request was declined by the Admin.");
       return res.redirect("/login");
@@ -136,7 +136,7 @@ export const loginUser = async (req, res) => {
 
     req.session.userId   = uid;
     req.session.userName = profile.name  || email;
-    req.session.userRole = profile.role  || "encoder";
+    req.session.userRole = profile.role  || "participant";
 
     console.log(`✅ Login: ${email} as ${req.session.userRole}`);
     res.redirect("/dashboard");
@@ -151,7 +151,7 @@ export const loginUser = async (req, res) => {
 
 export const registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
-  const allowedRoles = ["judge", "encoder"];   // admin only via /setup
+  const allowedRoles = ["judge", "organizer", "participant"];
 
   if (!allowedRoles.includes(role)) {
     req.flash("error_msg", "Invalid role selected.");
@@ -162,15 +162,25 @@ export const registerUser = async (req, res) => {
     const credential = await createUserWithEmailAndPassword(auth, email, password);
     const uid = credential.user.uid;
 
+    // Participants are auto-approved; others need admin approval
+    const status = role === "participant" ? "approved" : "pending";
+
     await setDoc(doc(db, "users", uid), {
       name, email, role,
-      status: "pending",
+      status,
       createdAt: new Date(),
     });
 
-    // Sign out immediately so user is not logged in while request is pending
-    await signOut(auth);
+    if (role === "participant") {
+      // Log in participant immediately
+      req.session.userId   = uid;
+      req.session.userName = name;
+      req.session.userRole = "participant";
+      req.flash("success_msg", `Welcome, ${name}! You can now join events.`);
+      return res.redirect("/dashboard");
+    }
 
+    await signOut(auth);
     console.log(`⏳ Account Request Submitted: ${email} as ${role}`);
     req.flash(
       "success_msg",

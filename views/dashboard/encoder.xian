@@ -28,7 +28,7 @@
     <div class="space-y-1">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-100">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-        Data Encoder Panel
+        Data Organizer Panel
       </div>
       <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight pt-1">
         Welcome, <span class="bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent">{{userName}}</span> 👋
@@ -43,7 +43,7 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
     </div>
     <div>
-      <h3 class="font-extrabold text-emerald-950 text-sm">Encoder Responsibilities</h3>
+      <h3 class="font-extrabold text-emerald-950 text-sm">Organizer Responsibilities</h3>
       <p class="text-emerald-800/90 text-xs font-medium mt-0.5 leading-relaxed">
         Select an event below and click <span class="px-2 py-0.5 rounded bg-emerald-600 text-white font-bold text-[11px]">Contestants</span> to input participant names, bio/details, and numbers before scoring starts.
       </p>

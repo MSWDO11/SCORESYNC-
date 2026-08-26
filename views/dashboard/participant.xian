@@ -1,0 +1,152 @@
+{{> head }}
+<style>
+  .event-card { background:#fff; border:1.5px solid #e2e8f0; border-radius:16px; transition:border-color 0.2s, box-shadow 0.2s; }
+  .event-card:hover { border-color:#6366f1; box-shadow:0 4px 24px rgba(99,102,241,0.1); }
+  .modal-overlay { background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); }
+  .input-field { width:100%; padding:10px 14px; border:1.5px solid #e2e8f0; border-radius:10px; font-size:0.875rem; color:#0f172a; outline:none; transition:border-color 0.2s, box-shadow 0.2s; background:#fff; }
+  .input-field:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,0.12); }
+  .btn-join { background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; font-weight:800; border-radius:12px; width:100%; padding:12px; font-size:0.875rem; border:none; cursor:pointer; transition:transform 0.15s,box-shadow 0.15s; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 16px rgba(99,102,241,0.35); }
+  .btn-join:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(99,102,241,0.5); }
+</style>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+{{> navbar }}
+<div class="flex flex-1 overflow-hidden">
+{{> sidebar }}
+<main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+  {{#if success_msg}}<div class="flex items-center gap-3 p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm font-semibold"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>{{success_msg}}</div>{{/if}}
+  {{#if error_msg}}<div class="flex items-center gap-3 p-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 text-sm font-semibold"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/></svg>{{error_msg}}</div>{{/if}}
+
+  <!-- Header -->
+  <div class="rounded-2xl p-6 sm:p-8 relative overflow-hidden" style="background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 60%,#2d1d6e 100%);">
+    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse at 70% 50%,rgba(99,102,241,0.15) 0%,transparent 65%);"></div>
+    <div class="relative z-10">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider" style="background:rgba(99,102,241,0.25);border:1px solid rgba(99,102,241,0.4);color:#a5b4fc;">Participant</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-black tracking-tight" style="color:#e0e7ff;">Hello, <span style="color:#a5b4fc;">{{userName}}!</span></h1>
+      <p class="text-sm mt-1" style="color:#64748b;">Browse open events below and click <strong style="color:#a5b4fc;">Join Event</strong> to register your participation.</p>
+    </div>
+  </div>
+
+  <!-- Events Grid -->
+  {{#if activeEvents.length}}
+  <div>
+    <h2 class="text-base font-extrabold text-slate-800 mb-3">Open Events</h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {{#each activeEvents}}
+      <div class="event-card p-5 flex flex-col gap-3">
+        <!-- Status badge -->
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-black capitalize {{#if (eq status 'ongoing')}}bg-emerald-50 text-emerald-700 border border-emerald-200{{else}}bg-blue-50 text-blue-700 border border-blue-200{{/if}}">
+            {{#if (eq status 'ongoing')}}● Ongoing{{else}}◌ Upcoming{{/if}}
+          </span>
+          {{#if paymentEnabled}}
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-teal-50 text-teal-700 border border-teal-200">Ticketed</span>
+          {{/if}}
+        </div>
+        <!-- Event info -->
+        <div>
+          <h3 class="font-extrabold text-slate-900 text-base leading-tight">{{name}}</h3>
+          <div class="text-xs text-slate-500 mt-1 capitalize">{{type}} &bull; {{#if venue}}{{venue}}{{else}}Venue TBD{{/if}}</div>
+          {{#if date}}<div class="text-xs text-slate-400 mt-0.5">📅 {{date}}{{#if time}} at {{time}}{{/if}}</div>{{/if}}
+          {{#if organizer}}<div class="text-xs text-slate-400 mt-0.5">🏛 {{organizer}}</div>{{/if}}
+        </div>
+        {{#if paymentEnabled}}
+        <div class="flex items-center justify-between px-3 py-2 rounded-xl" style="background:rgba(20,184,166,0.06);border:1px solid rgba(20,184,166,0.15);">
+          <span class="text-xs font-bold text-teal-700">Ticket Price</span>
+          <span class="font-black text-teal-800">{{#if ticketPrice}}₱{{ticketPrice}}{{else}}Free{{/if}}</span>
+        </div>
+        {{/if}}
+        <!-- Join button -->
+        <button onclick="openJoinModal('{{id}}','{{name}}','{{#if paymentEnabled}}true{{else}}false{{/if}}','{{ticketPrice}}')"
+          class="mt-auto w-full py-2.5 rounded-xl font-bold text-sm text-white transition flex items-center justify-center gap-2"
+          style="background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 3px 12px rgba(99,102,241,0.3);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>
+          Join Event
+        </button>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+  {{else}}
+  <div class="bg-white rounded-2xl border border-slate-200 py-20 flex flex-col items-center justify-center text-center shadow-sm">
+    <div class="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <p class="font-bold text-slate-500 text-base">No open events at the moment.</p>
+    <p class="text-sm text-slate-400 mt-1">Check back soon for upcoming events.</p>
+  </div>
+  {{/if}}
+
+</main>
+</div>
+
+<!-- JOIN EVENT MODAL -->
+<div id="joinModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="px-6 py-5 flex items-center justify-between" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);">
+      <div>
+        <h2 class="font-extrabold text-white text-base">Join Event</h2>
+        <p id="modalEventName" class="text-indigo-200 text-xs mt-0.5"></p>
+      </div>
+      <button onclick="closeJoinModal()" class="text-white/70 hover:text-white transition">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="joinForm" method="POST" action="/participant/join" class="px-6 py-5 space-y-4">
+      <input type="hidden" name="eventId" id="joinEventId"/>
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">Full Name <span class="text-red-500">*</span></label>
+        <input type="text" name="fullName" required placeholder="Juan dela Cruz" value="{{userName}}" class="input-field"/>
+      </div>
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">Contact Number</label>
+        <input type="text" name="contactNumber" placeholder="09XX-XXX-XXXX" class="input-field"/>
+      </div>
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">Barangay / Address</label>
+        <input type="text" name="barangay" placeholder="e.g. Brgy. Poblacion" class="input-field"/>
+      </div>
+      <div id="paymentInfo" class="hidden p-4 rounded-xl" style="background:rgba(20,184,166,0.06);border:1px solid rgba(20,184,166,0.2);">
+        <p class="text-xs font-bold text-teal-700 mb-1">This is a ticketed event.</p>
+        <p class="text-xs text-teal-600">Ticket Price: <strong id="modalTicketPrice"></strong> — Please pay via the QR code on the event page before attending.</p>
+      </div>
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5">Notes (optional)</label>
+        <textarea name="notes" rows="2" placeholder="Any special requests or info..." class="input-field" style="resize:none;"></textarea>
+      </div>
+      <div class="flex gap-3 pt-1">
+        <button type="button" onclick="closeJoinModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition">Cancel</button>
+        <button type="submit" class="btn-join flex-1">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>
+          Confirm Join
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openJoinModal(id, name, isPaid, price) {
+  document.getElementById('joinEventId').value = id;
+  document.getElementById('modalEventName').textContent = name;
+  const payDiv = document.getElementById('paymentInfo');
+  const priceEl = document.getElementById('modalTicketPrice');
+  if (isPaid === 'true' && price && price !== '0') {
+    payDiv.classList.remove('hidden');
+    priceEl.textContent = '₱' + price;
+  } else {
+    payDiv.classList.add('hidden');
+  }
+  document.getElementById('joinModal').classList.remove('hidden');
+  document.getElementById('joinModal').classList.add('flex');
+}
+function closeJoinModal() {
+  document.getElementById('joinModal').classList.add('hidden');
+  document.getElementById('joinModal').classList.remove('flex');
+}
+</script>
+{{> footer }}
+</body>
+</html>

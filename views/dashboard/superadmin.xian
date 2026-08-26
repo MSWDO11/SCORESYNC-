@@ -1,0 +1,136 @@
+{{> head }}
+<body class="bg-slate-50 min-h-screen flex flex-col">
+{{> navbar }}
+<div class="flex flex-1 overflow-hidden">
+{{> sidebar }}
+<main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+  {{#if success_msg}}<div class="flex items-center gap-3 p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm font-semibold"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>{{success_msg}}</div>{{/if}}
+  {{#if error_msg}}<div class="flex items-center gap-3 p-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 text-sm font-semibold"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg>{{error_msg}}</div>{{/if}}
+
+  <!-- Header -->
+  <div class="rounded-2xl p-6 sm:p-8 relative overflow-hidden" style="background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 60%,#312e81 100%);">
+    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse at 80% 50%,rgba(99,102,241,0.15) 0%,transparent 60%);"></div>
+    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider" style="background:rgba(99,102,241,0.3);border:1px solid rgba(99,102,241,0.5);color:#a5b4fc;">Super Admin</span>
+          <span class="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold" style="background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;">
+            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping inline-block"></span> Live
+          </span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black tracking-tight" style="color:#e0e7ff;">Welcome, <span style="color:#a5b4fc;">{{userName}}</span></h1>
+        <p class="text-sm mt-1" style="color:#475569;">Full system access — all events, history, users, and analytics.</p>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <a href="/events/create" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white transition" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 4px 16px rgba(99,102,241,0.4);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Event
+        </a>
+        <a href="/users" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:#c7d2fe;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Manage Users
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {{#if pendingCount}}
+  <div class="flex items-center justify-between gap-3 p-4 rounded-xl" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(245,158,11,0.2);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <span class="text-sm font-bold" style="color:#92400e;">{{pendingCount}} account request(s) awaiting approval</span>
+    </div>
+    <a href="/users" class="px-3 py-1.5 rounded-lg text-xs font-bold transition" style="background:rgba(245,158,11,0.2);color:#92400e;">Review →</a>
+  </div>
+  {{/if}}
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Total Events</div>
+      <div class="text-3xl font-black text-slate-900">{{totalEvents}}</div>
+      <div class="text-xs text-slate-400 mt-1">All time</div>
+    </div>
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Active Events</div>
+      <div class="text-3xl font-black text-emerald-600">{{activeEvents.length}}</div>
+      <div class="text-xs text-slate-400 mt-1">Upcoming + Ongoing</div>
+    </div>
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Completed</div>
+      <div class="text-3xl font-black text-indigo-600">{{completedEvents.length}}</div>
+      <div class="text-xs text-slate-400 mt-1">Historical records</div>
+    </div>
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Total Users</div>
+      <div class="text-3xl font-black text-slate-900">{{totalUsers}}</div>
+      <div class="text-xs text-amber-600 mt-1 font-semibold">{{pendingCount}} pending</div>
+    </div>
+  </div>
+
+  <!-- Active Events -->
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+      <h2 class="text-sm font-extrabold text-slate-800">Active Events (Upcoming &amp; Ongoing)</h2>
+      <a href="/events/create" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition">+ New Event</a>
+    </div>
+    {{#if activeEvents.length}}
+    <div class="divide-y divide-slate-100">
+      {{#each activeEvents}}
+      <div class="flex items-center justify-between px-6 py-3.5 hover:bg-slate-50 transition">
+        <div>
+          <a href="/events/{{id}}" class="font-bold text-slate-800 hover:text-indigo-600 transition text-sm">{{name}}</a>
+          <div class="text-xs text-slate-400 mt-0.5 capitalize">{{type}} &bull; {{venue}}</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-black capitalize {{#if (eq status 'ongoing')}}bg-emerald-50 text-emerald-700 border border-emerald-200{{else}}bg-blue-50 text-blue-700 border border-blue-200{{/if}}">{{status}}</span>
+          <a href="/events/{{id}}" class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 transition">View</a>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    <div class="py-12 text-center text-slate-400 text-sm">No active events. <a href="/events/create" class="text-indigo-600 font-bold">Create one →</a></div>
+    {{/if}}
+  </div>
+
+  <!-- Completed Events History (Super Admin only) -->
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center gap-2.5">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(99,102,241,0.1);">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/></svg>
+      </div>
+      <h2 class="text-sm font-extrabold text-slate-800">Completed Events — History</h2>
+      <span class="ml-auto px-2.5 py-1 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">Super Admin Only</span>
+    </div>
+    {{#if completedEvents.length}}
+    <div class="divide-y divide-slate-100">
+      {{#each completedEvents}}
+      <div class="flex items-center justify-between px-6 py-3.5 hover:bg-slate-50 transition">
+        <div>
+          <a href="/events/{{id}}" class="font-bold text-slate-700 hover:text-indigo-600 transition text-sm">{{name}}</a>
+          <div class="text-xs text-slate-400 mt-0.5 capitalize">{{type}} &bull; {{date}}</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-black bg-slate-100 text-slate-500 border border-slate-200">Completed</span>
+          <a href="/events/{{id}}/results" class="px-3 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition">Results</a>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    <div class="py-10 text-center text-slate-400 text-sm">No completed events yet.</div>
+    {{/if}}
+  </div>
+
+</main>
+</div>
+{{> footer }}
+</body>
+<script>
+  const d=new Date(),days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const el=document.getElementById('today-date');
+  if(el) el.textContent=days[d.getDay()]+', '+months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+</script>
+</html>

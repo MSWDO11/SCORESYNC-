@@ -1,0 +1,91 @@
+{{> head }}
+<body class="bg-slate-50 min-h-screen flex flex-col">
+{{> navbar }}
+<div class="flex flex-1 overflow-hidden">
+{{> sidebar }}
+<main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+  {{#if success_msg}}<div class="flex items-center gap-3 p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm font-semibold"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>{{success_msg}}</div>{{/if}}
+  {{#if error_msg}}<div class="flex items-center gap-3 p-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 text-sm font-semibold"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/></svg>{{error_msg}}</div>{{/if}}
+
+  <!-- Header -->
+  <div class="rounded-2xl p-6 sm:p-8 relative overflow-hidden" style="background:linear-gradient(135deg,#0f172a 0%,#064e3b 60%,#065f46 100%);">
+    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse at 80% 50%,rgba(16,185,129,0.12) 0%,transparent 60%);"></div>
+    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider" style="background:rgba(16,185,129,0.25);border:1px solid rgba(16,185,129,0.4);color:#6ee7b7;">Organizer</span>
+          <span class="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7;">
+            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping inline-block"></span> Active
+          </span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black tracking-tight" style="color:#e0e7ff;">Welcome, <span style="color:#6ee7b7;">{{userName}}</span></h1>
+        <p class="text-sm mt-1" style="color:#475569;">Showing upcoming and ongoing events only.</p>
+      </div>
+      <a href="/events" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white transition self-start" style="background:linear-gradient(135deg,#059669,#10b981);box-shadow:0 4px 16px rgba(16,185,129,0.35);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        All Events
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 gap-4">
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Active Events</div>
+      <div class="text-3xl font-black text-emerald-600">{{totalActive}}</div>
+      <div class="text-xs text-slate-400 mt-1">Upcoming + Ongoing</div>
+    </div>
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+      <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Ongoing Now</div>
+      <div class="text-3xl font-black text-blue-600">{{#each activeEvents}}{{#if (eq status 'ongoing')}}{{@index}}{{/if}}{{/each}}</div>
+      <div class="text-xs text-slate-400 mt-1">In progress</div>
+    </div>
+  </div>
+
+  <!-- Events List -->
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+      <h2 class="text-sm font-extrabold text-slate-800">Events — Upcoming &amp; Ongoing</h2>
+      <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">{{totalActive}} events</span>
+    </div>
+    {{#if activeEvents.length}}
+    <div class="divide-y divide-slate-100">
+      {{#each activeEvents}}
+      <div class="flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition group">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 {{#if (eq status 'ongoing')}}bg-emerald-100{{else}}bg-blue-50{{/if}}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{#if (eq status 'ongoing')}}#059669{{else}}#3b82f6{{/if}}" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div>
+            <a href="/events/{{id}}" class="font-bold text-slate-800 group-hover:text-indigo-600 transition text-sm">{{name}}</a>
+            <div class="text-xs text-slate-400 mt-0.5 capitalize">{{type}} &bull; {{#if date}}{{date}}{{else}}Date TBD{{/if}} &bull; {{venue}}</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-black capitalize {{#if (eq status 'ongoing')}}bg-emerald-50 text-emerald-700 border border-emerald-200{{else}}bg-blue-50 text-blue-700 border border-blue-200{{/if}}">{{status}}</span>
+          <a href="/events/{{id}}" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 transition">Manage</a>
+          <a href="/events/{{id}}/contestants/add" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition">+ Contestant</a>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    <div class="py-16 flex flex-col items-center justify-center text-center">
+      <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <p class="font-bold text-slate-500">No active events right now.</p>
+      <p class="text-sm text-slate-400 mt-1">Check back when events are scheduled.</p>
+    </div>
+    {{/if}}
+  </div>
+
+  <!-- Stage Timer -->
+  {{> countdown_timer }}
+
+</main>
+</div>
+{{> footer }}
+</body>
+</html>

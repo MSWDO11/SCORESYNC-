@@ -120,7 +120,7 @@
         <div class="bg-white/80 h-full rounded-full transition-all duration-1000" style="width: 85%"></div>
       </div>
       <a href="/users" class="inline-flex items-center gap-1.5 text-emerald-100 hover:text-white text-xs font-bold relative z-10 group-hover:underline">
-        Judges, encoders &amp; admins
+        Judges, organizers &amp; admins
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="group-hover:translate-x-1 transition"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </a>
     </div>
@@ -450,7 +450,7 @@
             </div>
             <div class="flex-1">
               <div class="text-xs font-bold text-slate-800 group-hover:text-amber-700 transition">User Management</div>
-              <div class="text-[11px] text-slate-400 font-medium">Add judges &amp; encoders</div>
+              <div class="text-[11px] text-slate-400 font-medium">Add judges &amp; organizers</div>
             </div>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" class="group-hover:translate-x-1 transition"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
