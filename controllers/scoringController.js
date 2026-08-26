@@ -1,17 +1,18 @@
 import { db } from "../models/firebaseConfig.js";
 import {
   collection, addDoc, getDocs, getDoc, doc,
-  setDoc, query, where, serverTimestamp, collectionGroup,
+  setDoc, query, where, orderBy, limit, serverTimestamp, collectionGroup,
 } from "firebase/firestore";
 
-// Load admin's saved tabulation preferences from Firestore
+// Load admin's saved tabulation preferences from Firestore (deterministic)
 async function loadTabPrefs() {
   const DEFAULT = { decimalPrecision: "2", olympicRule: false };
   try {
-    const usersSnap = await getDocs(collection(db, "users"));
-    const adminDoc  = usersSnap.docs.find(d => d.data().role === "admin");
-    if (adminDoc && adminDoc.data().tabPrefs) {
-      return { ...DEFAULT, ...adminDoc.data().tabPrefs };
+    // Use orderBy + limit so we always get the same admin regardless of insertion order
+    const q    = query(collection(db, "users"), where("role", "in", ["admin", "superadmin"]), orderBy("createdAt", "asc"), limit(1));
+    const snap = await getDocs(q);
+    if (!snap.empty && snap.docs[0].data().tabPrefs) {
+      return { ...DEFAULT, ...snap.docs[0].data().tabPrefs };
     }
   } catch (_) {}
   return DEFAULT;
@@ -80,29 +81,56 @@ export const scoringPage = async (req, res) => {
 export const submitScores = async (req, res) => {
   const { eventId } = req.params;
   const judgeId = req.session.userId;
-  // scores[contestantId][criteriaId] = value
   const { scores } = req.body;
 
   try {
+    // Load criteria to get maxScore limits for validation
+    const crSnap = await getDocs(collection(db, "events", eventId, "criteria"));
+    const maxScoreMap = {};
+    crSnap.docs.forEach(d => {
+      maxScoreMap[d.id] = parseFloat(d.data().maxScore) || 100;
+    });
+
     const writes = [];
+    const errors = [];
+
     for (const [contestantId, criteriaMap] of Object.entries(scores || {})) {
       for (const [criteriaId, rawScore] of Object.entries(criteriaMap || {})) {
-        const score = parseFloat(rawScore);
+        const score  = parseFloat(rawScore);
         if (isNaN(score)) continue;
+
+        const maxScore = maxScoreMap[criteriaId] || 100;
+
+        // Clamp: reject negative values, cap at maxScore
+        if (score < 0) {
+          errors.push(`Score cannot be negative (got ${score}).`);
+          continue;
+        }
+        if (score > maxScore) {
+          errors.push(`Score ${score} exceeds max of ${maxScore} — clamped to ${maxScore}.`);
+        }
+        const clampedScore = Math.min(Math.max(0, score), maxScore);
+
         const docId = `${judgeId}_${contestantId}_${criteriaId}`;
         writes.push(
           setDoc(doc(db, "events", eventId, "scores", docId), {
             judgeId,
             contestantId,
             criteriaId,
-            score,
+            score: clampedScore,
             submittedAt: serverTimestamp(),
           })
         );
       }
     }
+
     await Promise.all(writes);
-    req.flash("success_msg", "Scores submitted successfully.");
+
+    if (errors.length > 0) {
+      req.flash("success_msg", `Scores saved (${errors.length} value(s) auto-corrected: ${errors[0]})`);
+    } else {
+      req.flash("success_msg", "Scores submitted successfully.");
+    }
     res.redirect(`/events/${eventId}/scoring`);
   } catch (err) {
     console.error(err);

@@ -192,13 +192,22 @@ export const updateEvent = async (req, res) => {
   }
 };
 
-// ─── Delete event ─────────────────────────────────────────────────────────────
+// ─── Delete event (cascade deletes subcollections) ───────────────────────────
 export const deleteEvent = async (req, res) => {
+  const { id } = req.params;
   try {
-    await deleteDoc(doc(db, EVENTS, req.params.id));
-    req.flash("success_msg", "Event deleted.");
+    // Delete all subcollection docs first (Firestore doesn't auto-cascade)
+    const subcollections = ["contestants", "criteria", "scores"];
+    for (const sub of subcollections) {
+      const snap = await getDocs(collection(db, EVENTS, id, sub));
+      await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+    }
+    // Then delete the parent event document
+    await deleteDoc(doc(db, EVENTS, id));
+    req.flash("success_msg", "Event and all related data deleted.");
     res.redirect("/events");
   } catch (err) {
+    console.error("deleteEvent error:", err);
     req.flash("error_msg", "Failed to delete event.");
     res.redirect("/events");
   }
