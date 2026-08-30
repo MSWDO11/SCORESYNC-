@@ -281,6 +281,33 @@
 
     /* ── Print ── */
     @media print { .sidebar, nav, .no-print { display: none !important; } main { padding: 0 !important; } }
+
+    /* ── Global Dark Theme Overrides ── */
+    .bg-white, .card, .card-flat, .section-card, .data-table thead th { background: rgba(15,17,35,0.95) !important; color: #e0e7ff !important; }
+    .bg-slate-50, .bg-slate-100 { background: rgba(20,23,48,0.8) !important; }
+    .border-slate-100, .border-slate-200, .divide-slate-100 > * + * { border-color: rgba(99,102,241,0.15) !important; }
+    .text-slate-900, .text-slate-800 { color: #e0e7ff !important; }
+    .text-slate-700, .text-slate-600 { color: #c7d2fe !important; }
+    .text-slate-500, .text-slate-400 { color: #64748b !important; }
+    .section-header { border-bottom-color: rgba(99,102,241,0.15) !important; }
+    .section-header h2 { color: #e0e7ff !important; }
+    .data-table tbody tr { border-top-color: rgba(99,102,241,0.1) !important; }
+    .data-table tbody tr:nth-child(even) { background: rgba(20,23,48,0.5) !important; }
+    .data-table tbody tr:hover { background: rgba(99,102,241,0.08) !important; }
+    .data-table tbody td { color: #c7d2fe !important; }
+    .form-input-bare, .form-input, select.form-input-bare, select.form-input {
+      background: rgba(15,17,30,0.8) !important;
+      border-color: rgba(99,102,241,0.25) !important;
+      color: #e0e7ff !important;
+    }
+    .form-input-bare::placeholder, .form-input::placeholder { color: #334155 !important; }
+    .form-input-bare:focus, .form-input:focus { border-color: #6366f1 !important; box-shadow: 0 0 0 3px rgba(99,102,241,0.15) !important; }
+    .btn-secondary { background: rgba(30,32,60,0.9) !important; color: #a5b4fc !important; border-color: rgba(99,102,241,0.3) !important; }
+    .btn-sm-gray { background: rgba(30,32,60,0.8) !important; color: #94a3b8 !important; border-color: rgba(99,102,241,0.2) !important; }
+    .list-row:hover { background: rgba(99,102,241,0.06) !important; }
+    ::-webkit-scrollbar-track { background: #0b0f1e; }
+    ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.5); }
   </style>
   <script>
     function toggleMobileSidebar() {
