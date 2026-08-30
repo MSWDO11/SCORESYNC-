@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import cookieSession from "cookie-session";
-import flash from "connect-flash";
 import router from "./routes/index.js";
 import fs from "fs";
 import hbs from "hbs";
@@ -35,18 +34,20 @@ app.use(cookieSession({
   httpOnly: true,
 }));
 
-// connect-flash requires req.session.save — shim for cookie-session compat
+// ─── Manual flash middleware (replaces connect-flash — fully compatible with cookie-session) ──
 app.use((req, res, next) => {
-  if (!req.session.save) req.session.save = (cb) => cb && cb();
-  if (!req.session.regenerate) req.session.regenerate = (cb) => cb && cb();
-  next();
-});
-app.use(flash());
+  // Expose flash messages to views then clear them
+  res.locals.success_msg = req.session._flash_success || "";
+  res.locals.error_msg   = req.session._flash_error   || "";
+  req.session._flash_success = "";
+  req.session._flash_error   = "";
 
-// ─── Flash + user data into all views ────────────────────────────────────────
-app.use((req, res, next) => {
-  res.locals.success_msg = req.flash("success_msg")[0] || "";
-  res.locals.error_msg   = req.flash("error_msg")[0]   || "";
+  // req.flash() shim so all controllers work without changes
+  req.flash = (type, msg) => {
+    if (msg === undefined) return [];
+    if (type === "success_msg") req.session._flash_success = msg;
+    if (type === "error_msg")   req.session._flash_error   = msg;
+  };
   next();
 });
 app.use(injectUser);
