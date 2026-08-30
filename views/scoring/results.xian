@@ -24,7 +24,7 @@
   .rank-badge-2 { background:linear-gradient(135deg,#334155,#94a3b8); box-shadow:0 0 8px rgba(148,163,184,0.3); }
   .rank-badge-3 { background:linear-gradient(135deg,#78350f,#f97316); box-shadow:0 0 8px rgba(249,115,22,0.3); }
 </style>
-<body class="min-h-screen flex flex-col" style="background:#07090f;color:#e2e8f0;">
+<body class="min-h-screen flex flex-col" style="background:#0b0f1e;color:#e2e8f0;">
 {{> navbar }}
 <div class="flex flex-1 overflow-hidden">
 {{> sidebar }}

@@ -8,7 +8,7 @@
   .btn-join { background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; font-weight:800; border-radius:12px; width:100%; padding:12px; font-size:0.875rem; border:none; cursor:pointer; transition:transform 0.15s,box-shadow 0.15s; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 16px rgba(99,102,241,0.35); }
   .btn-join:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(99,102,241,0.5); }
 </style>
-<body class="bg-slate-50 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col" style="background:#0b0f1e;color:#e2e8f0;">
 {{> navbar }}
 <div class="flex flex-1 overflow-hidden">
 {{> sidebar }}

@@ -3,7 +3,7 @@
 <head>
   {{> head }}
 </head>
-<body class="bg-slate-50 text-slate-800 flex h-screen overflow-hidden font-sans antialiased">
+<body class="flex h-screen overflow-hidden font-sans antialiased" style="background:#0b0f1e;color:#e2e8f0;">
 
   <!-- Sidebar -->
   {{> sidebar }}

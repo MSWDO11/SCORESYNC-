@@ -1,5 +1,5 @@
 {{> head }}
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col font-sans">
+<body class="min-h-screen flex flex-col font-sans" style="background:#0b0f1e;color:#e2e8f0;">
 {{> navbar }}
 <div class="flex flex-1 overflow-hidden">
 {{> sidebar }}
