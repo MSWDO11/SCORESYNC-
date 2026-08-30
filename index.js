@@ -9,7 +9,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { injectUser } from "./middleware/auth.js";
 import { createClient } from "redis";
-import connectRedis from "connect-redis";
+import { RedisStore } from "connect-redis";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
@@ -34,15 +34,18 @@ if (!sessionSecret && process.env.NODE_ENV === "production") {
 let sessionStore;
 if (process.env.REDIS_URL) {
   try {
-    const RedisStore = connectRedis(session);
     const redisClient = createClient({
       url: process.env.REDIS_URL,
-      socket: { tls: process.env.REDIS_URL.startsWith("rediss://"), rejectUnauthorized: false },
+      socket: {
+        tls: process.env.REDIS_URL.startsWith("rediss://"),
+        rejectUnauthorized: false,
+      },
     });
     redisClient.connect().catch(err => console.error("Redis connect error:", err));
     redisClient.on("error", err => console.error("Redis error:", err));
+    // connect-redis v7 — pass client directly, no need to wrap session
     sessionStore = new RedisStore({ client: redisClient, prefix: "ss:" });
-    console.log("✅ Redis session store connected.");
+    console.log("✅ Redis session store initialised.");
   } catch (e) {
     console.warn("⚠️  Redis store failed, falling back to memory store:", e.message);
   }
