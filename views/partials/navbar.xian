@@ -34,7 +34,7 @@
 
     <!-- Stage Timer Quick Launcher -->
     <button type="button"
-      onclick="if(window.ScoreSyncTimer){ScoreSyncTimer.toggleFullscreen();}else{const t=document.getElementById('scoresync-timer-component');if(t){t.scrollIntoView({behavior:'smooth'});}else{window.location.href='/dashboard';}}"
+      onclick="const t=document.getElementById('scoresync-timer-component');if(t){t.scrollIntoView({behavior:'smooth'});}else{window.location.href='/dashboard';}"
       title="Stage & Round Timer"
       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition"
       style="background:rgba(99,102,241,0.18);border:1px solid rgba(99,102,241,0.35);color:#a5b4fc;"

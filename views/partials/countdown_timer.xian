@@ -187,7 +187,7 @@
 </div>
 
 <!-- ── FULLSCREEN STAGE MODAL ── -->
-<div id="scoresync-fullscreen-modal" class="fixed inset-0 z-50 hidden flex-col items-center justify-between p-6 sm:p-12" style="background:linear-gradient(135deg,#050711 0%,#0a0d1a 50%,#050711 100%);">
+<div id="scoresync-fullscreen-modal" class="hidden fixed inset-0 flex-col items-center justify-between p-6 sm:p-12" style="z-index:9999;background:linear-gradient(135deg,#050711 0%,#0a0d1a 50%,#050711 100%);">
   <!-- Top bar -->
   <div class="w-full flex items-center justify-between">
     <div class="flex items-center gap-3">
