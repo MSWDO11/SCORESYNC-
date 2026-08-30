@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import session from "express-session";
+import cookieSession from "cookie-session";
 import flash from "connect-flash";
 import router from "./routes/index.js";
 import fs from "fs";
@@ -8,8 +8,6 @@ import hbs from "hbs";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { injectUser } from "./middleware/auth.js";
-import { createClient } from "redis";
-import { RedisStore } from "connect-redis";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
@@ -22,47 +20,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(process.cwd(), "public")));
 
-// ─── Session & Flash ──────────────────────────────────────────────────────────
-const sessionSecret = process.env.SESSION_SECRET;
-if (!sessionSecret && process.env.NODE_ENV === "production") {
-  console.error("FATAL: SESSION_SECRET environment variable is not set. Refusing to start in production.");
-  process.exit(1);
-}
+// ─── Session (cookie-based — works on Vercel serverless) ─────────────────────
+const sessionSecret = process.env.SESSION_SECRET || "scoresync-dev-secret-change-in-prod";
 
-// Use Redis session store in production (required for Vercel serverless)
-// Falls back to in-memory store for local development
-let sessionStore;
-if (process.env.REDIS_URL) {
-  try {
-    const redisClient = createClient({
-      url: process.env.REDIS_URL,
-      socket: {
-        tls: process.env.REDIS_URL.startsWith("rediss://"),
-        rejectUnauthorized: false,
-      },
-    });
-    redisClient.connect().catch(err => console.error("Redis connect error:", err));
-    redisClient.on("error", err => console.error("Redis error:", err));
-    // connect-redis v7 — pass client directly, no need to wrap session
-    sessionStore = new RedisStore({ client: redisClient, prefix: "ss:" });
-    console.log("✅ Redis session store initialised.");
-  } catch (e) {
-    console.warn("⚠️  Redis store failed, falling back to memory store:", e.message);
-  }
-}
-
-app.use(session({
-  store:  sessionStore,
-  secret: sessionSecret || "scoresync-dev-secret-change-in-prod",
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge:   1000 * 60 * 60 * 8, // 8 hours
-    httpOnly: true,
-    sameSite: "lax",
-    secure:   process.env.NODE_ENV === "production",
-  },
+app.use(cookieSession({
+  name:   "scoresync.sess",
+  keys:   [sessionSecret],
+  maxAge: 1000 * 60 * 60 * 8, // 8 hours
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  httpOnly: true,
 }));
+
+// connect-flash requires req.session.save — shim for cookie-session compat
+app.use((req, res, next) => {
+  if (!req.session.save) req.session.save = (cb) => cb && cb();
+  if (!req.session.regenerate) req.session.regenerate = (cb) => cb && cb();
+  next();
+});
 app.use(flash());
 
 // ─── Flash + user data into all views ────────────────────────────────────────
