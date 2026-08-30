@@ -139,7 +139,8 @@ export const loginUser = async (req, res) => {
     req.session.userRole = profile.role  || "participant";
 
     console.log(`✅ Login: ${email} as ${req.session.userRole}`);
-    res.redirect("/dashboard");
+    // Force session save before redirect
+    req.session.save(() => res.redirect("/dashboard"));
   } catch (err) {
     console.error("Login error:", err.code, err.message);
     req.flash("error_msg", friendlyError(err.code));

@@ -15,6 +15,9 @@ const __dirname  = dirname(__filename);
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust Vercel's reverse proxy so secure cookies work
+app.set("trust proxy", 1);
+
 // ─── Body / Static ────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,10 +27,10 @@ app.use(express.static(path.join(process.cwd(), "public")));
 const sessionSecret = process.env.SESSION_SECRET || "scoresync-dev-secret-change-in-prod";
 
 app.use(cookieSession({
-  name:   "scoresync.sess",
-  keys:   [sessionSecret],
-  maxAge: 1000 * 60 * 60 * 8, // 8 hours
-  secure: process.env.NODE_ENV === "production",
+  name:     "scoresync.sess",
+  keys:     [sessionSecret],
+  maxAge:   1000 * 60 * 60 * 8, // 8 hours
+  secure:   false,   // Vercel handles HTTPS at edge — keep false to avoid cookie loss
   sameSite: "lax",
   httpOnly: true,
 }));
