@@ -41,27 +41,27 @@ export const dashboardPage = async (req, res) => {
     userName:    req.session.userName,
     userRole:    role,
     userInitial: (req.session.userName || "U")[0].toUpperCase(),
-    isSuperAdmin:  role === "superadmin",
-    isAdmin:       role === "admin" || role === "superadmin",
+    isSuperAdmin:  false,
+    isAdmin:       role === "admin",
     isOrganizer:   role === "organizer",
     isJudge:       role === "judge",
     isParticipant: role === "participant",
-    isEncoder:     role === "organizer", // legacy compat
+    isEncoder:     role === "organizer",
   };
 
   try {
 
-    // ── SUPER ADMIN ─ sees everything including completed events ───────────────
-    if (role === "superadmin") {
+    // ── ADMIN ─ full access including completed events history ────────────────
+    if (role === "admin") {
       const [evSnap, uSnap] = await Promise.all([
         getDocs(query(collection(db, "events"), orderBy("createdAt", "desc"))),
         getDocs(collection(db, "users")),
       ]);
 
-      const allEvents      = evSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-      const activeEvents   = allEvents.filter(e => ["upcoming","ongoing"].includes(e.status));
-      const completedEvents= allEvents.filter(e => e.status === "completed");
-      const recentEvents   = allEvents.slice(0, 5);
+      const allEvents       = evSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const activeEvents    = allEvents.filter(e => ["upcoming","ongoing"].includes(e.status));
+      const completedEvents = allEvents.filter(e => e.status === "completed");
+      const recentEvents    = allEvents.slice(0, 5);
 
       const allUsers = uSnap.docs.map(d => {
         const data = d.data();
@@ -74,7 +74,7 @@ export const dashboardPage = async (req, res) => {
       const pendingUsers = allUsers.filter(u => u.status === "pending");
       const income = buildIncomeSummary(evSnap.docs);
 
-      return res.render("dashboard/superadmin", {
+      return res.render("dashboard/admin", {
         ...base,
         recentEvents,
         activeEvents,
@@ -87,46 +87,7 @@ export const dashboardPage = async (req, res) => {
       });
     }
 
-    // ── ADMIN ─ upcoming + ongoing only, no completed ─────────────────────────
-    if (role === "admin") {
-      const [evSnap, uSnap] = await Promise.all([
-        getDocs(collection(db, "events")),
-        getDocs(collection(db, "users")),
-      ]);
-
-      const activeEvents = evSnap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .filter(e => ["upcoming","ongoing"].includes(e.status))
-        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-
-      const recentEvents = activeEvents.slice(0, 5);
-
-      const allUsers = uSnap.docs.map(d => {
-        const data = d.data();
-        const emailSubject = encodeURIComponent("ScoreSync Account Approved!");
-        const emailBody    = encodeURIComponent(`Hi ${data.name || 'User'},\n\nYour ScoreSync account has been APPROVED.\n\nBest regards,\nScoreSync Admin`);
-        const gmailUrl     = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(data.email)}&su=${emailSubject}&body=${emailBody}`;
-        return { id: d.id, ...data, createdAt: data.createdAt?.toDate?.()?.toLocaleDateString("en-PH") || "—", gmailUrl };
-      });
-
-      const pendingUsers = allUsers.filter(u => u.status === "pending");
-      const income = buildIncomeSummary(
-        evSnap.docs.filter(d => ["upcoming","ongoing"].includes(d.data().status))
-      );
-
-      return res.render("dashboard/admin", {
-        ...base,
-        recentEvents,
-        activeEvents,
-        totalEvents:  activeEvents.length,
-        totalUsers:   allUsers.filter(u => u.status !== "pending").length,
-        pendingUsers,
-        pendingCount: pendingUsers.length,
-        ...income,
-      });
-    }
-
-    // ── ORGANIZER ─ upcoming + ongoing events for their events ─────────────────
+    // ── ORGANIZER ─ upcoming + ongoing events only ────────────────────────────
     if (role === "organizer") {
       const evSnap = await getDocs(collection(db, "events"));
       const activeEvents = evSnap.docs

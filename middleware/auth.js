@@ -30,8 +30,8 @@ export const injectUser = (req, res, next) => {
   res.locals.userName        = req.session.userName || "";
   res.locals.userRole        = role;
   res.locals.userInitial     = (req.session.userName || "U")[0].toUpperCase();
-  res.locals.isSuperAdmin    = role === "superadmin";
-  res.locals.isAdmin         = role === "admin" || role === "superadmin"; // superadmin inherits admin powers
+  res.locals.isSuperAdmin    = false; // removed — admin is now top role
+  res.locals.isAdmin         = role === "admin";
   res.locals.isOrganizer     = role === "organizer";
   res.locals.isJudge         = role === "judge";
   res.locals.isParticipant   = role === "participant";

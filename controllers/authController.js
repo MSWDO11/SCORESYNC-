@@ -118,8 +118,8 @@ export const loginUser = async (req, res) => {
     const snap = await getDoc(doc(db, "users", uid));
     const profile = snap.exists() ? snap.data() : {};
 
-    // Check account status (superadmin & admin accounts are exempt and auto-approved)
-    if (!["admin","superadmin"].includes(profile.role) && profile.status === "pending") {
+    // Check account status — admin is exempt and auto-approved
+    if (profile.role !== "admin" && profile.status === "pending") {
       await signOut(auth);
       req.flash(
         "error_msg",
@@ -128,7 +128,7 @@ export const loginUser = async (req, res) => {
       return res.redirect("/login");
     }
 
-    if (!["admin","superadmin"].includes(profile.role) && profile.status === "rejected") {
+    if (profile.role !== "admin" && profile.status === "rejected") {
       await signOut(auth);
       req.flash("error_msg", "Your account request was declined by the Admin.");
       return res.redirect("/login");

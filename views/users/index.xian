@@ -38,14 +38,10 @@
   {{/if}}
 
   <!-- Stats -->
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 animate-fadeup-1">
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 animate-fadeup-1">
     <div class="card-flat px-5 py-4 flex items-center gap-4">
       <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#1e3a8a,#2563eb)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
       <div><p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total</p><p class="text-2xl font-black text-slate-800">{{totalUsers}}</p></div>
-    </div>
-    <div class="card-flat px-5 py-4 flex items-center gap-4">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#1e1b4b,#4338ca)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2l3 6.5 7 1-5 4.9 1.2 7L12 18l-6.2 3.4 1.2-7L2 9.5l7-1z"/></svg></div>
-      <div><p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Super Admin</p><p class="text-2xl font-black text-indigo-700">{{superAdminCount}}</p></div>
     </div>
     <div class="card-flat px-5 py-4 flex items-center gap-4">
       <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#1e3a8a,#2563eb)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
@@ -58,10 +54,6 @@
     <div class="card-flat px-5 py-4 flex items-center gap-4">
       <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#064e3b,#059669)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
       <div><p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Organizers</p><p class="text-2xl font-black text-emerald-700">{{encoderCount}}</p></div>
-    </div>
-    <div class="card-flat px-5 py-4 flex items-center gap-4">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background:linear-gradient(135deg,#0f766e,#14b8a6)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-      <div><p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Participants</p><p class="text-2xl font-black text-teal-700">{{participantCount}}</p></div>
     </div>
   </div>
 
@@ -162,10 +154,9 @@
             <td>
               <form method="POST" action="/users/{{id}}/role" class="flex items-center gap-2">
                 <select name="role" class="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-400">
-                  <option value="superadmin" {{#if (eq role 'superadmin')}}selected{{/if}}>Super Admin</option>
                   <option value="admin" {{#if (eq role 'admin')}}selected{{/if}}>Admin</option>
-                  <option value="judge" {{#if (eq role 'judge')}}selected{{/if}}>Judge</option>
                   <option value="organizer" {{#if (eq role 'organizer')}}selected{{/if}}>Organizer</option>
+                  <option value="judge" {{#if (eq role 'judge')}}selected{{/if}}>Judge</option>
                   <option value="participant" {{#if (eq role 'participant')}}selected{{/if}}>Participant</option>
                 </select>
                 <button type="submit" class="btn-sm btn-sm-blue text-xs px-2.5 py-1.5"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>
@@ -203,14 +194,10 @@
     </div>
     <div class="flex-1">
       <p class="font-semibold text-slate-700 text-sm mb-3">Role Permissions</p>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
-        <div class="rounded-xl px-4 py-3" style="background:#eef2ff;border:1px solid #c7d2fe">
-          <div class="flex items-center gap-2 mb-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3730a3" stroke-width="2"><path d="M12 2l3 6.5 7 1-5 4.9 1.2 7L12 18l-6.2 3.4 1.2-7L2 9.5l7-1z"/></svg><span class="font-bold text-indigo-900 text-sm">Super Admin</span></div>
-          <p class="text-indigo-600 text-xs leading-relaxed">Full access + completed event history. System-wide control.</p>
-        </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div class="rounded-xl px-4 py-3" style="background:#eff6ff;border:1px solid #bfdbfe">
           <div class="flex items-center gap-2 mb-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="font-bold text-blue-800 text-sm">Administrator</span></div>
-          <p class="text-blue-600 text-xs leading-relaxed">Create events, manage users, set criteria, view active results.</p>
+          <p class="text-blue-600 text-xs leading-relaxed">Full access. Create events, manage users, set criteria, view all results including history.</p>
         </div>
         <div class="rounded-xl px-4 py-3" style="background:#faf5ff;border:1px solid #ddd6fe">
           <div class="flex items-center gap-2 mb-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="font-bold text-purple-800 text-sm">Judge</span></div>
@@ -265,7 +252,6 @@
           <option value="organizer">Organizer (Can manage contestants &amp; events)</option>
           <option value="participant">Participant (Can join events)</option>
           <option value="admin">Administrator (Full system control)</option>
-          <option value="superadmin">Super Admin (Full access + history)</option>
         </select>
       </div>
 

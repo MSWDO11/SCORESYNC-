@@ -12,12 +12,12 @@ function roleLocals(req) {
     userName:      req.session.userName,
     userRole:      role,
     userInitial:   (req.session.userName || "U")[0].toUpperCase(),
-    isSuperAdmin:  role === "superadmin",
-    isAdmin:       role === "admin" || role === "superadmin",
+    isSuperAdmin:  false,
+    isAdmin:       role === "admin",
     isOrganizer:   role === "organizer",
     isJudge:       role === "judge",
     isParticipant: role === "participant",
-    isEncoder:     role === "organizer", // legacy compat for templates
+    isEncoder:     role === "organizer",
   };
 }
 
