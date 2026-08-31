@@ -248,12 +248,12 @@
 
     /* ── Page header ── */
     .page-header { margin-bottom: 28px; }
-    .page-header h1 { font-size: 1.6rem; font-weight: 900; color: #0f172a; letter-spacing: -0.03em; }
+    .page-header h1 { font-size: 1.6rem; font-weight: 900; color: #e0e7ff; letter-spacing: -0.03em; }
     .page-header p  { font-size: 0.875rem; color: #64748b; margin-top: 5px; }
-    .breadcrumb { font-size: 0.78rem; color: #94a3b8; margin-bottom: 7px; display: flex; align-items: center; gap: 4px; }
-    .breadcrumb a { color: #3b82f6; text-decoration: none; font-weight: 500; }
+    .breadcrumb { font-size: 0.78rem; color: #475569; margin-bottom: 7px; display: flex; align-items: center; gap: 4px; }
+    .breadcrumb a { color: #6366f1; text-decoration: none; font-weight: 500; }
     .breadcrumb a:hover { text-decoration: underline; }
-    .breadcrumb i { font-size: 9px; color: #cbd5e1; }
+    .breadcrumb i { font-size: 9px; color: #334155; }
 
     /* ── Section Card ── */
     .section-card { background: #fff; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 1px 5px rgba(0,0,0,0.05); overflow: hidden; }
@@ -283,18 +283,33 @@
     @media print { .sidebar, nav, .no-print { display: none !important; } main { padding: 0 !important; } }
 
     /* ── Global Dark Theme Overrides ── */
-    .bg-white, .card, .card-flat, .section-card, .data-table thead th { background: rgba(15,17,35,0.95) !important; color: #e0e7ff !important; }
-    .bg-slate-50, .bg-slate-100 { background: rgba(20,23,48,0.8) !important; }
-    .border-slate-100, .border-slate-200, .divide-slate-100 > * + * { border-color: rgba(99,102,241,0.15) !important; }
-    .text-slate-900, .text-slate-800 { color: #e0e7ff !important; }
-    .text-slate-700, .text-slate-600 { color: #c7d2fe !important; }
-    .text-slate-500, .text-slate-400 { color: #64748b !important; }
-    .section-header { border-bottom-color: rgba(99,102,241,0.15) !important; }
-    .section-header h2 { color: #e0e7ff !important; }
+    .bg-white, .card, .card-flat, .section-card { background: rgba(15,17,35,0.95) !important; }
+    .bg-slate-50 { background: rgba(20,23,48,0.8) !important; }
+    .bg-slate-100 { background: rgba(25,28,55,0.7) !important; }
+    .border-slate-100 { border-color: rgba(99,102,241,0.15) !important; }
+    .border-slate-200 { border-color: rgba(99,102,241,0.18) !important; }
+    .divide-slate-100 > * + * { border-color: rgba(99,102,241,0.12) !important; }
+    .divide-slate-50 > * + * { border-color: rgba(99,102,241,0.08) !important; }
+
+    /* Text overrides — only inside cards/sections, not page headers */
+    .section-header h2,
+    .card-flat .text-slate-900, .card-flat .text-slate-800,
+    .section-card .text-slate-900, .section-card .text-slate-800,
+    .bg-white .text-slate-900, .bg-white .text-slate-800 { color: #e0e7ff !important; }
+
+    /* Page-level headings must stay bright */
+    .page-header h1, main > div > h1, main h1 { color: #e0e7ff !important; }
+    main > div > p, main > div > div > p { color: #64748b !important; }
+
+    /* Table dark styling */
+    .data-table thead th { background: rgba(15,17,35,0.95) !important; color: #64748b !important; border-bottom-color: rgba(99,102,241,0.18) !important; }
     .data-table tbody tr { border-top-color: rgba(99,102,241,0.1) !important; }
-    .data-table tbody tr:nth-child(even) { background: rgba(20,23,48,0.5) !important; }
+    .data-table tbody tr:nth-child(even) { background: rgba(20,23,48,0.4) !important; }
     .data-table tbody tr:hover { background: rgba(99,102,241,0.08) !important; }
     .data-table tbody td { color: #c7d2fe !important; }
+    .section-header { border-bottom-color: rgba(99,102,241,0.15) !important; }
+
+    /* Form inputs dark */
     .form-input-bare, .form-input, select.form-input-bare, select.form-input {
       background: rgba(15,17,30,0.8) !important;
       border-color: rgba(99,102,241,0.25) !important;
@@ -302,9 +317,13 @@
     }
     .form-input-bare::placeholder, .form-input::placeholder { color: #334155 !important; }
     .form-input-bare:focus, .form-input:focus { border-color: #6366f1 !important; box-shadow: 0 0 0 3px rgba(99,102,241,0.15) !important; }
+
+    /* Buttons */
     .btn-secondary { background: rgba(30,32,60,0.9) !important; color: #a5b4fc !important; border-color: rgba(99,102,241,0.3) !important; }
     .btn-sm-gray { background: rgba(30,32,60,0.8) !important; color: #94a3b8 !important; border-color: rgba(99,102,241,0.2) !important; }
     .list-row:hover { background: rgba(99,102,241,0.06) !important; }
+
+    /* Scrollbar */
     ::-webkit-scrollbar-track { background: #0b0f1e; }
     ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); }
     ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.5); }
