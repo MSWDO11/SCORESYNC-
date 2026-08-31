@@ -282,6 +282,12 @@
     const modal = document.getElementById('addUserModal');
     modal.classList.toggle('hidden');
   }
+  // Auto-open modal if redirected from sidebar "Add User" link
+  if (window.location.search.includes('addUser=1')) {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('addUserModal')?.classList.remove('hidden');
+    });
+  }
 </script>
 
 {{> footer }}
