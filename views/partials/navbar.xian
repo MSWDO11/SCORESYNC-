@@ -32,20 +32,6 @@
   <!-- Right Actions -->
   <div class="flex items-center gap-2 sm:gap-2.5 ml-auto flex-shrink-0">
 
-    <!-- Stage Timer Quick Launcher -->
-    <button type="button"
-      onclick="const t=document.getElementById('scoresync-timer-component');if(t){t.scrollIntoView({behavior:'smooth'});}else{window.location.href='/dashboard';}"
-      title="Stage & Round Timer"
-      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition"
-      style="background:rgba(99,102,241,0.18);border:1px solid rgba(99,102,241,0.35);color:#a5b4fc;"
-      onmouseover="this.style.background='rgba(99,102,241,0.3)';this.style.color='#c7d2fe'"
-      onmouseout="this.style.background='rgba(99,102,241,0.18)';this.style.color='#a5b4fc'">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-      </svg>
-      <span class="hidden sm:inline">Stage Timer</span>
-    </button>
-
     <!-- Settings -->
     <a href="/settings" title="Settings"
       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition"
