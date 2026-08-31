@@ -1,231 +1,207 @@
 {{> head }}
 <style>
-  body { background:#0b0f1e; color:#e2e8f0; }
-  .dash-main { background:#0b0f1e; }
-  .glass-card { background:rgba(15,17,35,0.95); border:1px solid rgba(99,102,241,0.18); border-radius:20px; }
-  .glass-card-light { background:rgba(20,23,45,0.8); border:1px solid rgba(99,102,241,0.12); border-radius:16px; }
-  .kpi-card { border-radius:20px; overflow:hidden; position:relative; transition:transform 0.2s,box-shadow 0.2s; }
-  .kpi-card:hover { transform:translateY(-3px); }
-  .section-label { font-size:11px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:#4f56a8; }
-  .tbl-row:hover { background:rgba(99,102,241,0.06); }
-  .badge-status-ongoing { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
-  .badge-status-upcoming { background:rgba(59,130,246,0.15); color:#93c5fd; border:1px solid rgba(59,130,246,0.3); }
-  .badge-status-completed { background:rgba(99,102,241,0.15); color:#a5b4fc; border:1px solid rgba(99,102,241,0.3); }
-  .badge-status-cancelled { background:rgba(239,68,68,0.15); color:#fca5a5; border:1px solid rgba(239,68,68,0.3); }
-  .shortcut-btn { background:rgba(20,23,45,0.8); border:1px solid rgba(99,102,241,0.15); border-radius:14px; padding:14px; display:flex; align-items:center; gap:12px; transition:background 0.2s,border-color 0.2s; cursor:pointer; text-decoration:none; }
-  .shortcut-btn:hover { background:rgba(99,102,241,0.12); border-color:rgba(99,102,241,0.4); }
-  @keyframes fadeup { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-  .fadeup { animation:fadeup 0.4s ease-out both; }
-  .fadeup-1 { animation:fadeup 0.4s 0.1s ease-out both; }
-  .fadeup-2 { animation:fadeup 0.4s 0.2s ease-out both; }
+  body { background:#070b14; color:#e2e8f0; }
+  /* Bento grid cards */
+  .bento { background:rgba(12,15,30,0.9); border:1px solid rgba(255,255,255,0.06); border-radius:24px; transition:border-color 0.2s; }
+  .bento:hover { border-color:rgba(99,102,241,0.25); }
+  .bento-accent { background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(139,92,246,0.06)); border:1px solid rgba(99,102,241,0.2); border-radius:24px; }
+  /* KPI */
+  .stat-card { border-radius:20px; overflow:hidden; position:relative; }
+  /* Shortcuts */
+  .cmd-btn { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); transition:all 0.18s; text-decoration:none; }
+  .cmd-btn:hover { background:rgba(99,102,241,0.1); border-color:rgba(99,102,241,0.3); transform:translateX(3px); }
+  /* Table */
+  .ev-row { border-bottom:1px solid rgba(255,255,255,0.04); transition:background 0.15s; }
+  .ev-row:hover { background:rgba(99,102,241,0.05); }
+  /* Badges */
+  .b-ongoing   { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.25); border-radius:999px; padding:2px 10px; font-size:11px; font-weight:800; }
+  .b-upcoming  { background:rgba(59,130,246,0.15); color:#93c5fd; border:1px solid rgba(59,130,246,0.25); border-radius:999px; padding:2px 10px; font-size:11px; font-weight:800; }
+  .b-completed { background:rgba(99,102,241,0.15); color:#a5b4fc; border:1px solid rgba(99,102,241,0.25); border-radius:999px; padding:2px 10px; font-size:11px; font-weight:800; }
+  .b-cancelled { background:rgba(239,68,68,0.15); color:#fca5a5; border:1px solid rgba(239,68,68,0.25); border-radius:999px; padding:2px 10px; font-size:11px; font-weight:800; }
+  /* Animations */
+  @keyframes up { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  .u0{animation:up 0.35s ease both}
+  .u1{animation:up 0.35s 0.08s ease both}
+  .u2{animation:up 0.35s 0.16s ease both}
+  .u3{animation:up 0.35s 0.24s ease both}
+  /* Sparkline bars */
+  .spark { display:flex; align-items:flex-end; gap:3px; height:28px; }
+  .spark-bar { width:5px; border-radius:3px; background:rgba(255,255,255,0.25); flex-shrink:0; }
+  /* Mesh background blob */
+  .mesh-blob { position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none; }
 </style>
 
-<body class="dash-main min-h-screen flex flex-col">
+<body style="background:#070b14;" class="min-h-screen flex flex-col">
 {{> navbar }}
 <div class="flex flex-1 overflow-hidden">
 {{> sidebar }}
 
-<main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
+<main class="flex-1 overflow-y-auto" style="padding:24px 28px;background:radial-gradient(ellipse at 20% 0%,rgba(99,102,241,0.07) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(139,92,246,0.05) 0%,transparent 50%),#070b14;">
 
-  {{#if success_msg}}
-  <div class="flex items-center gap-3 p-4 rounded-2xl text-sm font-semibold fadeup" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
-    {{success_msg}}
-  </div>
-  {{/if}}
-  {{#if error_msg}}
-  <div class="flex items-center gap-3 p-4 rounded-2xl text-sm font-semibold fadeup" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/></svg>
-    {{error_msg}}
-  </div>
-  {{/if}}
+  {{#if success_msg}}<div class="flex items-center gap-3 p-4 rounded-2xl text-sm font-semibold mb-5 u0" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>{{success_msg}}</div>{{/if}}
+  {{#if error_msg}}<div class="flex items-center gap-3 p-4 rounded-2xl text-sm font-semibold mb-5 u0" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/></svg>{{error_msg}}</div>{{/if}}
 
-  <!-- ── HERO HEADER ── -->
-  <div class="glass-card p-6 sm:p-8 relative overflow-hidden fadeup" style="background:linear-gradient(135deg,#0d1035 0%,#111827 50%,#0d1035 100%);">
-    <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse at 80% 50%,rgba(99,102,241,0.12) 0%,transparent 65%);"></div>
-    <div class="absolute pointer-events-none" style="width:400px;height:400px;right:-100px;top:-100px;background:rgba(99,102,241,0.06);border-radius:50%;filter:blur(80px);"></div>
-
-    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-      <div>
-        <div class="flex items-center gap-2.5 mb-3">
-          <span class="px-3 py-1 rounded-full text-xs font-bold" style="background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.35);color:#a5b4fc;">
-            <span id="today-date">Today</span>
-          </span>
-          <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;">
-            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping inline-block"></span>
-            System Ready
-          </span>
-        </div>
-        <h1 class="text-2xl sm:text-3xl font-black tracking-tight leading-tight" style="color:#e0e7ff;">
-          Good day, <span style="background:linear-gradient(135deg,#a5b4fc,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">{{userName}}</span> 👋
-        </h1>
-        <p class="text-sm mt-1.5" style="color:#475569;">Welcome back to ScoreSync — your central competition management hub.</p>
+  <!-- ── HEADER ── -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7 u0">
+    <div>
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="text-[11px] font-black uppercase tracking-widest" style="color:#4f46e5;" id="today-date">Today</span>
+        <span class="w-1 h-1 rounded-full" style="background:#334155;"></span>
+        <span class="flex items-center gap-1 text-[11px] font-bold" style="color:#34d399;">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block"></span>
+          Live
+        </span>
       </div>
-      <a href="/events/create" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-extrabold text-sm text-white flex-shrink-0 transition"
-        style="background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 4px 24px rgba(99,102,241,0.4);"
-        onmouseover="this.style.boxShadow='0 6px 32px rgba(99,102,241,0.6)'"
-        onmouseout="this.style.boxShadow='0 4px 24px rgba(99,102,241,0.4)'">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        + New Event
-      </a>
+      <h1 class="text-2xl sm:text-3xl font-black tracking-tight" style="color:#f1f5f9;">
+        Hello, <span style="background:linear-gradient(90deg,#818cf8,#c084fc,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">{{userName}}</span> 👋
+      </h1>
+      <p class="text-sm mt-1" style="color:#334155;">ScoreSync Admin Control Center</p>
     </div>
+    <a href="/events/create"
+      class="inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl font-black text-sm text-white flex-shrink-0"
+      style="background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 0 0 1px rgba(99,102,241,0.3),0 8px 32px rgba(99,102,241,0.35);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Event
+    </a>
   </div>
 
   {{#if pendingCount}}
-  <!-- Pending approval banner -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl fadeup" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);">
-    <div class="flex items-center gap-4">
-      <div class="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:rgba(245,158,11,0.2);">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl mb-6 u1" style="background:linear-gradient(90deg,rgba(245,158,11,0.1),rgba(245,158,11,0.05));border:1px solid rgba(245,158,11,0.25);">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(245,158,11,0.15);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       </div>
       <div>
-        <div class="flex items-center gap-2">
-          <span class="font-extrabold text-sm" style="color:#fcd34d;">Pending Account Requests</span>
-          <span class="px-2 py-0.5 rounded-full text-[11px] font-black text-white" style="background:#f59e0b;">{{pendingCount}} new</span>
-        </div>
-        <p class="text-xs mt-0.5" style="color:#92400e;">User accounts awaiting admin verification before accessing the system.</p>
+        <span class="font-extrabold text-sm" style="color:#fcd34d;">{{pendingCount}} account request(s) pending</span>
+        <p class="text-xs" style="color:#78350f;">Awaiting your approval</p>
       </div>
     </div>
-    <a href="/users" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm flex-shrink-0 transition" style="background:#f59e0b;color:#fff;">
-      Review &amp; Approve
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-    </a>
+    <a href="/users" class="text-xs font-black px-4 py-2 rounded-xl flex-shrink-0" style="background:#f59e0b;color:#000;">Review →</a>
   </div>
   {{/if}}
 
-  <!-- ── KPI CARDS ── -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 fadeup-1">
+  <!-- ── BENTO KPI GRID ── -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 u1">
 
-    <!-- Total Events -->
-    <div class="kpi-card p-5 text-white" style="background:linear-gradient(135deg,#1e3a8a,#2563eb);box-shadow:0 4px 24px rgba(37,99,235,0.3);">
-      <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 80% 20%,rgba(255,255,255,0.08),transparent 60%);"></div>
-      <div class="relative z-10">
-        <p class="text-blue-200 text-[11px] font-black uppercase tracking-widest mb-2">Total Events</p>
-        <p class="text-4xl font-black leading-none mb-3">{{totalEvents}}</p>
-        <div class="w-full h-1 rounded-full mb-3" style="background:rgba(255,255,255,0.15);">
-          <div class="h-full rounded-full" style="background:rgba(255,255,255,0.6);width:70%;"></div>
+    <div class="stat-card p-5" style="background:linear-gradient(135deg,#0f1f6e,#1d4ed8);box-shadow:0 0 0 1px rgba(59,130,246,0.2),0 8px 32px rgba(29,78,216,0.25);">
+      <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 85% 15%,rgba(255,255,255,0.1),transparent 55%);"></div>
+      <div class="relative z-10 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-black uppercase tracking-widest text-blue-300">Total Events</span>
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:rgba(255,255,255,0.12);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
         </div>
-        <a href="/events" class="text-blue-200 text-xs font-bold hover:text-white transition flex items-center gap-1">
-          Browse all <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </a>
+        <p class="text-5xl font-black leading-none text-white">{{totalEvents}}</p>
+        <div class="spark">
+          <div class="spark-bar" style="height:40%;"></div><div class="spark-bar" style="height:60%;"></div><div class="spark-bar" style="height:45%;"></div><div class="spark-bar" style="height:75%;"></div><div class="spark-bar" style="height:55%;"></div><div class="spark-bar" style="height:90%;background:rgba(255,255,255,0.7);"></div>
+        </div>
+        <a href="/events" class="text-blue-200 text-xs font-bold flex items-center gap-1">All events <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></a>
       </div>
     </div>
 
-    <!-- Active Users -->
-    <div class="kpi-card p-5 text-white" style="background:linear-gradient(135deg,#064e3b,#059669);box-shadow:0 4px 24px rgba(5,150,105,0.3);">
-      <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 80% 20%,rgba(255,255,255,0.08),transparent 60%);"></div>
-      <div class="relative z-10">
-        <p class="text-emerald-200 text-[11px] font-black uppercase tracking-widest mb-2">Active Users</p>
-        <p class="text-4xl font-black leading-none mb-3">{{totalUsers}}</p>
-        <div class="w-full h-1 rounded-full mb-3" style="background:rgba(255,255,255,0.15);">
-          <div class="h-full rounded-full" style="background:rgba(255,255,255,0.6);width:85%;"></div>
+    <div class="stat-card p-5" style="background:linear-gradient(135deg,#052e1f,#047857);box-shadow:0 0 0 1px rgba(16,185,129,0.2),0 8px 32px rgba(4,120,87,0.25);">
+      <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 85% 15%,rgba(255,255,255,0.1),transparent 55%);"></div>
+      <div class="relative z-10 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-black uppercase tracking-widest text-emerald-300">Active Users</span>
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:rgba(255,255,255,0.12);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          </div>
         </div>
-        <a href="/users" class="text-emerald-200 text-xs font-bold hover:text-white transition flex items-center gap-1">
-          Manage users <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </a>
+        <p class="text-5xl font-black leading-none text-white">{{totalUsers}}</p>
+        <div class="spark">
+          <div class="spark-bar" style="height:50%;"></div><div class="spark-bar" style="height:65%;"></div><div class="spark-bar" style="height:80%;"></div><div class="spark-bar" style="height:70%;"></div><div class="spark-bar" style="height:85%;"></div><div class="spark-bar" style="height:95%;background:rgba(255,255,255,0.7);"></div>
+        </div>
+        <a href="/users" class="text-emerald-200 text-xs font-bold flex items-center gap-1">Manage <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></a>
       </div>
     </div>
 
-    <!-- Pending -->
-    <div class="kpi-card p-5 text-white" style="background:linear-gradient(135deg,#78350f,#d97706);box-shadow:0 4px 24px rgba(217,119,6,0.3);">
-      <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 80% 20%,rgba(255,255,255,0.08),transparent 60%);"></div>
-      <div class="relative z-10">
-        <p class="text-amber-200 text-[11px] font-black uppercase tracking-widest mb-2">Pending Approvals</p>
-        <p class="text-4xl font-black leading-none mb-3">{{pendingCount}}</p>
-        <div class="w-full h-1 rounded-full mb-3" style="background:rgba(255,255,255,0.15);">
-          <div class="h-full rounded-full" style="background:rgba(255,255,255,0.6);width:{{#if pendingCount}}50{{else}}0{{/if}}%;"></div>
+    <div class="stat-card p-5" style="background:linear-gradient(135deg,#3b0764,#7c3aed);box-shadow:0 0 0 1px rgba(124,58,237,0.2),0 8px 32px rgba(124,58,237,0.25);">
+      <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 85% 15%,rgba(255,255,255,0.1),transparent 55%);"></div>
+      <div class="relative z-10 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-black uppercase tracking-widest text-purple-300">Pending</span>
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:rgba(255,255,255,0.12);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
         </div>
-        <a href="/users" class="text-amber-200 text-xs font-bold hover:text-white transition flex items-center gap-1">
-          Review requests <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </a>
+        <p class="text-5xl font-black leading-none text-white">{{pendingCount}}</p>
+        <div class="spark">
+          <div class="spark-bar" style="height:30%;"></div><div class="spark-bar" style="height:50%;"></div><div class="spark-bar" style="height:40%;"></div><div class="spark-bar" style="height:60%;"></div><div class="spark-bar" style="height:35%;"></div><div class="spark-bar" style="height:{{#if pendingCount}}70{{else}}10{{/if}}%;background:rgba(255,255,255,0.7);"></div>
+        </div>
+        <a href="/users" class="text-purple-200 text-xs font-bold flex items-center gap-1">Review <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></a>
       </div>
     </div>
 
-    <!-- Revenue -->
-    <div class="kpi-card p-5 text-white" style="background:linear-gradient(135deg,#064e3b,#16a34a);box-shadow:0 4px 24px rgba(22,163,74,0.3);">
-      <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 80% 20%,rgba(255,255,255,0.08),transparent 60%);"></div>
-      <div class="relative z-10">
-        <p class="text-green-200 text-[11px] font-black uppercase tracking-widest mb-2">Total Revenue</p>
-        <p class="text-3xl font-black leading-none mb-3">₱{{totalIncome}}</p>
-        <div class="w-full h-1 rounded-full mb-3" style="background:rgba(255,255,255,0.15);">
-          <div class="h-full rounded-full" style="background:rgba(255,255,255,0.6);width:{{#if paidEventsCount}}60{{else}}0{{/if}}%;"></div>
+    <div class="stat-card p-5" style="background:linear-gradient(135deg,#052e16,#15803d);box-shadow:0 0 0 1px rgba(22,163,74,0.2),0 8px 32px rgba(22,163,74,0.25);">
+      <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(circle at 85% 15%,rgba(255,255,255,0.1),transparent 55%);"></div>
+      <div class="relative z-10 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-black uppercase tracking-widest text-green-300">Revenue</span>
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:rgba(255,255,255,0.12);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
         </div>
-        <a href="/inventory" class="text-green-200 text-xs font-bold hover:text-white transition flex items-center gap-1">
-          View inventory <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </a>
+        <p class="text-3xl font-black leading-none text-white">₱{{totalIncome}}</p>
+        <div class="spark">
+          <div class="spark-bar" style="height:20%;"></div><div class="spark-bar" style="height:45%;"></div><div class="spark-bar" style="height:35%;"></div><div class="spark-bar" style="height:55%;"></div><div class="spark-bar" style="height:65%;"></div><div class="spark-bar" style="height:{{#if paidEventsCount}}80{{else}}10{{/if}}%;background:rgba(255,255,255,0.7);"></div>
+        </div>
+        <a href="/inventory" class="text-green-200 text-xs font-bold flex items-center gap-1">Inventory <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></a>
       </div>
     </div>
 
   </div>
 
-  <!-- ── MAIN CONTENT GRID ── -->
-  <div class="grid lg:grid-cols-3 gap-6 fadeup-2">
+  <!-- ── BENTO MAIN GRID ── -->
+  <div class="grid lg:grid-cols-7 gap-4 u2">
 
-    <!-- Recent Events Table (2 cols) -->
-    <div class="lg:col-span-2 glass-card overflow-hidden flex flex-col">
-      <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid rgba(99,102,241,0.15);">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:rgba(99,102,241,0.2);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-          <h2 class="text-sm font-extrabold" style="color:#e0e7ff;">Recent Competitions</h2>
+    <!-- Events table — 4 cols -->
+    <div class="lg:col-span-4 bento overflow-hidden flex flex-col" style="min-height:380px;">
+      <div class="px-6 py-4 flex items-center justify-between flex-shrink-0" style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <div class="flex items-center gap-3">
+          <div class="w-2 h-2 rounded-full" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);box-shadow:0 0 8px rgba(99,102,241,0.6);"></div>
+          <span class="text-sm font-extrabold" style="color:#e0e7ff;">Recent Competitions</span>
         </div>
-        <a href="/events" class="text-xs font-bold transition flex items-center gap-1" style="color:#6366f1;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='#6366f1'">
-          View All Events
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-        </a>
+        <a href="/events" class="text-[11px] font-black uppercase tracking-wider transition" style="color:#4f46e5;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='#4f46e5'">View all →</a>
       </div>
 
       {{#if recentEvents.length}}
       <div class="overflow-x-auto flex-1">
-        <table class="w-full text-left min-w-max">
+        <table class="w-full text-left" style="min-width:520px;">
           <thead>
-            <tr style="border-bottom:1px solid rgba(99,102,241,0.1);">
-              <th class="py-3 px-6 text-[11px] font-black uppercase tracking-wider" style="color:#334155;">Event Name</th>
-              <th class="py-3 px-4 text-[11px] font-black uppercase tracking-wider" style="color:#334155;">Type</th>
-              <th class="py-3 px-4 text-[11px] font-black uppercase tracking-wider" style="color:#334155;">Date</th>
-              <th class="py-3 px-4 text-[11px] font-black uppercase tracking-wider" style="color:#334155;">Status</th>
-              <th class="py-3 px-6 text-[11px] font-black uppercase tracking-wider text-right" style="color:#334155;">Actions</th>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+              <th class="py-3 px-6 text-[10px] font-black uppercase tracking-widest" style="color:#1e293b;">Event</th>
+              <th class="py-3 px-3 text-[10px] font-black uppercase tracking-widest" style="color:#1e293b;">Type</th>
+              <th class="py-3 px-3 text-[10px] font-black uppercase tracking-widest" style="color:#1e293b;">Status</th>
+              <th class="py-3 px-6 text-[10px] font-black uppercase tracking-widest text-right" style="color:#1e293b;">Actions</th>
             </tr>
           </thead>
           <tbody>
             {{#each recentEvents}}
-            <tr class="tbl-row" style="border-bottom:1px solid rgba(99,102,241,0.07);">
-              <td class="py-3.5 px-6">
+            <tr class="ev-row">
+              <td class="py-3 px-6">
                 <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#1e1b4b,#4338ca);">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                  <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#1e1b4b,#4338ca);">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
                   </div>
                   <div>
-                    <a href="/events/{{id}}" class="font-bold text-sm transition" style="color:#e0e7ff;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='#e0e7ff'">{{name}}</a>
-                    {{#if venue}}<div class="text-xs mt-0.5" style="color:#334155;">📍 {{venue}}</div>{{/if}}
+                    <a href="/events/{{id}}" class="text-sm font-bold block" style="color:#e0e7ff;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='#e0e7ff'">{{name}}</a>
+                    {{#if date}}<span class="text-[11px]" style="color:#1e293b;">{{date}}</span>{{/if}}
                   </div>
                 </div>
               </td>
-              <td class="py-3.5 px-4">
-                <span class="px-2.5 py-1 rounded-lg text-xs font-bold capitalize" style="background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.25);">{{type}}</span>
+              <td class="py-3 px-3">
+                <span class="text-[11px] font-bold capitalize px-2.5 py-1 rounded-lg" style="background:rgba(99,102,241,0.12);color:#818cf8;border:1px solid rgba(99,102,241,0.2);">{{type}}</span>
               </td>
-              <td class="py-3.5 px-4 text-xs font-semibold" style="color:#475569;">{{date}}</td>
-              <td class="py-3.5 px-4">
-                <span class="px-2.5 py-1 rounded-full text-[11px] font-black capitalize
-                  {{#if (eq status 'ongoing')}}badge-status-ongoing
-                  {{else}}{{#if (eq status 'completed')}}badge-status-completed
-                  {{else}}{{#if (eq status 'cancelled')}}badge-status-cancelled
-                  {{else}}badge-status-upcoming{{/if}}{{/if}}{{/if}}">
-                  {{status}}
-                </span>
+              <td class="py-3 px-3">
+                <span class="{{#if (eq status 'ongoing')}}b-ongoing{{else}}{{#if (eq status 'completed')}}b-completed{{else}}{{#if (eq status 'cancelled')}}b-cancelled{{else}}b-upcoming{{/if}}{{/if}}{{/if}}">{{status}}</span>
               </td>
-              <td class="py-3.5 px-6">
+              <td class="py-3 px-6">
                 <div class="flex items-center justify-end gap-1.5">
-                  <a href="/events/{{id}}" class="p-2 rounded-lg transition" style="background:rgba(99,102,241,0.12);color:#a5b4fc;" title="View" onmouseover="this.style.background='rgba(99,102,241,0.3)'" onmouseout="this.style.background='rgba(99,102,241,0.12)'">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  </a>
-                  <a href="/events/{{id}}/edit" class="p-2 rounded-lg transition" style="background:rgba(255,255,255,0.06);color:#64748b;" title="Edit" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.color='#e0e7ff'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='#64748b'">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  </a>
-                  <a href="/events/{{id}}/results" class="p-2 rounded-lg transition" style="background:rgba(16,185,129,0.12);color:#34d399;" title="Results" onmouseover="this.style.background='rgba(16,185,129,0.25)'" onmouseout="this.style.background='rgba(16,185,129,0.12)'">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                  </a>
+                  <a href="/events/{{id}}" class="p-1.5 rounded-lg" style="color:#6366f1;" title="View" onmouseover="this.style.background='rgba(99,102,241,0.15)'" onmouseout="this.style.background='transparent'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a>
+                  <a href="/events/{{id}}/edit" class="p-1.5 rounded-lg" style="color:#475569;" title="Edit" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='#e0e7ff'" onmouseout="this.style.background='transparent';this.style.color='#475569'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></a>
+                  <a href="/events/{{id}}/results" class="p-1.5 rounded-lg" style="color:#34d399;" title="Results" onmouseover="this.style.background='rgba(16,185,129,0.12)'" onmouseout="this.style.background='transparent'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></a>
                 </div>
               </td>
             </tr>
@@ -234,203 +210,139 @@
         </table>
       </div>
       {{else}}
-      <div class="py-16 flex flex-col items-center justify-center text-center flex-1">
-        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div class="flex-1 flex flex-col items-center justify-center py-12 text-center">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.15);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </div>
-        <p class="font-bold" style="color:#475569;">No events yet</p>
-        <p class="text-sm mt-1 mb-5" style="color:#334155;">Create your first competition to get started.</p>
-        <a href="/events/create" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white transition" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Create First Event
-        </a>
+        <p class="font-bold text-sm" style="color:#334155;">No events yet</p>
+        <a href="/events/create" class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">+ Create First Event</a>
       </div>
       {{/if}}
     </div>
 
-    <!-- Right column -->
-    <div class="space-y-5">
+    <!-- Right 3 cols: shortcuts + revenue mini -->
+    <div class="lg:col-span-3 flex flex-col gap-4">
 
-      <!-- Quick Actions -->
-      <div class="glass-card overflow-hidden">
-        <div class="px-5 py-4" style="border-bottom:1px solid rgba(99,102,241,0.15);">
-          <div class="flex items-center gap-2.5">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(251,191,36,0.15);">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            </div>
-            <h2 class="text-sm font-extrabold" style="color:#e0e7ff;">Admin Shortcuts</h2>
-          </div>
+      <!-- Quick Launch -->
+      <div class="bento-accent p-5 flex-shrink-0">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-2 h-2 rounded-full" style="background:#fbbf24;box-shadow:0 0 8px rgba(251,191,36,0.5);"></div>
+          <span class="text-sm font-extrabold" style="color:#e0e7ff;">Quick Actions</span>
         </div>
-        <div class="p-4 space-y-2">
-          <a href="/events/create" class="shortcut-btn">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#1e1b4b,#4338ca);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <div class="space-y-2">
+          <a href="/events/create" class="cmd-btn">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#1e1b4b,#4338ca);">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </div>
-            <div class="flex-1 min-w-0">
-              <div class="text-xs font-bold" style="color:#e0e7ff;">Create Competition</div>
-              <div class="text-[11px]" style="color:#475569;">Add new event &amp; venue</div>
+            <div>
+              <div class="text-xs font-bold" style="color:#e0e7ff;">New Competition</div>
+              <div class="text-[11px]" style="color:#334155;">Event + venue + criteria</div>
             </div>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.5" class="ml-auto"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
-          <a href="/events" class="shortcut-btn">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#064e3b,#059669);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <a href="/users" class="cmd-btn">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#4c1d95,#7c3aed);">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
-            <div class="flex-1 min-w-0">
-              <div class="text-xs font-bold" style="color:#e0e7ff;">Manage Events</div>
-              <div class="text-[11px]" style="color:#475569;">Configure contestants &amp; judges</div>
-            </div>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-          </a>
-          <a href="/users" class="shortcut-btn">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#4c1d95,#7c3aed);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-            <div class="flex-1 min-w-0">
+            <div>
               <div class="text-xs font-bold" style="color:#e0e7ff;">User Management</div>
-              <div class="text-[11px]" style="color:#475569;">Add judges &amp; organizers</div>
+              <div class="text-[11px]" style="color:#334155;">Judges &amp; organizers</div>
             </div>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.5" class="ml-auto"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
-          <a href="/analytics" class="shortcut-btn">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#1e1b4b,#6366f1);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+          <a href="/analytics" class="cmd-btn">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#1e1b4b,#6366f1);">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
             </div>
-            <div class="flex-1 min-w-0">
+            <div>
               <div class="text-xs font-bold" style="color:#e0e7ff;">AI Score Audit</div>
-              <div class="text-[11px]" style="color:#475569;">Detect scoring anomalies</div>
+              <div class="text-[11px]" style="color:#334155;">Detect anomalies</div>
             </div>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.5" class="ml-auto"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
-          <a href="/inventory" class="shortcut-btn">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#064e3b,#16a34a);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <a href="/inventory" class="cmd-btn">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#064e3b,#16a34a);">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
-            <div class="flex-1 min-w-0">
+            <div>
               <div class="text-xs font-bold" style="color:#e0e7ff;">Payment Inventory</div>
-              <div class="text-[11px]" style="color:#475569;">Track ticket revenue</div>
+              <div class="text-[11px]" style="color:#334155;">Ticket revenue</div>
             </div>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.5" class="ml-auto"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
         </div>
       </div>
 
-      <!-- System Environment -->
-      <div class="glass-card overflow-hidden">
-        <div class="px-5 py-4" style="border-bottom:1px solid rgba(99,102,241,0.15);">
-          <div class="flex items-center gap-2.5">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(99,102,241,0.15);">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            </div>
-            <h2 class="text-sm font-extrabold" style="color:#e0e7ff;">System Environment</h2>
-          </div>
+      <!-- Revenue mini card -->
+      {{#if paidEventsCount}}
+      <div class="bento p-5 flex-1" style="background:linear-gradient(135deg,rgba(6,78,59,0.6),rgba(22,163,74,0.2));border-color:rgba(22,163,74,0.2);">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[10px] font-black uppercase tracking-widest" style="color:#34d399;">Revenue Summary</span>
+          <a href="/inventory" class="text-[11px] font-black" style="color:#34d399;">Details →</a>
         </div>
-        <div class="px-5 py-4 space-y-3 text-xs">
-          <div class="flex items-center justify-between">
-            <span style="color:#475569;">Account Role</span>
-            <span class="px-2.5 py-1 rounded-full font-black uppercase text-[10px]" style="background:rgba(59,130,246,0.2);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);">{{userRole}}</span>
+        <p class="text-3xl font-black mb-1" style="color:#f0fdf4;">₱{{totalIncome}}</p>
+        <p class="text-xs mb-4" style="color:#166534;">{{paidEventsCount}} ticketed event(s) &bull; {{totalTicketsSold}} tickets sold</p>
+        <div class="grid grid-cols-2 gap-2">
+          {{#each incomeByEvent}}
+          {{#if @first}}
+          <div class="col-span-2 flex items-center justify-between p-2.5 rounded-xl" style="background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.15);">
+            <span class="text-xs font-bold truncate max-w-[120px]" style="color:#bbf7d0;">{{name}}</span>
+            <span class="text-xs font-black" style="color:#34d399;">₱<span data-fmt-income="{{income}}">{{income}}</span></span>
           </div>
-          <div class="flex items-center justify-between">
-            <span style="color:#475569;">Cloud Database</span>
-            <span class="px-2.5 py-1 rounded-full font-black text-[10px]" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);">Firebase Firestore</span>
-          </div>
-          <div class="flex items-center justify-between">
-            <span style="color:#475569;">App Framework</span>
-            <span class="font-bold" style="color:#c7d2fe;">Node.js / Express</span>
-          </div>
-          <div class="flex items-center justify-between">
-            <span style="color:#475569;">AI Model</span>
-            <span class="font-bold" style="color:#c7d2fe;">Gemini 2.5 Flash</span>
-          </div>
-          <div class="flex items-center justify-between">
-            <span style="color:#475569;">App Version</span>
-            <span class="font-bold" style="color:#c7d2fe;">v2.5.0</span>
-          </div>
-          <div class="flex items-center justify-between">
-            <span style="color:#475569;">Total Users</span>
-            <span class="font-bold" style="color:#c7d2fe;">{{totalUsers}}</span>
-          </div>
-          <div class="flex items-center justify-between">
-            <span style="color:#475569;">Active Events</span>
-            <span class="font-bold" style="color:#c7d2fe;">{{activeEvents.length}}</span>
-          </div>
-          <div class="flex items-center justify-between pt-2" style="border-top:1px solid rgba(99,102,241,0.1);">
-            <span style="color:#475569;">Firebase Status</span>
-            <span class="flex items-center gap-1.5 font-black text-[11px]" style="color:#34d399;">
-              <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping inline-block"></span>
-              Connected
-            </span>
-          </div>
+          {{/if}}
+          {{/each}}
         </div>
       </div>
+      {{else}}
+      <div class="bento p-5 flex-1 flex flex-col items-center justify-center text-center">
+        <div class="w-10 h-10 rounded-2xl flex items-center justify-center mb-3" style="background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.15);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <p class="text-xs font-bold" style="color:#334155;">No ticketed events yet</p>
+        <p class="text-[11px] mt-1" style="color:#1e293b;">Create a concert or festival to track revenue</p>
+      </div>
+      {{/if}}
 
     </div>
   </div>
 
-  <!-- ── INCOME SECTION ── -->
+  <!-- ── INCOME BREAKDOWN (full width, only if data exists) ── -->
   {{#if paidEventsCount}}
-  <div class="space-y-4 fadeup-2">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#064e3b,#16a34a);">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        </div>
-        <h2 class="text-base font-extrabold" style="color:#e0e7ff;">Ticketed Events — Income Overview</h2>
-      </div>
-      <span class="px-3 py-1 rounded-full text-xs font-bold" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);">{{paidEventsCount}} Ticketed Event{{#if (gt paidEventsCount 1)}}s{{/if}}</span>
+  <div class="bento overflow-hidden mt-4 u3">
+    <div class="px-6 py-4 flex items-center gap-3" style="border-bottom:1px solid rgba(255,255,255,0.05);">
+      <div class="w-2 h-2 rounded-full" style="background:#34d399;box-shadow:0 0 8px rgba(52,211,153,0.5);"></div>
+      <span class="text-sm font-extrabold" style="color:#e0e7ff;">Revenue Breakdown</span>
+      <span class="ml-auto text-[11px] font-black px-2.5 py-1 rounded-full" style="background:rgba(22,163,74,0.15);color:#34d399;border:1px solid rgba(22,163,74,0.25);">{{paidEventsCount}} event(s)</span>
     </div>
-
-    <div class="grid sm:grid-cols-3 gap-4">
-      <div class="kpi-card p-5 text-white" style="background:linear-gradient(135deg,#064e3b,#16a34a);box-shadow:0 4px 20px rgba(22,163,74,0.25);">
-        <div class="relative z-10"><p class="text-green-200 text-[11px] font-black uppercase tracking-widest mb-1">Total Revenue</p><p class="text-3xl font-black">₱{{totalIncome}}</p><p class="text-green-100 text-xs mt-1">Across all ticketed events</p></div>
-      </div>
-      <div class="kpi-card p-5 text-white" style="background:linear-gradient(135deg,#0f766e,#14b8a6);box-shadow:0 4px 20px rgba(20,184,166,0.25);">
-        <div class="relative z-10"><p class="text-teal-100 text-[11px] font-black uppercase tracking-widest mb-1">Tickets Sold</p><p class="text-3xl font-black">{{totalTicketsSold}}</p><p class="text-teal-100 text-xs mt-1">Combined across all events</p></div>
-      </div>
-      <div class="kpi-card p-5 text-white" style="background:linear-gradient(135deg,#1e1b4b,#4338ca);box-shadow:0 4px 20px rgba(67,56,202,0.25);">
-        <div class="relative z-10"><p class="text-indigo-200 text-[11px] font-black uppercase tracking-widest mb-1">Ticketed Events</p><p class="text-3xl font-black">{{paidEventsCount}}</p><p class="text-indigo-100 text-xs mt-1">With QR payment enabled</p></div>
-      </div>
-    </div>
-
-    <div class="glass-card overflow-hidden">
-      <div class="px-6 py-4 flex items-center gap-2.5" style="border-bottom:1px solid rgba(99,102,241,0.15);">
-        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:rgba(16,185,129,0.15);">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        </div>
-        <h3 class="text-sm font-extrabold" style="color:#e0e7ff;">Revenue Breakdown by Event</h3>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left min-w-max">
-          <thead>
-            <tr style="border-bottom:1px solid rgba(99,102,241,0.1);">
-              <th class="py-3 px-6 text-[11px] font-black uppercase tracking-wider" style="color:#334155;">Event</th>
-              <th class="py-3 px-4 text-[11px] font-black uppercase tracking-wider" style="color:#334155;">Type</th>
-              <th class="py-3 px-4 text-[11px] font-black uppercase tracking-wider" style="color:#334155;">Status</th>
-              <th class="py-3 px-4 text-[11px] font-black uppercase tracking-wider text-right" style="color:#334155;">Ticket Price</th>
-              <th class="py-3 px-4 text-[11px] font-black uppercase tracking-wider text-right" style="color:#334155;">Sold</th>
-              <th class="py-3 px-6 text-[11px] font-black uppercase tracking-wider text-right" style="color:#334155;">Revenue</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each incomeByEvent}}
-            <tr class="tbl-row" style="border-bottom:1px solid rgba(99,102,241,0.07);">
-              <td class="py-3.5 px-6"><a href="/events/{{id}}" class="font-bold text-sm" style="color:#e0e7ff;">{{name}}</a></td>
-              <td class="py-3.5 px-4"><span class="px-2.5 py-1 rounded-lg text-xs font-bold capitalize" style="background:rgba(99,102,241,0.15);color:#a5b4fc;">{{type}}</span></td>
-              <td class="py-3.5 px-4"><span class="px-2.5 py-1 rounded-full text-[11px] font-black capitalize badge-status-{{status}}">{{status}}</span></td>
-              <td class="py-3.5 px-4 text-right text-xs font-semibold" style="color:#94a3b8;">₱{{ticketPrice}}</td>
-              <td class="py-3.5 px-4 text-right text-xs font-semibold" style="color:#94a3b8;">{{ticketsSold}}</td>
-              <td class="py-3.5 px-6 text-right font-black" style="color:#34d399;">₱<span data-fmt-income="{{income}}">{{income}}</span></td>
-            </tr>
-            {{/each}}
-          </tbody>
-          <tfoot style="border-top:2px solid rgba(99,102,241,0.2);">
-            <tr>
-              <td colspan="5" class="py-3.5 px-6 text-xs font-black uppercase tracking-wider text-right" style="color:#475569;">Total Revenue</td>
-              <td class="py-3.5 px-6 text-right font-black" style="color:#34d399;">₱{{totalIncome}}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left" style="min-width:500px;">
+        <thead>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+            <th class="py-3 px-6 text-[10px] font-black uppercase tracking-widest" style="color:#1e293b;">Event</th>
+            <th class="py-3 px-4 text-[10px] font-black uppercase tracking-widest" style="color:#1e293b;">Type</th>
+            <th class="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-right" style="color:#1e293b;">Ticket Price</th>
+            <th class="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-right" style="color:#1e293b;">Sold</th>
+            <th class="py-3 px-6 text-[10px] font-black uppercase tracking-widest text-right" style="color:#1e293b;">Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each incomeByEvent}}
+          <tr class="ev-row">
+            <td class="py-3.5 px-6 font-bold text-sm" style="color:#e0e7ff;">{{name}}</td>
+            <td class="py-3.5 px-4"><span class="text-[11px] font-bold capitalize px-2.5 py-1 rounded-lg" style="background:rgba(99,102,241,0.12);color:#818cf8;">{{type}}</span></td>
+            <td class="py-3.5 px-4 text-right text-xs font-semibold" style="color:#475569;">₱{{ticketPrice}}</td>
+            <td class="py-3.5 px-4 text-right text-xs font-semibold" style="color:#475569;">{{ticketsSold}}</td>
+            <td class="py-3.5 px-6 text-right font-black" style="color:#34d399;">₱<span data-fmt-income="{{income}}">{{income}}</span></td>
+          </tr>
+          {{/each}}
+        </tbody>
+        <tfoot style="border-top:1px solid rgba(22,163,74,0.2);">
+          <tr>
+            <td colspan="4" class="py-3 px-6 text-[11px] font-black uppercase tracking-wider text-right" style="color:#334155;">Total</td>
+            <td class="py-3 px-6 text-right font-black" style="color:#34d399;">₱{{totalIncome}}</td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   </div>
   {{/if}}
@@ -442,15 +354,7 @@
 <script>
   const d=new Date(),days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],months=['January','February','March','April','May','June','July','August','September','October','November','December'];
   const el=document.getElementById('today-date');
-  if(el) el.textContent=days[d.getDay()]+', '+months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
-
-  // Sell-through % for income table
-  document.querySelectorAll('[data-pct="true"]').forEach(function(span){
-    const sold=parseInt(span.getAttribute('data-sold'))||0,cap=parseInt(span.getAttribute('data-cap'))||0;
-    if(cap>0){const pct=Math.min((sold/cap)*100,100).toFixed(1);span.textContent=pct+'%';const bar=span.parentElement.querySelector('.bg-gradient-to-r');if(bar)bar.style.width=pct+'%';}else span.textContent='—';
-  });
-
-  // Format peso values
+  if(el) el.textContent=days[d.getDay()]+', '+months[d.getMonth()]+' '+d.getDate();
   document.querySelectorAll('[data-fmt-income]').forEach(function(span){
     const v=parseFloat(span.getAttribute('data-fmt-income'))||0;
     span.textContent=v.toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
