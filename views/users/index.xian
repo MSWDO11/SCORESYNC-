@@ -191,7 +191,7 @@
     <div class="py-16 text-center text-slate-400">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" stroke-width="1.5" class="mx-auto mb-4"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
       <p class="font-semibold text-slate-600 mb-1">No users yet</p>
-      <a href="/register" class="btn-primary text-sm mt-3 inline-flex"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add First User</a>
+      <button type="button" onclick="toggleAddUserModal()" class="btn-primary text-sm mt-3 inline-flex"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add First User</button>
     </div>
     {{/if}}
   </div>
