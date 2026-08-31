@@ -61,6 +61,7 @@ export const storeEvent = async (req, res) => {
     organizer, maxContestants, prizes, rules, theme, notes,
     paymentEnabled, ticketPrice, ticketCapacity,
     qrPaymentUrl, paymentAccountName, paymentNumber, ticketsSold,
+    endTime,
   } = req.body;
 
   const isPaymentEnabled = paymentEnabled === "true";
@@ -74,6 +75,7 @@ export const storeEvent = async (req, res) => {
       description:        description || "",
       date:               date || "",
       time:               time || "",
+      endTime:            endTime || "",
       venue:              venue || "",
       type:               type || "pageant",
       status:             status || "upcoming",
@@ -161,6 +163,7 @@ export const updateEvent = async (req, res) => {
     organizer, maxContestants, prizes, rules, theme, notes,
     paymentEnabled, ticketPrice, ticketCapacity,
     qrPaymentUrl, paymentAccountName, paymentNumber, ticketsSold,
+    endTime,
   } = req.body;
 
   const isPaymentEnabled = paymentEnabled === "true";
@@ -170,7 +173,8 @@ export const updateEvent = async (req, res) => {
 
   try {
     await updateDoc(doc(db, EVENTS, req.params.id), {
-      name, description, date, time, venue, type, status,
+      name, description, date, time,
+      endTime:            endTime || "", venue, type, status,
       organizer:          organizer          || "",
       maxContestants:     maxContestants     || "",
       prizes:             prizes             || "",
