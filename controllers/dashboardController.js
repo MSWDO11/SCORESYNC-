@@ -2,6 +2,7 @@ import { db } from "../models/firebaseConfig.js";
 import {
   collection, getDocs, query, orderBy, limit, where,
 } from "firebase/firestore";
+import { autoTransitionEventStatus } from "./autoStatusService.js";
 
 // Helper: build income summary from events snapshot
 function buildIncomeSummary(evDocs) {
@@ -30,6 +31,9 @@ function buildIncomeSummary(evDocs) {
 
 export const dashboardPage = async (req, res) => {
   const role = req.session.userRole;
+
+  // Auto-transition upcoming → ongoing for events whose time has passed
+  await autoTransitionEventStatus();
 
   // Shared base view data
   const base = {

@@ -3,6 +3,7 @@ import {
   collection, addDoc, getDocs, getDoc, doc,
   updateDoc, deleteDoc, query, orderBy, serverTimestamp,
 } from "firebase/firestore";
+import { autoTransitionEventStatus } from "./autoStatusService.js";
 
 // Helper: build role locals from session
 function roleLocals(req) {
@@ -25,6 +26,8 @@ const EVENTS = "events";
 // ─── List all events ──────────────────────────────────────────────────────────
 export const listEvents = async (req, res) => {
   try {
+    // Auto-transition upcoming → ongoing before loading the list
+    await autoTransitionEventStatus();
     const q = query(collection(db, EVENTS), orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
     const events = snap.docs.map(d => ({ id: d.id, ...d.data() }));
