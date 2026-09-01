@@ -77,10 +77,10 @@ export const setupAdmin = async (req, res) => {
 
 export const fixRole = async (req, res) => {
   const { email, role } = req.query;
-  const allowed = ["superadmin", "admin", "organizer", "judge", "participant"];
+  const allowed = ["admin", "organizer", "judge", "participant"];
 
   if (!email || !allowed.includes(role)) {
-    return res.json({ error: "Provide ?email=...&role=admin|judge|encoder" });
+    return res.json({ error: "Provide ?email=...&role=admin|organizer|judge|participant" });
   }
 
   try {

@@ -26,28 +26,40 @@ app.use(express.static(path.join(process.cwd(), "public")));
 const sessionSecret = process.env.SESSION_SECRET || "scoresync-dev-secret-change-in-prod";
 
 app.use(cookieSession({
-  name:     "scoresync.sess",
+  name:     "ss",          // shorter name saves bytes
   keys:     [sessionSecret],
   maxAge:   1000 * 60 * 60 * 8, // 8 hours
-  secure:   false,   // Vercel handles HTTPS at edge — keep false to avoid cookie loss
+  secure:   false,
   sameSite: "lax",
   httpOnly: true,
+  // Keep cookie small — only store uid, name, role
+  signed:   true,
 }));
 
-// ─── Manual flash middleware (replaces connect-flash — fully compatible with cookie-session) ──
+// ─── Manual flash middleware (cookie-session safe — no session bloat) ──────────
 app.use((req, res, next) => {
-  // Expose flash messages to views then clear them
-  res.locals.success_msg = req.session._flash_success || "";
-  res.locals.error_msg   = req.session._flash_error   || "";
-  req.session._flash_success = "";
-  req.session._flash_error   = "";
+  // Read flash from URL query params (set by redirect) then expose to views
+  res.locals.success_msg = req.query._s ? decodeURIComponent(req.query._s) : (req.session._flash_success || "");
+  res.locals.error_msg   = req.query._e ? decodeURIComponent(req.query._e) : (req.session._flash_error   || "");
 
-  // req.flash() shim so all controllers work without changes
+  // Clear session flash after reading
+  if (req.session._flash_success) req.session._flash_success = "";
+  if (req.session._flash_error)   req.session._flash_error   = "";
+
+  // req.flash() shim — stores in session (for same-origin redirects without query params)
   req.flash = (type, msg) => {
     if (msg === undefined) return [];
     if (type === "success_msg") req.session._flash_success = msg;
     if (type === "error_msg")   req.session._flash_error   = msg;
   };
+
+  // Helper to redirect with flash as query param (avoids cookie size limit)
+  req.flashRedirect = (type, msg, url) => {
+    const key = type === "success_msg" ? "_s" : "_e";
+    const sep = url.includes("?") ? "&" : "?";
+    res.redirect(`${url}${sep}${key}=${encodeURIComponent(msg)}`);
+  };
+
   next();
 });
 app.use(injectUser);
