@@ -31,52 +31,52 @@
 
   <!-- Stats -->
   <div class="grid grid-cols-2 gap-4">
-    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-      <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Active Events</div>
-      <div class="text-3xl font-black text-emerald-600">{{totalActive}}</div>
-      <div class="text-xs text-slate-400 mt-1">Upcoming + Ongoing</div>
+    <div class="rounded-2xl p-5 text-white" style="background:linear-gradient(135deg,#064e3b,#059669);box-shadow:0 4px 20px rgba(5,150,105,0.25);">
+      <div class="text-[10px] font-black uppercase tracking-widest mb-2" style="color:rgba(255,255,255,0.6);">Active Events</div>
+      <div class="text-3xl font-black">{{totalActive}}</div>
+      <div class="text-xs mt-1" style="color:rgba(255,255,255,0.5);">Upcoming + Ongoing</div>
     </div>
-    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-      <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Ongoing Now</div>
-      <div class="text-3xl font-black text-blue-600">{{ongoingCount}}</div>
-      <div class="text-xs text-slate-400 mt-1">In progress</div>
+    <div class="rounded-2xl p-5 text-white" style="background:linear-gradient(135deg,#1e3a8a,#2563eb);box-shadow:0 4px 20px rgba(37,99,235,0.25);">
+      <div class="text-[10px] font-black uppercase tracking-widest mb-2" style="color:rgba(255,255,255,0.6);">Ongoing Now</div>
+      <div class="text-3xl font-black">{{ongoingCount}}</div>
+      <div class="text-xs mt-1" style="color:rgba(255,255,255,0.5);">In progress</div>
     </div>
   </div>
 
   <!-- Events List -->
-  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-      <h2 class="text-sm font-extrabold text-slate-800">Events — Upcoming &amp; Ongoing</h2>
-      <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">{{totalActive}} events</span>
+  <div class="rounded-2xl overflow-hidden" style="background:rgba(12,15,30,0.95);border:1px solid rgba(16,185,129,0.18);">
+    <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid rgba(16,185,129,0.12);">
+      <h2 class="text-sm font-extrabold" style="color:#e0e7ff;">Events — Upcoming &amp; Ongoing</h2>
+      <span class="px-2.5 py-1 rounded-full text-[11px] font-bold" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.25);">{{totalActive}} events</span>
     </div>
     {{#if activeEvents.length}}
-    <div class="divide-y divide-slate-100">
+    <div>
       {{#each activeEvents}}
-      <div class="flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition group">
+      <div class="flex items-center justify-between px-6 py-4 transition group" style="border-bottom:1px solid rgba(255,255,255,0.04);" onmouseover="this.style.background='rgba(16,185,129,0.05)'" onmouseout="this.style.background='transparent'">
         <div class="flex items-center gap-4">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 {{#if (eq status 'ongoing')}}bg-emerald-100{{else}}bg-blue-50{{/if}}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{#if (eq status 'ongoing')}}#059669{{else}}#3b82f6{{/if}}" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:{{#if (eq status 'ongoing')}}rgba(5,150,105,0.2){{else}}rgba(37,99,235,0.15){{/if}};">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{#if (eq status 'ongoing')}}#34d399{{else}}#93c5fd{{/if}}" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
           <div>
-            <a href="/events/{{id}}" class="font-bold text-slate-800 group-hover:text-indigo-600 transition text-sm">{{name}}</a>
-            <div class="text-xs text-slate-400 mt-0.5 capitalize">{{type}} &bull; {{#if date}}{{date}}{{else}}Date TBD{{/if}} &bull; {{venue}}</div>
+            <a href="/events/{{id}}" class="font-bold text-sm transition" style="color:#e0e7ff;" onmouseover="this.style.color='#6ee7b7'" onmouseout="this.style.color='#e0e7ff'">{{name}}</a>
+            <div class="text-xs mt-0.5 capitalize" style="color:#334155;">{{type}} &bull; {{#if date}}{{date}}{{else}}Date TBD{{/if}}</div>
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <span class="px-2.5 py-1 rounded-full text-[11px] font-black capitalize {{#if (eq status 'ongoing')}}bg-emerald-50 text-emerald-700 border border-emerald-200{{else}}bg-blue-50 text-blue-700 border border-blue-200{{/if}}">{{status}}</span>
-          <a href="/events/{{id}}" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 transition">Manage</a>
-          <a href="/events/{{id}}/contestants/add" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition">+ Contestant</a>
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-black capitalize" style="{{#if (eq status 'ongoing')}}background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);{{else}}background:rgba(59,130,246,0.15);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);{{/if}}">{{status}}</span>
+          <a href="/events/{{id}}" class="px-3 py-1.5 rounded-xl text-xs font-bold transition" style="background:rgba(255,255,255,0.06);color:#94a3b8;" onmouseover="this.style.background='rgba(16,185,129,0.12)';this.style.color='#34d399'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='#94a3b8'">Manage</a>
+          <a href="/events/{{id}}/contestants/add" class="px-3 py-1.5 rounded-xl text-xs font-bold transition" style="background:rgba(16,185,129,0.12);color:#34d399;" onmouseover="this.style.background='rgba(16,185,129,0.22)'" onmouseout="this.style.background='rgba(16,185,129,0.12)'">&plus; Contestant</a>
         </div>
       </div>
       {{/each}}
     </div>
     {{else}}
     <div class="py-16 flex flex-col items-center justify-center text-center">
-      <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.15);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       </div>
-      <p class="font-bold text-slate-500">No active events right now.</p>
-      <p class="text-sm text-slate-400 mt-1">Check back when events are scheduled.</p>
+      <p class="font-bold" style="color:#475569;">No active events right now.</p>
+      <p class="text-sm mt-1" style="color:#334155;">Check back when events are scheduled.</p>
     </div>
     {{/if}}
   </div>

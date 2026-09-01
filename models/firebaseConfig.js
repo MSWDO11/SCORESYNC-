@@ -1,9 +1,7 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-// All config values must come from environment variables
-// Fallbacks are provided for local development only
 const firebaseConfig = {
   apiKey:            process.env.FIREBASE_API_KEY            || "AIzaSyCQTkh6tsjLjuw6d6KaPetiNH2CriQxD7Q",
   authDomain:        process.env.FIREBASE_AUTH_DOMAIN        || "scoresync-92994.firebaseapp.com",
@@ -14,18 +12,9 @@ const firebaseConfig = {
   measurementId:     process.env.FIREBASE_MEASUREMENT_ID     || "G-R9WJWV7KWR",
 };
 
-// Prevent duplicate app initialization (important for Vercel serverless warm starts)
-let app, db, auth;
-try {
-  app  = initializeApp(firebaseConfig);
-  db   = getFirestore(app);
-  auth = getAuth(app);
-} catch (e) {
-  // App already initialized — reuse existing instance
-  const { getApps } = await import("firebase/app");
-  app  = getApps()[0];
-  db   = getFirestore(app);
-  auth = getAuth(app);
-}
+// Safe init — reuse existing app on Vercel warm starts
+const app  = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+const db   = getFirestore(app);
+const auth = getAuth(app);
 
 export { db, auth, firebaseConfig };

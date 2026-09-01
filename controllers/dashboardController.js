@@ -130,6 +130,7 @@ export const dashboardPage = async (req, res) => {
 
   } catch (err) {
     console.error("Dashboard error:", err);
+    req.flash("error_msg", "Could not load dashboard data: " + err.message);
     res.render("dashboard/admin", {
       ...base,
       recentEvents: [], activeEvents: [], completedEvents: [],
