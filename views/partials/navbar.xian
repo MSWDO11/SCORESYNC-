@@ -17,9 +17,7 @@
 
   <!-- Brand -->
   <a href="/dashboard" class="flex items-center gap-2 flex-shrink-0 group">
-    <div class="w-7 h-7 grad-gold rounded-lg flex items-center justify-center shadow-md">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
-    </div>
+    <img src="/images/mansalay-logo.png" alt="Mansalay Seal" class="w-8 h-8 rounded-full object-cover" style="box-shadow:0 0 8px rgba(255,255,255,0.15);">
     <span class="font-black text-sm tracking-tight hidden sm:block" style="color:#e0e7ff;">ScoreSync</span>
   </a>
 

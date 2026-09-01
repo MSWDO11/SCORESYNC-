@@ -23,8 +23,8 @@
 <header class="home-nav">
   <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
     <div class="flex items-center gap-2.5">
-      <div class="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+      <div class="w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 shadow-md" style="background:#fff;">
+        <img src="/images/mansalay-logo.png" alt="Mansalay Seal" class="w-8 h-8 object-cover">
       </div>
       <span class="font-black text-xl tracking-tight" style="color:#e0e7ff;">Score<span style="color:#a5b4fc;">Sync</span></span>
     </div>
@@ -199,8 +199,8 @@
 <section class="py-24 px-6 relative overflow-hidden" style="background:radial-gradient(ellipse at 50% 50%,rgba(99,102,241,0.18) 0%,rgba(7,9,15,0.98) 70%);">
   <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse at 50% 50%,rgba(99,102,241,0.08) 0%,transparent 65%);"></div>
   <div class="relative z-10 max-w-2xl mx-auto text-center">
-    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);box-shadow:0 0 32px rgba(251,191,36,0.4);">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 overflow-hidden shadow-lg" style="background:#fff;">
+      <img src="/images/mansalay-logo.png" alt="Mansalay Seal" class="w-16 h-16 object-cover">
     </div>
     <h2 class="text-4xl font-black mb-4 tracking-tight" style="color:#e0e7ff;">Ready to run your next competition?</h2>
     <p class="mb-8 text-base" style="color:#475569;">Join ScoreSync and bring efficiency and transparency to Mansalay's events.</p>
