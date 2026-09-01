@@ -75,8 +75,8 @@
 
       <!-- Mobile logo -->
       <div class="flex items-center gap-2.5 justify-center mb-8 lg:hidden">
-        <div class="w-10 h-10 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);box-shadow:0 0 16px rgba(251,191,36,0.35);">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        <div class="w-10 h-10 rounded-2xl overflow-hidden flex-shrink-0" style="background:#fff;box-shadow:0 0 16px rgba(255,255,255,0.15);">
+          <img src="/images/mansalay-logo.png" alt="Mansalay Seal" class="w-10 h-10 object-cover">
         </div>
         <span class="font-black text-xl tracking-tight" style="color:#e0e7ff;">Score<span style="color:#a5b4fc;">Sync</span></span>
       </div>
