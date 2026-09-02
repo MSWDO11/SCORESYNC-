@@ -53,10 +53,16 @@ export const dashboardPage = async (req, res) => {
 
     // ── ADMIN ─ full access including completed events history ────────────────
     if (role === "admin") {
-      const [evSnap, uSnap] = await Promise.all([
-        getDocs(collection(db, "events")),
-        getDocs(collection(db, "users")),
-      ]);
+      let evSnap, uSnap;
+      try {
+        [evSnap, uSnap] = await Promise.all([
+          getDocs(collection(db, "events")),
+          getDocs(collection(db, "users")),
+        ]);
+      } catch (permErr) {
+        console.error("Firestore read failed:", permErr.code, permErr.message);
+        throw permErr;
+      }
 
       const allEvents = evSnap.docs
         .map(d => ({ id: d.id, ...d.data() }))
@@ -134,8 +140,8 @@ export const dashboardPage = async (req, res) => {
     res.redirect("/login");
 
   } catch (err) {
-    console.error("Dashboard error:", err);
-    req.flash("error_msg", "Could not load dashboard data: " + err.message);
+    console.error("Dashboard error:", err.code || err.message, err);
+    req.flash("error_msg", "Could not load dashboard data: " + (err.code || err.message));
     res.render("dashboard/admin", {
       ...base,
       recentEvents: [], activeEvents: [], completedEvents: [],
