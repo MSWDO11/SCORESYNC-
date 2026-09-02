@@ -28,9 +28,10 @@ export const listEvents = async (req, res) => {
   try {
     // Auto-transition runs silently — never blocks event list load
     autoTransitionEventStatus().catch(e => console.warn("autoStatus:", e.message));
-    const q = query(collection(db, EVENTS), orderBy("createdAt", "desc"));
-    const snap = await getDocs(q);
-    const events = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const snap = await getDocs(collection(db, EVENTS));
+    const events = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
     res.render("events/index", {
       title: "Events",
       events,

@@ -109,11 +109,13 @@ export const dashboardPage = async (req, res) => {
       });
     }
 
-    // ── JUDGE ─ unchanged, gets all events ─────────────────────────────────────
+    // ── JUDGE ─ gets all events, sorted in JS ─────────────────────────────────
     if (role === "judge") {
-      const q    = query(collection(db, "events"), orderBy("createdAt", "desc"), limit(10));
-      const snap = await getDocs(q);
-      const recentEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const snap = await getDocs(collection(db, "events"));
+      const recentEvents = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+        .slice(0, 10);
       return res.render("dashboard/judge", { ...base, recentEvents });
     }
 

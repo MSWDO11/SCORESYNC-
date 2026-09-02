@@ -1,7 +1,7 @@
 import { db } from "../models/firebaseConfig.js";
 import {
   collection, getDocs, getDoc, addDoc, deleteDoc,
-  doc, query, orderBy, serverTimestamp, where,
+  doc, query, serverTimestamp, where,
 } from "firebase/firestore";
 
 const EVENTS = "events";
@@ -19,10 +19,8 @@ export const inventoryPage = async (req, res) => {
       .filter(e => e.paymentEnabled)
       .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 
-    // Load payment records
-    let paymentsQuery = query(collection(db, PAYMENTS), orderBy("createdAt", "desc"));
-    const paySnap = await getDocs(paymentsQuery);
-
+    // Load payment records — sort in JS to avoid Firestore index requirement
+    const paySnap = await getDocs(collection(db, PAYMENTS));
     let records = paySnap.docs.map(d => {
       const data = d.data();
       return {
@@ -39,8 +37,9 @@ export const inventoryPage = async (req, res) => {
         status:      data.status      || "Confirmed",
         recordedBy:  data.recordedBy  || "Admin",
         createdAt:   data.createdAt?.toDate?.()?.toLocaleString("en-PH") || "—",
+        _sec:        data.createdAt?.seconds || 0,
       };
-    });
+    }).sort((a, b) => b._sec - a._sec);
 
     // Apply event filter
     if (filterEventId) {

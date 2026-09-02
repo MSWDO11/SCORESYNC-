@@ -2,13 +2,13 @@ import { db, auth, firebaseConfig } from "../models/firebaseConfig.js";
 import { initializeApp, deleteApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import {
-  collection, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, query, orderBy,
+  collection, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, query,
 } from "firebase/firestore";
 
 // ─── List all users ───────────────────────────────────────────────────────────
 export const listUsers = async (req, res) => {
   try {
-    const snap = await getDocs(query(collection(db, "users"), orderBy("createdAt", "desc")));
+    const snap = await getDocs(collection(db, "users"));
     const allUsers = snap.docs.map(d => {
       const data = d.data();
       const emailSubject = encodeURIComponent("ScoreSync Account Approved!");

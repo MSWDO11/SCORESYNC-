@@ -1,5 +1,5 @@
 import { db } from "../models/firebaseConfig.js";
-import { doc, getDoc, updateDoc, collection, getDocs, addDoc, serverTimestamp, query, orderBy, limit } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, getDocs, addDoc, serverTimestamp, query } from "firebase/firestore";
 
 // Initial default suggestions list
 const DEFAULT_SUGGESTIONS = [
@@ -53,7 +53,7 @@ export const settingsPage = async (req, res) => {
 
     let customSuggestions = [];
     try {
-      const q = query(collection(db, "feature_requests"), orderBy("createdAt", "desc"), limit(10));
+      const q = collection(db, "feature_requests");
       const querySnap = await getDocs(q);
       querySnap.forEach((docSnap) => {
         customSuggestions.push({ id: docSnap.id, ...docSnap.data() });

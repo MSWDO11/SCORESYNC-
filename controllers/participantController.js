@@ -1,6 +1,6 @@
 import { db } from "../models/firebaseConfig.js";
 import {
-  collection, addDoc, getDocs, doc, getDoc, serverTimestamp, query, where, orderBy,
+  collection, addDoc, getDocs, doc, getDoc, serverTimestamp, query, where,
 } from "firebase/firestore";
 
 // ─── Participant joins an event ───────────────────────────────────────────────
@@ -66,8 +66,7 @@ export const myRegistrations = async (req, res) => {
     const snap = await getDocs(
       query(
         collection(db, "event_participants"),
-        where("participantId", "==", req.session.userId),
-        orderBy("joinedAt", "desc")
+        where("participantId", "==", req.session.userId)
       )
     );
 
@@ -86,8 +85,9 @@ export const myRegistrations = async (req, res) => {
         notes:         data.notes         || "",
         status:        data.status        || "registered",
         joinedAt:      data.joinedAt?.toDate?.()?.toLocaleString("en-PH") || "—",
+        _sec:          data.joinedAt?.seconds || 0,
       };
-    });
+    }).sort((a, b) => b._sec - a._sec);
 
     res.render("participant/registrations", {
       title:         "My Registrations",
