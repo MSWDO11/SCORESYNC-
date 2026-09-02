@@ -26,8 +26,8 @@ const EVENTS = "events";
 // ─── List all events ──────────────────────────────────────────────────────────
 export const listEvents = async (req, res) => {
   try {
-    // Auto-transition upcoming → ongoing before loading the list
-    await autoTransitionEventStatus();
+    // Auto-transition runs silently — never blocks event list load
+    autoTransitionEventStatus().catch(e => console.warn("autoStatus:", e.message));
     const q = query(collection(db, EVENTS), orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
     const events = snap.docs.map(d => ({ id: d.id, ...d.data() }));

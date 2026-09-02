@@ -32,8 +32,8 @@ function buildIncomeSummary(evDocs) {
 export const dashboardPage = async (req, res) => {
   const role = req.session.userRole;
 
-  // Auto-transition upcoming → ongoing for events whose time has passed
-  await autoTransitionEventStatus();
+  // Auto-transition runs silently in background — never blocks dashboard load
+  autoTransitionEventStatus().catch(e => console.warn("autoStatus:", e.message));
 
   // Shared base view data
   const base = {
