@@ -1,6 +1,6 @@
 import { db } from "../models/firebaseConfig.js";
 import {
-  collection, getDocs, query, orderBy, limit, where,
+  collection, getDocs, query, where,
 } from "firebase/firestore";
 import { autoTransitionEventStatus } from "./autoStatusService.js";
 
@@ -54,11 +54,14 @@ export const dashboardPage = async (req, res) => {
     // ── ADMIN ─ full access including completed events history ────────────────
     if (role === "admin") {
       const [evSnap, uSnap] = await Promise.all([
-        getDocs(query(collection(db, "events"), orderBy("createdAt", "desc"))),
+        getDocs(collection(db, "events")),
         getDocs(collection(db, "users")),
       ]);
 
-      const allEvents       = evSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const allEvents = evSnap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
       const activeEvents    = allEvents.filter(e => ["upcoming","ongoing"].includes(e.status));
       const completedEvents = allEvents.filter(e => e.status === "completed");
       const recentEvents    = allEvents.slice(0, 5);

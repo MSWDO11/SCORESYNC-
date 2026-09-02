@@ -1,18 +1,18 @@
 import { db } from "../models/firebaseConfig.js";
 import {
   collection, addDoc, getDocs, getDoc, doc,
-  setDoc, query, where, orderBy, limit, serverTimestamp, collectionGroup,
+  setDoc, query, where, serverTimestamp,
 } from "firebase/firestore";
 
 // Load admin's saved tabulation preferences from Firestore (deterministic)
 async function loadTabPrefs() {
   const DEFAULT = { decimalPrecision: "2", olympicRule: false };
   try {
-    // Use orderBy + limit so we always get the same admin regardless of insertion order
-    const q    = query(collection(db, "users"), where("role", "in", ["admin", "superadmin"]), orderBy("createdAt", "asc"), limit(1));
-    const snap = await getDocs(q);
-    if (!snap.empty && snap.docs[0].data().tabPrefs) {
-      return { ...DEFAULT, ...snap.docs[0].data().tabPrefs };
+    // Get all users, find first admin — avoids composite index requirement
+    const snap = await getDocs(collection(db, "users"));
+    const adminDoc = snap.docs.find(d => d.data().role === "admin" && d.data().tabPrefs);
+    if (adminDoc) {
+      return { ...DEFAULT, ...adminDoc.data().tabPrefs };
     }
   } catch (_) {}
   return DEFAULT;
