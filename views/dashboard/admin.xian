@@ -36,7 +36,7 @@
 <div class="flex flex-1 overflow-hidden">
 {{> sidebar }}
 
-<main class="flex-1 overflow-y-auto" style="padding:24px 28px;background:radial-gradient(ellipse at 20% 0%,rgba(99,102,241,0.07) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(139,92,246,0.05) 0%,transparent 50%),#070b14;">
+<main class="flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8" style="background:radial-gradient(ellipse at 20% 0%,rgba(99,102,241,0.07) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(139,92,246,0.05) 0%,transparent 50%),#070b14;">
 
   {{#if success_msg}}<div class="flex items-center gap-3 p-4 rounded-2xl text-sm font-semibold mb-5 u0" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>{{success_msg}}</div>{{/if}}
   {{#if error_msg}}<div class="flex items-center gap-3 p-4 rounded-2xl text-sm font-semibold mb-5 u0" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/></svg>{{error_msg}}</div>{{/if}}

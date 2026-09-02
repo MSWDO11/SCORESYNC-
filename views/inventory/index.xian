@@ -142,7 +142,7 @@
 
     {{#if records.length}}
     <div class="overflow-x-auto">
-      <table class="w-full text-left min-w-max">
+      <table class="w-full text-left" style="min-width:800px;">
         <thead>
           <tr style="border-bottom:1px solid rgba(99,102,241,0.12);">
             <th class="py-3 px-5 text-[11px] font-black uppercase tracking-wider" style="color:#334155;">Event</th>

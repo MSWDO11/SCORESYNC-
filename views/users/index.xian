@@ -68,7 +68,7 @@
       <span class="badge badge-yellow">Action Required</span>
     </div>
     <div class="overflow-x-auto">
-      <table class="data-table">
+      <table class="data-table" style="min-width:640px;">
         <thead>
           <tr>
             <th>Applicant Name</th>
@@ -131,7 +131,7 @@
     </div>
     {{#if users.length}}
     <div class="overflow-x-auto">
-      <table class="data-table">
+      <table class="data-table" style="min-width:640px;">
         <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Change Role</th><th class="text-right pr-5">Action</th></tr></thead>
         <tbody>
           {{#each users}}
